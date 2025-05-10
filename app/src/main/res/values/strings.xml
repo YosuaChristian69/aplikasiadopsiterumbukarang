@@ -1,5 +1,23 @@
 <resources>
     <string name="app_name">AplikasiAdopsiTerumbuKarang</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tagline">Selamatkan Terumbu Karang Kita</string>
+    <string name="login">Masuk</string>
+    <string name="register">Daftar</string>
+    <string name="email">Email</string>
+    <string name="password">Kata Sandi</string>
+    <string name="confirm_password">Konfirmasi Kata Sandi</string>
+    <string name="forgot_password">Lupa kata sandi?</string>
+    <string name="no_account">Belum punya akun?</string>
+    <string name="create_account">Buat Akun</string>
+    <string name="join_community">Bergabunglah dengan komunitas penyelamat terumbu karang</string>
+    <string name="full_name">Nama Lengkap</string>
+    <string name="phone_number">Nomor Telepon</string>
+    <string name="terms_agreement">Saya menyetujui</string>
+    <string name="terms_and_conditions">Syarat dan Ketentuan</string>
+    <string name="already_have_account">Sudah punya akun?</string>
+    <string name="password_requirements">Min. 8 karakter, huruf besar, huruf kecil, dan angka</string>
+    <string name="app_logo">Logo Aplikasi</string>
+    <string name="back">Kembali</string>
+    <string name="un_goals">Mendukung SDGs PBB untuk Kehidupan Bawah Laut</string>
 </resources>
