@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.adopsiterumbukarang"
+    namespace = "id.istts.aplikasiadopsiterumbukarang"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.adopsiterumbukarang"
-        minSdk = 26
+        applicationId = "id.istts.aplikasiadopsiterumbukarang"
+        minSdk = 30
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"

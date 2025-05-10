@@ -1,4 +1,4 @@
-package com.example.adopsiterumbukarang
+package id.istts.aplikasiadopsiterumbukarang
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
