@@ -9,15 +9,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.cardview.widget.CardView
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.LoginLogic.LoginRequest
+import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginFragment : Fragment() {
 
     private lateinit var videoView: VideoView
+    private lateinit var emailEditText: TextInputEditText
+    private lateinit var passwordEditText: TextInputEditText
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +40,18 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize SessionManager
+        sessionManager = SessionManager(requireContext())
+
+        // Check if user is already logged in
+        if (sessionManager.isLoggedIn()) {
+            navigateToHome()
+        }
+
+        // Initialize views
+        emailEditText = view.findViewById(R.id.emailEditText)
+        passwordEditText = view.findViewById(R.id.passwordEditText)
 
         // Set up video background
         setupVideoBackground(view)
@@ -91,8 +115,115 @@ class LoginFragment : Fragment() {
 
         val btnLogin = view.findViewById<MaterialButton>(R.id.loginButton)
         btnLogin.setOnClickListener {
-            // Implement login functionality here
+            performLogin()
         }
+    }
+
+    private fun performLogin() {
+        val email = emailEditText.text.toString().trim()
+        val password = passwordEditText.text.toString().trim()
+
+        // Validate input
+        if (email.isEmpty()) {
+            emailEditText.error = "Email is required"
+            emailEditText.requestFocus()
+            return
+        }
+
+        if (password.isEmpty()) {
+            passwordEditText.error = "Password is required"
+            passwordEditText.requestFocus()
+            return
+        }
+
+        // Show loading state (you might want to add a progress bar)
+        showLoading(true)
+
+        // Create login request
+        val loginRequest = LoginRequest(email, password)
+
+        // Make API call
+        RetrofitClient.instance.login(loginRequest).enqueue(object : Callback<id.istts.aplikasiadopsiterumbukarang.LoginLogic.LoginResponse> {
+            override fun onResponse(call: Call<id.istts.aplikasiadopsiterumbukarang.LoginLogic.LoginResponse>, response: Response<id.istts.aplikasiadopsiterumbukarang.LoginLogic.LoginResponse>) {
+                showLoading(false)
+
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()
+
+                    if (loginResponse?.msg == "success login") {
+                        // Save token to session
+                        loginResponse.token?.let { token ->
+                            sessionManager.saveAuthToken(token)
+
+                            // Parse JWT token to get user info
+                            try {
+                                val splitToken = token.split(".")
+                                if (splitToken.size >= 2) {
+                                    val payload = splitToken[1]
+                                    val decodedPayload = android.util.Base64.decode(
+                                        normalizeBase64(payload),
+                                        android.util.Base64.DEFAULT
+                                    )
+                                    val payloadJson = JSONObject(String(decodedPayload))
+
+                                    // Extract user details
+                                    val name = payloadJson.getString("full_name")
+                                    val userEmail = payloadJson.getString("email")
+                                    val status = payloadJson.getString("status")
+
+                                    // Save user details
+                                    sessionManager.saveUserDetails(name, userEmail, status)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+
+                        Toast.makeText(requireContext(), "Anda berhasil Login", Toast.LENGTH_SHORT).show()
+                        navigateToHome()
+                    } else {
+                        Toast.makeText(requireContext(), loginResponse?.msg ?: "Login failed", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    // Handle error response
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        val errorJson = JSONObject(errorBody ?: "{}")
+                        val errorMsg = errorJson.optString("msg", "Login failed")
+                        Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(requireContext(), "Login failed: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<id.istts.aplikasiadopsiterumbukarang.LoginLogic.LoginResponse>, t: Throwable) {
+                showLoading(false)
+                Toast.makeText(requireContext(), "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun normalizeBase64(input: String): String {
+        // Add padding if needed
+        val padding = when (input.length % 4) {
+            0 -> ""
+            1 -> "==="
+            2 -> "=="
+            3 -> "="
+            else -> ""
+        }
+        return input + padding
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        // Implement loading state (e.g., show/hide progress bar)
+        // For now, we'll just disable the login button
+        view?.findViewById<MaterialButton>(R.id.loginButton)?.isEnabled = !isLoading
+    }
+
+    private fun navigateToHome() {
+        findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
     }
 
     // Handle lifecycle events to properly manage video playback

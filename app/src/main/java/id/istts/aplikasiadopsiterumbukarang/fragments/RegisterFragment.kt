@@ -27,10 +27,10 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Set up video background
-        setupVideoBackground(view)
-
-        // Animate register card
-        animateRegisterCard(view)
+//        setupVideoBackground(view)
+//
+//        // Animate register card
+//        animateRegisterCard(view)
 
         // Set up click listeners
         setupClickListeners(view)
@@ -45,49 +45,49 @@ class RegisterFragment : Fragment() {
             findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
     }
-    private fun setupVideoBackground(view: View) {
-        var videoView = view.findViewById(R.id.videoBackground)
+//    private fun setupVideoBackground(view: View) {
+//        var videoView = view.findViewById(R.id.videoBackground)
+//
+//        // Use a video from raw resource folder
+//        val videoPath = "android.resource://" + requireActivity().packageName + "/" + R.raw.coral_background_video
+//        val uri = Uri.parse(videoPath)
+//
+//        videoView.setVideoURI(uri)
+//
+//        // Set on prepared listener to start the video when ready
+//        videoView.setOnPreparedListener { mp ->
+//            // Configure video properties
+//            mp.isLooping = true
+//
+//            // Mute the video (for background videos)
+//            mp.setVolume(0f, 0f)
+//
+//            // Optional: If you want to scale the video to cover the entire view
+//            mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING)
+//
+//            // Start playback
+//            videoView.start()
+//        }
+//
+//        // Handle any errors that might occur
+//        videoView.setOnErrorListener { mp, what, extra ->
+//            // Log error or handle it appropriately
+//            // For now, we'll just return true to prevent crash
+//            true
+//        }
+//    }
 
-        // Use a video from raw resource folder
-        val videoPath = "android.resource://" + requireActivity().packageName + "/" + R.raw.coral_background_video
-        val uri = Uri.parse(videoPath)
-
-        videoView.setVideoURI(uri)
-
-        // Set on prepared listener to start the video when ready
-        videoView.setOnPreparedListener { mp ->
-            // Configure video properties
-            mp.isLooping = true
-
-            // Mute the video (for background videos)
-            mp.setVolume(0f, 0f)
-
-            // Optional: If you want to scale the video to cover the entire view
-            mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING)
-
-            // Start playback
-            videoView.start()
-        }
-
-        // Handle any errors that might occur
-        videoView.setOnErrorListener { mp, what, extra ->
-            // Log error or handle it appropriately
-            // For now, we'll just return true to prevent crash
-            true
-        }
-    }
-
-    private fun animateRegisterCard(view: View) {
-        val registerCard = view.findViewById<CardView>(R.id.registerCard)
-
-        registerCard.animate()
-            .alpha(1f)
-            .translationY(0f)
-            .setDuration(800)
-            .setStartDelay(300)
-            .setInterpolator(DecelerateInterpolator())
-            .start()
-    }
+//    private fun animateRegisterCard(view: View) {
+//        val registerCard = view.findViewById<CardView>(R.id.registerCard)
+//
+//        registerCard.animate()
+//            .alpha(1f)
+//            .translationY(0f)
+//            .setDuration(800)
+//            .setStartDelay(300)
+//            .setInterpolator(DecelerateInterpolator())
+//            .start()
+//    }
 
     private fun setupClickListeners(view: View) {
         val loginLink = view.findViewById<TextView>(R.id.loginLink)
@@ -102,26 +102,26 @@ class RegisterFragment : Fragment() {
     }
 
     // Handle lifecycle events to properly manage video playback
-    override fun onResume() {
-        super.onResume()
-        if (::videoView.isInitialized && !videoView.isPlaying) {
-            videoView.start()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (::videoView.isInitialized && videoView.isPlaying) {
-            videoView.pause()
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        if (::videoView.isInitialized) {
-            videoView.stopPlayback()
-        }
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        if (::videoView.isInitialized && !videoView.isPlaying) {
+//            videoView.start()
+//        }
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        if (::videoView.isInitialized && videoView.isPlaying) {
+//            videoView.pause()
+//        }
+//    }
+//
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        if (::videoView.isInitialized) {
+//            videoView.stopPlayback()
+//        }
+//    }
 
     companion object {
         @JvmStatic
