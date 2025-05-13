@@ -72,25 +72,17 @@ class LoginFragment : Fragment() {
 
         videoView.setVideoURI(uri)
 
-        // Set on prepared listener to start the video when ready
         videoView.setOnPreparedListener { mp ->
-            // Configure video properties
             mp.isLooping = true
 
-            // Mute the video (for background videos)
             mp.setVolume(0f, 0f)
 
-            // Optional: If you want to scale the video to cover the entire view
             mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING)
 
-            // Start playback
             videoView.start()
         }
 
-        // Handle any errors that might occur
         videoView.setOnErrorListener { mp, what, extra ->
-            // Log error or handle it appropriately
-            // For now, we'll just return true to prevent crash
             true
         }
     }
@@ -123,7 +115,6 @@ class LoginFragment : Fragment() {
         val email = emailEditText.text.toString().trim()
         val password = passwordEditText.text.toString().trim()
 
-        // Validate input
         if (email.isEmpty()) {
             emailEditText.error = "Email is required"
             emailEditText.requestFocus()
@@ -136,13 +127,10 @@ class LoginFragment : Fragment() {
             return
         }
 
-        // Show loading state (you might want to add a progress bar)
         showLoading(true)
 
-        // Create login request
         val loginRequest = LoginRequest(email, password)
 
-        // Make API call
         RetrofitClient.instance.login(loginRequest).enqueue(object : Callback<id.istts.aplikasiadopsiterumbukarang.LoginLogic.LoginResponse> {
             override fun onResponse(call: Call<id.istts.aplikasiadopsiterumbukarang.LoginLogic.LoginResponse>, response: Response<id.istts.aplikasiadopsiterumbukarang.LoginLogic.LoginResponse>) {
                 showLoading(false)
@@ -155,7 +143,6 @@ class LoginFragment : Fragment() {
                         loginResponse.token?.let { token ->
                             sessionManager.saveAuthToken(token)
 
-                            // Parse JWT token to get user info
                             try {
                                 val splitToken = token.split(".")
                                 if (splitToken.size >= 2) {
@@ -166,12 +153,10 @@ class LoginFragment : Fragment() {
                                     )
                                     val payloadJson = JSONObject(String(decodedPayload))
 
-                                    // Extract user details
                                     val name = payloadJson.getString("full_name")
                                     val userEmail = payloadJson.getString("email")
                                     val status = payloadJson.getString("status")
 
-                                    // Save user details
                                     sessionManager.saveUserDetails(name, userEmail, status)
                                 }
                             } catch (e: Exception) {
@@ -185,7 +170,6 @@ class LoginFragment : Fragment() {
                         Toast.makeText(requireContext(), loginResponse?.msg ?: "Login failed", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Handle error response
                     try {
                         val errorBody = response.errorBody()?.string()
                         val errorJson = JSONObject(errorBody ?: "{}")
@@ -217,8 +201,6 @@ class LoginFragment : Fragment() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        // Implement loading state (e.g., show/hide progress bar)
-        // For now, we'll just disable the login button
         view?.findViewById<MaterialButton>(R.id.loginButton)?.isEnabled = !isLoading
     }
 
@@ -226,7 +208,6 @@ class LoginFragment : Fragment() {
         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
     }
 
-    // Handle lifecycle events to properly manage video playback
     override fun onResume() {
         super.onResume()
         if (::videoView.isInitialized && !videoView.isPlaying) {

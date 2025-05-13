@@ -24,6 +24,19 @@ class SessionManager(context: Context) {
     fun fetchAuthToken(): String? {
         return prefs.getString(USER_TOKEN, null)
     }
+    fun fetchUserName(): String? {
+        return prefs.getString(USER_NAME, null)
+    }
+
+    // Get user email
+    fun fetchUserEmail(): String? {
+        return prefs.getString(USER_EMAIL, null)
+    }
+
+    // Get user status
+    fun fetchUserStatus(): String? {
+        return prefs.getString(USER_STATUS, null)
+    }
 
     fun saveUserDetails(name: String, email: String, status: String) {
         editor.putString(USER_NAME, name)
