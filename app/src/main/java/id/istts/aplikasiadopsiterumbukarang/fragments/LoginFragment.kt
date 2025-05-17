@@ -3,6 +3,7 @@ package id.istts.aplikasiadopsiterumbukarang.fragments
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.log
 
 class LoginFragment : Fragment() {
 
@@ -138,7 +140,8 @@ class LoginFragment : Fragment() {
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
 
-                    if (loginResponse?.msg == "success login") {
+                    if (loginResponse?.msg?.equals("success login", ignoreCase = true) == true) {
+                        Log.d("NamaTagAnda", "Token: ${loginResponse.token}")
                         // Save token to session
                         loginResponse.token?.let { token ->
                             sessionManager.saveAuthToken(token)
@@ -205,7 +208,14 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateToHome() {
-        findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+        Log.d("Navigation", "Attempting to navigate to HomeFragment")
+        try {
+            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+            Log.d("Navigation", "Navigation command executed")
+        } catch (e: Exception) {
+            Log.e("Navigation", "Navigation failed: ${e.message}", e)
+            Toast.makeText(requireContext(), "Navigation error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onResume() {

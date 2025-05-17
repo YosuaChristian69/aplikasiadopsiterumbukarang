@@ -90,8 +90,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
-
+                    android:padding="24dp"
+                    android:background="@color/design_default_color_on_primary"
+                    >
                     <!-- Full Name Input -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/fullNameInputLayout"
