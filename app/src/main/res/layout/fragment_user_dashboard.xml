@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/design_default_color_primary"
-    tools:context=".fragments.HomeFragment">
+    tools:context=".fragments.dashboard.UserDashboardFragment">
 
     <TextView
         android:id="@+id/welcomeTextView"
@@ -29,7 +29,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:gravity="center"
-        android:text="You are now logged into My Coral app. Here you can adopt and protect coral reefs."
+        android:text="You are now logged into My Coral app on User Dashboard. Here you can adopt and protect coral reefs."
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"

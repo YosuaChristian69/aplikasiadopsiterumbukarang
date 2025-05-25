@@ -48,7 +48,7 @@ class LoginFragment : Fragment() {
 
         // Check if user is already logged in
         if (sessionManager.isLoggedIn()) {
-            navigateToHome()
+            navigateToUserDashboard()
         }
 
         // Initialize views
@@ -161,14 +161,16 @@ class LoginFragment : Fragment() {
                                     val status = payloadJson.getString("status")
 
                                     sessionManager.saveUserDetails(name, userEmail, status)
+                                    
+                                    Toast.makeText(requireContext(), "Anda berhasil Login", Toast.LENGTH_SHORT).show()
+                                    navigateToUserDashboard()
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
                         }
 
-                        Toast.makeText(requireContext(), "Anda berhasil Login", Toast.LENGTH_SHORT).show()
-                        navigateToHome()
+
                     } else {
                         Toast.makeText(requireContext(), loginResponse?.msg ?: "Login failed", Toast.LENGTH_SHORT).show()
                     }
@@ -207,10 +209,30 @@ class LoginFragment : Fragment() {
         view?.findViewById<MaterialButton>(R.id.loginButton)?.isEnabled = !isLoading
     }
 
-    private fun navigateToHome() {
+    private fun navigateToUserDashboard() {
         Log.d("Navigation", "Attempting to navigate to HomeFragment")
         try {
-            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+            findNavController().navigate(R.id.action_loginFragment_to_userDashboardFragment)
+            Log.d("Navigation", "Navigation command executed")
+        } catch (e: Exception) {
+            Log.e("Navigation", "Navigation failed: ${e.message}", e)
+            Toast.makeText(requireContext(), "Navigation error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+    private fun naivgateToAdminDashboard() {
+        Log.d("Navigation", "Attempting to navigate to HomeFragment")
+        try {
+            findNavController().navigate(R.id.action_loginFragment_to_adminDashboardFragment)
+            Log.d("Navigation", "Navigation command executed")
+        } catch (e: Exception) {
+            Log.e("Navigation", "Navigation failed: ${e.message}", e)
+            Toast.makeText(requireContext(), "Navigation error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+    private fun navigateToWorkerDashboard() {
+        Log.d("Navigation", "Attempting to navigate to HomeFragment")
+        try {
+            findNavController().navigate(R.id.action_loginFragment_to_workerDashboardFragment)
             Log.d("Navigation", "Navigation command executed")
         } catch (e: Exception) {
             Log.e("Navigation", "Navigation failed: ${e.message}", e)
