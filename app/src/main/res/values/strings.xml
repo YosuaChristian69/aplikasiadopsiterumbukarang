@@ -20,4 +20,5 @@
     <string name="app_logo">Logo Aplikasi</string>
     <string name="back">Kembali</string>
     <string name="un_goals">Mendukung SDGs PBB untuk Kehidupan Bawah Laut</string>
+    <string name="welcome_message">Welcome, %1$s!</string>
 </resources>

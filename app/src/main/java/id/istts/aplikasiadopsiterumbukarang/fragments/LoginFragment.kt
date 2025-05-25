@@ -47,8 +47,15 @@ class LoginFragment : Fragment() {
         sessionManager = SessionManager(requireContext())
 
         // Check if user is already logged in
+
         if (sessionManager.isLoggedIn()) {
-            navigateToUserDashboard()
+            if(sessionManager.fetchUserStatus()=="user") {
+                navigateToUserDashboard()
+            }else if(sessionManager.fetchUserStatus()=="admin"){
+                navigateToAdminDashboard()
+            }else{
+                navigateToWorkerDashboard()
+            }
         }
 
         // Initialize views
@@ -142,7 +149,6 @@ class LoginFragment : Fragment() {
 
                     if (loginResponse?.msg?.equals("success login", ignoreCase = true) == true) {
                         Log.d("NamaTagAnda", "Token: ${loginResponse.token}")
-                        // Save token to session
                         loginResponse.token?.let { token ->
                             sessionManager.saveAuthToken(token)
 
@@ -163,7 +169,15 @@ class LoginFragment : Fragment() {
                                     sessionManager.saveUserDetails(name, userEmail, status)
                                     
                                     Toast.makeText(requireContext(), "Anda berhasil Login", Toast.LENGTH_SHORT).show()
-                                    navigateToUserDashboard()
+                                    Toast.makeText(requireContext(),status, Toast.LENGTH_SHORT).show()
+                                    if(status.toString()=="user"){
+                                        navigateToUserDashboard()
+                                    }else if(status.toString()=="admin"){
+                                        navigateToAdminDashboard()
+                                    }else{
+                                        navigateToWorkerDashboard()
+                                    }
+
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -219,7 +233,7 @@ class LoginFragment : Fragment() {
             Toast.makeText(requireContext(), "Navigation error: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
-    private fun naivgateToAdminDashboard() {
+    private fun navigateToAdminDashboard() {
         Log.d("Navigation", "Attempting to navigate to HomeFragment")
         try {
             findNavController().navigate(R.id.action_loginFragment_to_adminDashboardFragment)

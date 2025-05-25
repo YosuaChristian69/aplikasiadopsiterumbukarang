@@ -9,6 +9,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.R
 
@@ -22,7 +24,6 @@ class UserDashboardFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_user_dashboard, container, false)
     }
 
@@ -31,11 +32,37 @@ class UserDashboardFragment : Fragment() {
 
         sessionManager = SessionManager(requireContext())
 
-        if (!sessionManager.isLoggedIn()) {
-            findNavController().navigate(R.id.action_userDashboardFragment_to_loginFragment)
-            return
+        // Gunakan lifecycleScope untuk memastikan navigation aman
+        lifecycleScope.launch {
+            if (!validateUserAccess()) {
+                return@launch
+            }
+
+            setupViews(view)
+        }
+    }
+
+    private fun validateUserAccess(): Boolean {
+        // Cek apakah fragment masih aktif sebelum navigation
+        if (!isAdded || isDetached) {
+            return false
         }
 
+        if (!sessionManager.isLoggedIn()) {
+            navigateToLogin()
+            return false
+        }
+
+        val userStatus = sessionManager.fetchUserStatus()
+        if (userStatus != "user") {
+            navigateToLogin()
+            return false
+        }
+
+        return true
+    }
+
+    private fun setupViews(view: View) {
         welcomeTextView = view.findViewById(R.id.welcomeTextView)
         logoutButton = view.findViewById(R.id.logoutButton)
 
@@ -47,13 +74,38 @@ class UserDashboardFragment : Fragment() {
         }
     }
 
+    private fun navigateToLogin() {
+        // Pastikan fragment masih aktif dan navigation controller tersedia
+        if (isAdded && !isDetached && !isRemoving) {
+            try {
+                findNavController().navigate(R.id.action_userDashboardFragment_to_loginFragment)
+            } catch (e: Exception) {
+                // Log error jika perlu, tapi jangan crash
+                e.printStackTrace()
+            }
+        }
+    }
+
     private fun performLogout() {
+        // Pastikan fragment masih aktif sebelum logout
+        if (!isAdded || isDetached) {
+            return
+        }
+
         // Clear user session
         sessionManager.clearSession()
 
         Toast.makeText(requireContext(), "Anda berhasil Logout", Toast.LENGTH_SHORT).show()
 
-        findNavController().navigate(R.id.action_userDashboardFragment_to_loginFragment)
+        navigateToLogin()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Validasi ulang saat fragment resume (kembali dari background)
+        if (!validateUserAccess()) {
+            return
+        }
     }
 
     companion object {
