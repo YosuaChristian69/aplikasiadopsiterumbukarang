@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="400dp"
+    android:height="800dp"
+    android:viewportWidth="400"
+    android:viewportHeight="800">
+
+    <group android:name="particles">
+        <path
+            android:fillColor="#4D1E88E5"
+            android:pathData="M50,100 C55,100 60,105 60,110 C60,115 55,120 50,120 C45,120 40,115 40,110 C40,105 45,100 50,100 Z" />
+        <path
+            android:fillColor="#4D00BCD4"
+            android:pathData="M150,200 C155,200 160,205 160,210 C160,215 155,220 150,220 C145,220 140,215 140,210 C140,205 145,200 150,200 Z" />
+        <path
+            android:fillColor="#4D4CAF50"
+            android:pathData="M300,350 C305,350 310,355 310,360 C310,365 305,370 300,370 C295,370 290,365 290,360 C290,355 295,350 300,350 Z" />
+    </group>
+</vector>

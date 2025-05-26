@@ -7,7 +7,7 @@
     android:background="@drawable/gradient_background"
     tools:context=".fragments.dashboard.AdminDashboardFragment">
 
-    <!-- Header Section with improved styling -->
+    <!-- Header Section with improved styling and animation support -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
@@ -16,17 +16,20 @@
         android:paddingTop="40dp"
         android:paddingEnd="24dp"
         android:paddingBottom="24dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Profile Icon -->
+        <!-- Profile Icon with enhanced animation support -->
         <androidx.cardview.widget.CardView
             android:id="@+id/profileCard"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="4dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="6dp"
             app:cardBackgroundColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -39,29 +42,35 @@
                 app:tint="#1a4d52" />
         </androidx.cardview.widget.CardView>
 
+        <!-- Welcome Text with enhanced styling -->
         <TextView
             android:id="@+id/welcomeTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="Hi, LORIK"
+            android:layout_marginStart="16dp"
+            android:text="Hi, ADMIN"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
+            android:shadowColor="#4C1a4d52"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
             app:layout_constraintStart_toEndOf="@+id/profileCard"
             app:layout_constraintTop_toTopOf="@+id/profileCard"
+            app:layout_constraintBottom_toBottomOf="@+id/profileCard"
             app:layout_constraintEnd_toStartOf="@+id/logoutCard" />
 
-        <!-- Logout Button with Card Background -->
+        <!-- Logout Button with enhanced animation support -->
         <androidx.cardview.widget.CardView
             android:id="@+id/logoutCard"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="4dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="6dp"
             app:cardBackgroundColor="#FFFFFF"
-            android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -76,72 +85,102 @@
                 app:tint="#1a4d52" />
         </androidx.cardview.widget.CardView>
 
+        <!-- Collection Title with enhanced styling -->
         <TextView
             android:id="@+id/collectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="36dp"
             android:text="MY CORAL'S SEEDS COLLECTION"
             android:textColor="#FFFFFF"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.05"
+            android:shadowColor="#4C1a4d52"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profileCard" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- RecyclerView for Coral Cards with improved styling -->
+    <!-- RecyclerView with enhanced animation support -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCorals"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="16dp"
         android:clipToPadding="false"
         android:paddingBottom="120dp"
         android:scrollbars="none"
         android:overScrollMode="never"
+        android:layoutAnimation="@anim/layout_animation_slide_up"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout" />
 
-    <!-- Enhanced Floating Action Button -->
+    <!-- Enhanced Floating Action Button with animation support -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="28dp"
         android:layout_marginBottom="100dp"
         android:src="@drawable/ic_add"
         android:contentDescription="Add New Coral"
         app:backgroundTint="#00BCD4"
         app:tint="#FFFFFF"
-        app:elevation="8dp"
-        app:pressedTranslationZ="12dp"
+        app:elevation="12dp"
+        app:pressedTranslationZ="16dp"
         app:rippleColor="#FFFFFF"
         app:borderWidth="0dp"
         app:fabSize="normal"
+        app:maxImageSize="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Enhanced Bottom Navigation -->
+    <!-- Enhanced Bottom Navigation with animation support -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#4CDDCF"
-        android:elevation="8dp"
+        android:elevation="12dp"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/bottom_nav_color"
         app:itemRippleColor="#FFFFFF"
         app:menu="@menu/admin_bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Decorative Elements for Enhanced Visual Appeal -->
+    <View
+        android:id="@+id/decorativeCircle1"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="-60dp"
+        android:layout_marginEnd="-60dp"
+        android:background="@drawable/circle_gradient_decoration"
+        android:alpha="0.3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/decorativeCircle2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="-40dp"
+        android:layout_marginBottom="-40dp"
+        android:background="@drawable/circle_gradient_decoration_2"
+        android:alpha="0.2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_coral_seed"
-        android:icon="@drawable/ic_coral_seed"
+        android:icon="@drawable/ic_coral_logo"
         android:title="Coral Seed" />
 
     <item
