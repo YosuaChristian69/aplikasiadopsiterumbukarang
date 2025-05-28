@@ -13,12 +13,10 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -26,8 +24,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import id.istts.aplikasiadopsiterumbukarang.fragments.adapters.CoralAdapter
-import id.istts.aplikasiadopsiterumbukarang.fragments.models.CoralItem
 
 class AdminDashboardFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
@@ -41,51 +37,34 @@ class AdminDashboardFragment : Fragment() {
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var headerLayout: View
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_admin_dashboard, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         sessionManager = SessionManager(requireContext())
 
-        // Gunakan lifecycleScope untuk memastikan navigation aman
         lifecycleScope.launch {
-            if (!validateWorkerAccess()) {
-                return@launch
+            if (validateAccess()) {
+                setupViews(view)
+                startAnimations()
             }
-
-            setupViews(view)
-            startEntranceAnimations()
         }
     }
 
-    private fun validateWorkerAccess(): Boolean {
-        // Cek apakah fragment masih aktif sebelum navigation
-        if (!isAdded || isDetached) {
-            return false
-        }
+    private fun validateAccess(): Boolean {
+        if (!isAdded || isDetached) return false
 
-        if (!sessionManager.isLoggedIn()) {
+        if (!sessionManager.isLoggedIn() || sessionManager.fetchUserStatus() != "admin") {
             navigateToLogin()
             return false
         }
-
-        val userStatus = sessionManager.fetchUserStatus()
-        if (userStatus != "admin") {
-            navigateToLogin()
-            return false
-        }
-
         return true
     }
 
     private fun setupViews(view: View) {
-        // Initialize all views
+        // Initialize views
         welcomeTextView = view.findViewById(R.id.welcomeTextView)
         logoutButton = view.findViewById(R.id.logoutButton)
         profileCard = view.findViewById(R.id.profileCard)
@@ -96,307 +75,178 @@ class AdminDashboardFragment : Fragment() {
         bottomNavigation = view.findViewById(R.id.bottomNavigation)
         headerLayout = view.findViewById(R.id.headerLayout)
 
-        val userName = sessionManager.fetchUserName() ?: "Admin"
-        welcomeTextView.text = "Hi, $userName"
+        welcomeTextView.text = "Hi, ${sessionManager.fetchUserName() ?: "Admin"}"
 
-        // Set initial states for animations
-        setInitialAnimationStates()
-
-        // Setup click listeners with animations
+        // Set initial animation states
+        setInitialStates()
         setupClickListeners()
     }
 
-    private fun setInitialAnimationStates() {
-        // Hide elements initially for entrance animations
-        headerLayout.alpha = 0f
+    private fun setInitialStates() {
+        listOf(headerLayout, recyclerView, fabAdd, bottomNavigation,
+            profileCard, logoutCard, welcomeTextView, collectionTitle).forEach {
+            it.alpha = 0f
+        }
+
         headerLayout.translationY = -100f
-
-        recyclerView.alpha = 0f
         recyclerView.translationY = 50f
-
-        fabAdd.alpha = 0f
-        fabAdd.scaleX = 0f
-        fabAdd.scaleY = 0f
-
-        bottomNavigation.alpha = 0f
         bottomNavigation.translationY = 100f
-
-        profileCard.scaleX = 0f
-        profileCard.scaleY = 0f
-
-        logoutCard.scaleX = 0f
-        logoutCard.scaleY = 0f
-
-        welcomeTextView.alpha = 0f
         welcomeTextView.translationX = -50f
-
-        collectionTitle.alpha = 0f
         collectionTitle.translationX = -30f
+
+        listOf(fabAdd, profileCard, logoutCard).forEach {
+            it.scaleX = 0f
+            it.scaleY = 0f
+        }
     }
 
-    private suspend fun startEntranceAnimations() {
-        // Animate header slide down
-        animateHeaderEntrance()
-
+    private suspend fun startAnimations() {
+        // Staggered entrance animations
+        animateView(headerLayout, translationY = Pair(-100f, 0f), duration = 600)
         delay(200)
 
-        // Animate profile and logout cards
-        animateCardsEntrance()
-
+        animateCards()
         delay(100)
 
-        // Animate welcome text
-        animateWelcomeText()
-
+        animateView(welcomeTextView, translationX = Pair(-50f, 0f), duration = 500)
         delay(150)
 
-        // Animate collection title
-        animateCollectionTitle()
-
+        animateView(collectionTitle, translationX = Pair(-30f, 0f), duration = 400)
         delay(200)
 
-        // Animate RecyclerView fade in
-        animateRecyclerView()
-
+        animateView(recyclerView, translationY = Pair(50f, 0f), duration = 500)
         delay(100)
 
-        // Animate FAB bounce in
-        animateFAB()
-
+        animateScale(fabAdd, BounceInterpolator(), 600)
         delay(150)
 
-        // Animate bottom navigation slide up
-        animateBottomNavigation()
+        animateView(bottomNavigation, translationY = Pair(100f, 0f), duration = 500)
+
+        // Start floating animation
+        delay(2000)
+        if (isAdded) startFloatingAnimation()
     }
 
-    private fun animateHeaderEntrance() {
-        val fadeIn = ObjectAnimator.ofFloat(headerLayout, "alpha", 0f, 1f)
-        val slideDown = ObjectAnimator.ofFloat(headerLayout, "translationY", -100f, 0f)
+    private fun animateView(view: View, translationY: Pair<Float, Float>? = null,
+                            translationX: Pair<Float, Float>? = null, duration: Long = 400) {
+        val fadeIn = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
+        val animators = mutableListOf<ObjectAnimator>(fadeIn)
 
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(fadeIn, slideDown)
-        animatorSet.duration = 600
-        animatorSet.interpolator = DecelerateInterpolator()
-        animatorSet.start()
+        translationY?.let { (from, to) ->
+            animators.add(ObjectAnimator.ofFloat(view, "translationY", from, to))
+        }
+
+        translationX?.let { (from, to) ->
+            animators.add(ObjectAnimator.ofFloat(view, "translationX", from, to))
+        }
+
+        AnimatorSet().apply {
+            playTogether(animators as Collection<android.animation.Animator>)
+            this.duration = duration
+            interpolator = DecelerateInterpolator()
+            start()
+        }
     }
 
-    private fun animateCardsEntrance() {
-        // Profile card animation
-        val profileScaleX = ObjectAnimator.ofFloat(profileCard, "scaleX", 0f, 1f)
-        val profileScaleY = ObjectAnimator.ofFloat(profileCard, "scaleY", 0f, 1f)
-
-        val profileAnimator = AnimatorSet()
-        profileAnimator.playTogether(profileScaleX, profileScaleY)
-        profileAnimator.duration = 400
-        profileAnimator.interpolator = OvershootInterpolator()
-        profileAnimator.start()
-
-        // Logout card animation with slight delay
-        val logoutScaleX = ObjectAnimator.ofFloat(logoutCard, "scaleX", 0f, 1f)
-        val logoutScaleY = ObjectAnimator.ofFloat(logoutCard, "scaleY", 0f, 1f)
-
-        val logoutAnimator = AnimatorSet()
-        logoutAnimator.playTogether(logoutScaleX, logoutScaleY)
-        logoutAnimator.duration = 400
-        logoutAnimator.startDelay = 100
-        logoutAnimator.interpolator = OvershootInterpolator()
-        logoutAnimator.start()
+    private fun animateCards() {
+        val cards = listOf(profileCard to 0L, logoutCard to 100L)
+        cards.forEach { (card, delayTime) ->
+            animateScale(card, OvershootInterpolator(), 400, delayTime)
+        }
     }
 
-    private fun animateWelcomeText() {
-        val fadeIn = ObjectAnimator.ofFloat(welcomeTextView, "alpha", 0f, 1f)
-        val slideRight = ObjectAnimator.ofFloat(welcomeTextView, "translationX", -50f, 0f)
+    private fun animateScale(view: View, interpolator: android.view.animation.Interpolator,
+                             duration: Long, startDelay: Long = 0) {
+        val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(view, "scaleY", 0f, 1f)
+        val fadeIn = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
 
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(fadeIn, slideRight)
-        animatorSet.duration = 500
-        animatorSet.interpolator = DecelerateInterpolator()
-        animatorSet.start()
-    }
-
-    private fun animateCollectionTitle() {
-        val fadeIn = ObjectAnimator.ofFloat(collectionTitle, "alpha", 0f, 1f)
-        val slideRight = ObjectAnimator.ofFloat(collectionTitle, "translationX", -30f, 0f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(fadeIn, slideRight)
-        animatorSet.duration = 400
-        animatorSet.interpolator = DecelerateInterpolator()
-        animatorSet.start()
-    }
-
-    private fun animateRecyclerView() {
-        val fadeIn = ObjectAnimator.ofFloat(recyclerView, "alpha", 0f, 1f)
-        val slideUp = ObjectAnimator.ofFloat(recyclerView, "translationY", 50f, 0f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(fadeIn, slideUp)
-        animatorSet.duration = 500
-        animatorSet.interpolator = DecelerateInterpolator()
-        animatorSet.start()
-    }
-
-    private fun animateFAB() {
-        val fadeIn = ObjectAnimator.ofFloat(fabAdd, "alpha", 0f, 1f)
-        val scaleX = ObjectAnimator.ofFloat(fabAdd, "scaleX", 0f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(fabAdd, "scaleY", 0f, 1f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(fadeIn, scaleX, scaleY)
-        animatorSet.duration = 600
-        animatorSet.interpolator = BounceInterpolator()
-        animatorSet.start()
-    }
-
-    private fun animateBottomNavigation() {
-        val fadeIn = ObjectAnimator.ofFloat(bottomNavigation, "alpha", 0f, 1f)
-        val slideUp = ObjectAnimator.ofFloat(bottomNavigation, "translationY", 100f, 0f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(fadeIn, slideUp)
-        animatorSet.duration = 500
-        animatorSet.interpolator = DecelerateInterpolator()
-        animatorSet.start()
+        AnimatorSet().apply {
+            playTogether(scaleX, scaleY, fadeIn)
+            this.duration = duration
+            this.startDelay = startDelay
+            this.interpolator = interpolator
+            start()
+        }
     }
 
     private fun setupClickListeners() {
-        // Logout button with animation
         logoutButton.setOnClickListener {
-            animateLogoutClick()
+            animateClick(logoutCard) { performLogout() }
         }
 
-        // FAB with pulse animation
         fabAdd.setOnClickListener {
-            animateFABClick()
-            // Add your FAB click logic here
+            // FAB specific animation with rotation
+            val animators = listOf(
+                ObjectAnimator.ofFloat(fabAdd, "scaleX", 1f, 1.2f, 1f),
+                ObjectAnimator.ofFloat(fabAdd, "scaleY", 1f, 1.2f, 1f),
+                ObjectAnimator.ofFloat(fabAdd, "rotation", 0f, 180f)
+            )
+
+            AnimatorSet().apply {
+                playTogether(animators)
+                duration = 300
+                interpolator = AccelerateDecelerateInterpolator()
+                start()
+            }
+            navigtateToAddCoral()
         }
 
-        // Profile card click animation
-        profileCard.setOnClickListener {
-            animateCardClick(profileCard)
+        profileCard.setOnClickListener { animateClick(profileCard) }
+    }
+
+    private fun animateClick(view: View, action: (() -> Unit)? = null) {
+        val scale = if (view == logoutCard) 0.9f else 1.05f
+        val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, scale, 1f)
+        val scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f, scale, 1f)
+
+        AnimatorSet().apply {
+            playTogether(scaleX, scaleY)
+            duration = 200
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+
+        action?.let {
+            lifecycleScope.launch {
+                delay(200)
+                it()
+            }
         }
     }
 
-    private fun animateLogoutClick() {
-        // Scale animation for logout button
-        val scaleDown = ObjectAnimator.ofFloat(logoutCard, "scaleX", 1f, 0.9f, 1f)
-        val scaleDownY = ObjectAnimator.ofFloat(logoutCard, "scaleY", 1f, 0.9f, 1f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(scaleDown, scaleDownY)
-        animatorSet.duration = 200
-        animatorSet.interpolator = AccelerateDecelerateInterpolator()
-
-        animatorSet.start()
-
-        // Perform logout after animation
-        lifecycleScope.launch {
-            delay(200)
-            performLogout()
+    private fun startFloatingAnimation() {
+        ObjectAnimator.ofFloat(fabAdd, "translationY", 0f, -10f, 0f).apply {
+            duration = 2000
+            repeatCount = ValueAnimator.INFINITE
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
         }
-    }
-
-    private fun animateFABClick() {
-        // Pulse animation for FAB
-        val scaleX = ObjectAnimator.ofFloat(fabAdd, "scaleX", 1f, 1.2f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(fabAdd, "scaleY", 1f, 1.2f, 1f)
-        val rotation = ObjectAnimator.ofFloat(fabAdd, "rotation", 0f, 180f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(scaleX, scaleY, rotation)
-        animatorSet.duration = 300
-        animatorSet.interpolator = AccelerateDecelerateInterpolator()
-        animatorSet.start()
-    }
-
-    private fun animateCardClick(card: CardView) {
-        // Gentle bounce animation for card clicks
-        val scaleX = ObjectAnimator.ofFloat(card, "scaleX", 1f, 1.05f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(card, "scaleY", 1f, 1.05f, 1f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(scaleX, scaleY)
-        animatorSet.duration = 200
-        animatorSet.interpolator = AccelerateDecelerateInterpolator()
-        animatorSet.start()
-    }
-
-    private fun animateExitTransition() {
-        // Animate elements out before navigation
-        val headerFade = ObjectAnimator.ofFloat(headerLayout, "alpha", 1f, 0f)
-        val headerSlide = ObjectAnimator.ofFloat(headerLayout, "translationY", 0f, -50f)
-
-        val recyclerFade = ObjectAnimator.ofFloat(recyclerView, "alpha", 1f, 0f)
-
-        val fabScale = ObjectAnimator.ofFloat(fabAdd, "scaleX", 1f, 0f)
-        val fabScaleY = ObjectAnimator.ofFloat(fabAdd, "scaleY", 1f, 0f)
-
-        val bottomFade = ObjectAnimator.ofFloat(bottomNavigation, "alpha", 1f, 0f)
-        val bottomSlide = ObjectAnimator.ofFloat(bottomNavigation, "translationY", 0f, 50f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(
-            headerFade, headerSlide, recyclerFade,
-            fabScale, fabScaleY, bottomFade, bottomSlide
-        )
-        animatorSet.duration = 300
-        animatorSet.interpolator = AccelerateDecelerateInterpolator()
-        animatorSet.start()
     }
 
     private fun navigateToLogin() {
-        // Pastikan fragment masih aktif dan navigation controller tersedia
         if (isAdded && !isDetached && !isRemoving) {
             try {
-                animateExitTransition()
-                lifecycleScope.launch {
-                    delay(300) // Wait for exit animation
-                    if (isAdded && !isDetached && !isRemoving) {
-                        findNavController().navigate(R.id.action_adminDashboardFragment_to_loginFragment)
-                    }
-                }
+                findNavController().navigate(R.id.action_adminDashboardFragment_to_loginFragment)
             } catch (e: Exception) {
-                // Log error jika perlu, tapi jangan crash
                 e.printStackTrace()
             }
         }
     }
+    private fun navigtateToAddCoral(){
+        findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment)
+    }
 
     private fun performLogout() {
-        if (!isAdded || isDetached) {
-            return
+        if (isAdded && !isDetached) {
+            sessionManager.clearSession()
+            navigateToLogin()
         }
-
-        sessionManager.clearSession()
-
-        navigateToLogin()
     }
 
     override fun onResume() {
         super.onResume()
-        if (!validateWorkerAccess()) {
-            return
-        }
-    }
-
-    // Add floating animation for FAB
-    private fun startFABFloatingAnimation() {
-        val floatingAnimation = ObjectAnimator.ofFloat(fabAdd, "translationY", 0f, -10f, 0f)
-        floatingAnimation.duration = 2000
-        floatingAnimation.repeatCount = ValueAnimator.INFINITE
-        floatingAnimation.interpolator = AccelerateDecelerateInterpolator()
-        floatingAnimation.start()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        // Start continuous floating animation for FAB after initial entrance
-        lifecycleScope.launch {
-            delay(2000) // Wait for entrance animations to complete
-            if (isAdded && !isDetached) {
-                startFABFloatingAnimation()
-            }
-        }
+        validateAccess()
     }
 
     companion object {

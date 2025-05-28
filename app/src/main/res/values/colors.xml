@@ -1,31 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Material Design 3 Colors (yang dibutuhkan layout) -->
+    <color name="surface">#FFFFFF</color>
+    <color name="on_surface">#1C1B1F</color>
+    <color name="outline_variant">#CAC4D0</color>
+
+    <!-- Coral Theme Colors (warna tema utama) -->
     <color name="coral_primary">#FF5A5F</color>
     <color name="coral_secondary">#FF8A8F</color>
+    <color name="coral_light">#FFB3B6</color>
+    <color name="coral_dark">#E04347</color>
+
+    <!-- Ocean Theme Colors -->
     <color name="ocean_blue">#1E88E5</color>
     <color name="deep_ocean">#0D47A1</color>
     <color name="ocean_text">#455A64</color>
     <color name="ocean_light">#B3E5FC</color>
-    <color name="sand">#F5F5DC</color>
-    <color name="sea_green">#26A69A</color>
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <color name="ocean_medium">#4FC3F7</color>
+    <color name="login_button">#43C5D1</color>
 
+    <!-- Nature Colors -->
+    <color name="sea_green">#26A69A</color>
+    <color name="sea_green_light">#80CBC4</color>
+    <color name="sand">#F5F5DC</color>
+    <color name="sand_dark">#D4C5A9</color>
+
+    <!-- Primary App Colors -->
     <color name="primary_blue">#1E88E5</color>
     <color name="primary_teal">#00BCD4</color>
     <color name="primary_green">#4CAF50</color>
+
+    <!-- Background Colors -->
     <color name="card_background">#FAFAFA</color>
     <color name="surface_color">#FFFFFF</color>
+    <color name="background_light">#F8F9FA</color>
+    <color name="background_overlay">#80000000</color>
+
+    <!-- Text Colors -->
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_on_surface">#1C1B1F</color>
     <color name="input_text_color">#424242</color>
     <color name="hint_color">#9E9E9E</color>
+
+    <!-- Interactive Colors -->
     <color name="link_color">#1E88E5</color>
     <color name="input_stroke_color">#1E88E5</color>
     <color name="icon_tint">#1E88E5</color>
+    <color name="ripple_color">#1E88E5</color>
+
+    <!-- Button Colors -->
     <color name="button_gradient_start">#1E88E5</color>
     <color name="button_gradient_end">#00BCD4</color>
+    <color name="button_coral_start">#FF5A5F</color>
+    <color name="button_coral_end">#FF8A8F</color>
+
+    <!-- Status Colors -->
     <color name="success_color">#4CAF50</color>
     <color name="error_color">#F44336</color>
     <color name="warning_color">#FF9800</color>
+    <color name="info_color">#2196F3</color>
+
+    <!-- Basic Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent">#80FFFFFF</color>
+
+    <!-- Shadow Colors -->
+    <color name="shadow_light">#1A000000</color>
+    <color name="shadow_medium">#33000000</color>
+    <color name="shadow_dark">#4D000000</color>
+
+    <!-- Gradient Colors untuk Background Video -->
+    <color name="gradient_overlay_start">#66000000</color>
+    <color name="gradient_overlay_end">#00000000</color>
 </resources>

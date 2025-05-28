@@ -10,6 +10,7 @@ import id.istts.aplikasiadopsiterumbukarang.RegisterLogic.VerifyAndRegisterReque
 import id.istts.aplikasiadopsiterumbukarang.RegisterLogic.VerifyAndRegisterResponse
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
@@ -23,4 +24,8 @@ interface ApiService {
 
     @POST("/users/verifyAndRegister")
     fun verifyAndRegister(@Body request: VerifyAndRegisterRequest): Call<VerifyAndRegisterResponse>
+
+    @POST("/tk/addTk")
+    fun addTerumbuKarang()
+
 }
