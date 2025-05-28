@@ -196,7 +196,52 @@
                             android:textSize="16sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/totalInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:hint="Total"
+                        app:boxStrokeColor="#4CDDCF"
+                        app:hintTextColor="#1a4d52"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:startIconTint="#4CDDCF"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/totalEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:textColor="#1a4d52"
+                            android:textSize="16sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Harga Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/hargaInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:hint="Harga"
+                        app:boxStrokeColor="#4CDDCF"
+                        app:hintTextColor="#1a4d52"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:startIconTint="#4CDDCF"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/hargaEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:textColor="#1a4d52"
+                            android:textSize="16sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Coral Description Input -->
                     <com.google.android.material.textfield.TextInputLayout

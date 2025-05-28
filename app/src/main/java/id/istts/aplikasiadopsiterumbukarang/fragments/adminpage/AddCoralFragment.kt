@@ -46,6 +46,8 @@ class AddCoralFragment : Fragment() {
     private lateinit var coralNameEditText: TextInputEditText
     private lateinit var coralTypeEditText: TextInputEditText
     private lateinit var coralDescriptionEditText: TextInputEditText
+    private lateinit var coralTotalEditText: EditText
+    private lateinit var coralhargaEditText: EditText
     private lateinit var coralNameInput: TextInputLayout
     private lateinit var coralTypeInput: TextInputLayout
     private lateinit var coralDescriptionInput: TextInputLayout
@@ -126,6 +128,8 @@ class AddCoralFragment : Fragment() {
         imagePreview = view.findViewById(R.id.imagePreview)
         saveButton = view.findViewById(R.id.saveButton)
         cancelButton = view.findViewById(R.id.cancelButton)
+        coralTotalEditText = view.findViewById(R.id.totalEditText)
+        coralhargaEditText = view.findViewById(R.id.hargaEditText)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -222,6 +226,8 @@ class AddCoralFragment : Fragment() {
         val name = coralNameEditText.text.toString().trim()
         val type = coralTypeEditText.text.toString().trim()
         val description = coralDescriptionEditText.text.toString().trim()
+        val total = coralTotalEditText.text.toString().trim()
+        val harga = coralhargaEditText.text.toString().trim()
 
         when {
             name.isEmpty() -> {
@@ -230,6 +236,14 @@ class AddCoralFragment : Fragment() {
             }
             type.isEmpty() -> {
                 coralTypeInput.error = "Coral species is required"
+                return false
+            }
+            total.isEmpty() -> {
+                coralTotalEditText.error = "Total is required"
+                return false
+            }
+            harga.isEmpty() -> {
+                coralhargaEditText.error = "Harga is required"
                 return false
             }
             description.isEmpty() -> {
@@ -263,10 +277,8 @@ class AddCoralFragment : Fragment() {
         val type = coralTypeEditText.text.toString().trim()
         val description = coralDescriptionEditText.text.toString().trim()
 
-        // For this example, using default values for harga and stok
-        // You might want to add these fields to your form
-        val harga = "100000" // Default price
-        val stok = "10" // Default stock
+        val harga = coralhargaEditText.text.toString().trim()
+        val stok = coralTotalEditText.text.toString().trim()
 
         selectedImageUri?.let { uri ->
             try {
