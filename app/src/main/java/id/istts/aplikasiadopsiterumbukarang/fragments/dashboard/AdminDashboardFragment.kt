@@ -234,7 +234,7 @@ class AdminDashboardFragment : Fragment() {
         }
     }
     private fun navigtateToAddCoral(){
-        findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment)
+        findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment2)
     }
 
     private fun performLogout() {

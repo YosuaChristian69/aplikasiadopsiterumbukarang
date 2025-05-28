@@ -50,8 +50,8 @@
             android:id="@+id/action_adminDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
-            android:id="@+id/action_adminDashboardFragment_to_addCoralFragment"
-            app:destination="@id/addCoralFragment" />
+            android:id="@+id/action_adminDashboardFragment_to_addCoralFragment2"
+            app:destination="@id/addCoralFragment2" />
     </fragment>
     <fragment
         android:id="@+id/workerDashboardFragment"
@@ -63,11 +63,12 @@
             app:destination="@id/loginFragment" />
     </fragment>
     <fragment
-        android:id="@+id/addCoralFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.fragments.coral.AddCoralFragment"
-        android:label="AddCoralFragment" >
+        android:id="@+id/addCoralFragment2"
+        android:name="id.istts.aplikasiadopsiterumbukarang.fragments.adminpage.AddCoralFragment"
+        android:label="fragment_add_coral"
+        tools:layout="@layout/fragment_add_coral" >
         <action
-            android:id="@+id/action_addCoralFragment_to_adminDashboardFragment"
+            android:id="@+id/action_addCoralFragment2_to_adminDashboardFragment"
             app:destination="@id/adminDashboardFragment" />
     </fragment>
 
