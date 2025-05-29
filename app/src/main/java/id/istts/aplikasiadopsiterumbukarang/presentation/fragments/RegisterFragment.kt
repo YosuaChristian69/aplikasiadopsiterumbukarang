@@ -5,6 +5,14 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.text.Html
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -57,6 +66,7 @@ class RegisterFragment : Fragment() {
         setupVideoBackground(view)
         animateRegisterCard(view)
         setupClickListeners()
+        setupTermsAndConditionsLink() // Add this call
         observeViewModel()
     }
 
@@ -67,7 +77,7 @@ class RegisterFragment : Fragment() {
         confirmPasswordEditText = view.findViewById(R.id.confirmPasswordEditText)
         verificationCodeEditText = view.findViewById(R.id.verificationCodeEditText)
         getCodeButton = view.findViewById(R.id.getCodeButton)
-        termsCheckbox = view.findViewById(R.id.termsCheckbox)
+        termsCheckbox = view.findViewById(R.id.termsCheckbox) // Ensure this ID matches your XML
         registerButton = view.findViewById(R.id.registerButton)
         loginLink = view.findViewById(R.id.loginLink)
         videoView = view.findViewById(R.id.videoBackground)
@@ -134,6 +144,66 @@ class RegisterFragment : Fragment() {
                 viewModel.verifyAndRegister(email, verificationCode)
             }
         }
+    }
+
+    // New function to make "Terms and Conditions" clickable
+    private fun setupTermsAndConditionsLink() {
+        val fullText = getString(R.string.terms_and_conditions_checkbox_text) // "I agree to the Terms and Conditions"
+        val linkText = getString(R.string.terms_and_conditions_link_text) // "Terms and Conditions"
+
+        val spannableString = SpannableString(Html.fromHtml(fullText, Html.FROM_HTML_MODE_LEGACY))
+
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                // Prevent checkbox from toggling when clicking the link
+                widget.cancelPendingInputEvents()
+                showTermsAndConditionsDialog()
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                // Style the link (optional, as HTML string already has some styling)
+                // ds.isUnderlineText = true // Already handled by HTML <b><u>
+                ds.color = ContextCompat.getColor(requireContext(), R.color.ocean_blue) // Ensure this color is defined
+            }
+        }
+
+        val startIndex = spannableString.toString().indexOf(linkText)
+        if (startIndex != -1) {
+            val endIndex = startIndex + linkText.length
+            spannableString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            // If you don't use HTML for styling in strings.xml, you can add spans here:
+            // spannableString.setSpan(UnderlineSpan(), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            // spannableString.setSpan(StyleSpan(Typeface.BOLD), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            // spannableString.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.ocean_blue)), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
+        termsCheckbox.text = spannableString
+        termsCheckbox.movementMethod = LinkMovementMethod.getInstance() // Important to make links clickable
+        termsCheckbox.highlightColor = ContextCompat.getColor(requireContext(), android.R.color.transparent) // Optional: remove link highlight on click
+    }
+
+    // New function to show the Terms and Conditions Dialog
+    private fun showTermsAndConditionsDialog() {
+        val termsAndConditionsHtml = getString(R.string.terms_and_conditions_content)
+        val message = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            Html.fromHtml(termsAndConditionsHtml, Html.FROM_HTML_MODE_COMPACT)
+        } else {
+            @Suppress("DEPRECATION")
+            Html.fromHtml(termsAndConditionsHtml)
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.dialog_title_terms_and_conditions))
+            .setMessage(message)
+            .setPositiveButton(getString(R.string.dialog_action_accept)) { dialog, _ ->
+                termsCheckbox.isChecked = true // Optionally auto-check the box upon "Accept"
+                dialog.dismiss()
+            }
+            .setNegativeButton(getString(R.string.dialog_action_close)) {dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun observeViewModel() {
