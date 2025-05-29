@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import id.istts.aplikasiadopsiterumbukarang.R
-import id.istts.aplikasiadopsiterumbukarang.fragments.models.CoralItem
+import id.istts.aplikasiadopsiterumbukarang.domain.models.CoralItem
 
 class CoralAdapter(private val coralList: List<CoralItem>) :
     RecyclerView.Adapter<CoralAdapter.CoralViewHolder>() {

@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.fragments.adminpage
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
 
 import android.Manifest
 import android.app.Activity
@@ -16,28 +16,20 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import id.istts.aplikasiadopsiterumbukarang.R
-import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
+import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
+import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import kotlinx.coroutines.launch
 
 class AddCoralFragment : Fragment() {
 
@@ -56,7 +48,11 @@ class AddCoralFragment : Fragment() {
     private lateinit var saveButton: MaterialButton
     private lateinit var cancelButton: MaterialButton
 
+    // Dependencies
     private lateinit var sessionManager: SessionManager
+    private lateinit var addCoralUseCase: AddCoralUseCase
+    private lateinit var fileUtils: FileUtils
+
     private var selectedImageUri: Uri? = null
     private var isLoading = false
 
@@ -69,7 +65,6 @@ class AddCoralFragment : Fragment() {
         }
     }
 
-    // Legacy gallery picker for older Android versions
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -99,7 +94,7 @@ class AddCoralFragment : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             val imageBitmap = result.data?.extras?.get("data") as? Bitmap
             imageBitmap?.let { bitmap ->
-                selectedImageUri = saveBitmapToFile(bitmap)
+                selectedImageUri = fileUtils.saveBitmapToFile(bitmap)
                 imagePreview.setImageBitmap(bitmap)
                 imagePreview.visibility = View.VISIBLE
             }
@@ -112,8 +107,16 @@ class AddCoralFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_add_coral, container, false)
+        initDependencies()
         initViews(view)
         return view
+    }
+
+    private fun initDependencies() {
+        sessionManager = SessionManager(requireContext())
+        fileUtils = FileUtils(requireContext())
+        val coralRepository = CoralRepositoryImpl()
+        addCoralUseCase = AddCoralUseCase(coralRepository, fileUtils)
     }
 
     private fun initViews(view: View) {
@@ -134,9 +137,6 @@ class AddCoralFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        sessionManager = SessionManager(requireContext())
-
         setupClickListeners()
         setupUI()
     }
@@ -208,20 +208,6 @@ class AddCoralFragment : Fragment() {
         }
     }
 
-    private fun saveBitmapToFile(bitmap: Bitmap): Uri? {
-        return try {
-            val file = File(requireContext().cacheDir, "temp_image_${System.currentTimeMillis()}.png")
-            val outputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            outputStream.flush()
-            outputStream.close()
-            Uri.fromFile(file)
-        } catch (e: IOException) {
-            Log.e("AddCoralFragment", "Error saving bitmap", e)
-            null
-        }
-    }
-
     private fun validateInputs(): Boolean {
         val name = coralNameEditText.text.toString().trim()
         val type = coralTypeEditText.text.toString().trim()
@@ -275,75 +261,45 @@ class AddCoralFragment : Fragment() {
 
         val name = coralNameEditText.text.toString().trim()
         val type = coralTypeEditText.text.toString().trim()
-        val description = coralDescriptionEditText.text.toString().trim()
-
         val harga = coralhargaEditText.text.toString().trim()
         val stok = coralTotalEditText.text.toString().trim()
 
         selectedImageUri?.let { uri ->
-            try {
-                val file = getFileFromUri(uri)
-                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-                val body = MultipartBody.Part.createFormData("profile_picture", file.name, requestFile)
+            setLoading(true)
 
-                val nameBody = name.toRequestBody("text/plain".toMediaTypeOrNull())
-                val jenisBody = type.toRequestBody("text/plain".toMediaTypeOrNull())
-                val hargaBody = harga.toRequestBody("text/plain".toMediaTypeOrNull())
-                val stokBody = stok.toRequestBody("text/plain".toMediaTypeOrNull())
+            val params = AddCoralUseCase.AddCoralParams(
+                token = token,
+                name = name,
+                jenis = type,
+                harga = harga,
+                stok = stok,
+                imageUri = uri
+            )
 
-                setLoading(true)
+            lifecycleScope.launch {
+                try {
+                    val result = addCoralUseCase.execute(params)
 
-                RetrofitClient.instance.addTerumbuKarang(
-                    token = token,
-                    name = nameBody,
-                    jenis = jenisBody,
-                    harga = hargaBody,
-                    stok = stokBody,
-                    profile_picture = body
-                ).enqueue(object : Callback<ResponseBody> {
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        setLoading(false)
-                        if (response.isSuccessful) {
-                            Toast.makeText(requireContext(), "Coral added successfully!", Toast.LENGTH_SHORT).show()
+                    result.fold(
+                        onSuccess = { message ->
+                            setLoading(false)
+                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                             clearForm()
                             findNavController().navigateUp()
-                        } else {
-                            val errorMessage = when (response.code()) {
-                                400 -> "Invalid data or unauthorized access"
-                                401 -> "Session expired. Please login again."
-                                else -> "Failed to add coral. Error: ${response.code()}"
-                            }
-                            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
+                        },
+                        onFailure = { exception ->
+                            setLoading(false)
+                            Log.e("AddCoralFragment", "Error adding coral", exception)
+                            Toast.makeText(requireContext(), exception.message ?: "Unknown error", Toast.LENGTH_LONG).show()
                         }
-                    }
-
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        setLoading(false)
-                        Log.e("AddCoralFragment", "Network error", t)
-                        Toast.makeText(requireContext(), "Network error: ${t.message}", Toast.LENGTH_LONG).show()
-                    }
-                })
-
-            } catch (e: Exception) {
-                setLoading(false)
-                Log.e("AddCoralFragment", "Error preparing file", e)
-                Toast.makeText(requireContext(), "Error preparing image file", Toast.LENGTH_SHORT).show()
+                    )
+                } catch (e: Exception) {
+                    setLoading(false)
+                    Log.e("AddCoralFragment", "Unexpected error", e)
+                    Toast.makeText(requireContext(), "Error preparing image file", Toast.LENGTH_SHORT).show()
+                }
             }
         }
-    }
-
-    private fun getFileFromUri(uri: Uri): File {
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
-        val file = File(requireContext().cacheDir, "coral_image_${System.currentTimeMillis()}.png")
-        val outputStream = FileOutputStream(file)
-
-        inputStream?.use { input ->
-            outputStream.use { output ->
-                input.copyTo(output)
-            }
-        }
-
-        return file
     }
 
     private fun setLoading(loading: Boolean) {
@@ -356,6 +312,8 @@ class AddCoralFragment : Fragment() {
         coralNameEditText.text?.clear()
         coralTypeEditText.text?.clear()
         coralDescriptionEditText.text?.clear()
+        coralhargaEditText.text?.clear()
+        coralTotalEditText.text?.clear()
         imagePreview.setImageResource(0)
         imagePreview.visibility = View.GONE
         selectedImageUri = null

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
-    tools:context=".fragments.dashboard.AdminDashboardFragment">
+    tools:context=".presentation.fragments.AdminDashboardFragment">
 
     <!-- Header Section with improved styling and animation support -->
     <androidx.constraintlayout.widget.ConstraintLayout

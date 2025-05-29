@@ -1,5 +1,6 @@
-package id.istts.aplikasiadopsiterumbukarang.fragments.dashboard
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageButton
 import android.widget.TextView
@@ -141,7 +143,7 @@ class AdminDashboardFragment : Fragment() {
         }
 
         AnimatorSet().apply {
-            playTogether(animators as Collection<android.animation.Animator>)
+            playTogether(animators as Collection<Animator>)
             this.duration = duration
             interpolator = DecelerateInterpolator()
             start()
@@ -155,7 +157,7 @@ class AdminDashboardFragment : Fragment() {
         }
     }
 
-    private fun animateScale(view: View, interpolator: android.view.animation.Interpolator,
+    private fun animateScale(view: View, interpolator: Interpolator,
                              duration: Long, startDelay: Long = 0) {
         val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f)
         val scaleY = ObjectAnimator.ofFloat(view, "scaleY", 0f, 1f)
@@ -185,7 +187,7 @@ class AdminDashboardFragment : Fragment() {
 
             AnimatorSet().apply {
                 playTogether(animators)
-                duration = 300
+                AnimatorSet.setDuration = 300
                 interpolator = AccelerateDecelerateInterpolator()
                 start()
             }
@@ -202,7 +204,7 @@ class AdminDashboardFragment : Fragment() {
 
         AnimatorSet().apply {
             playTogether(scaleX, scaleY)
-            duration = 200
+            AnimatorSet.setDuration = 200
             interpolator = AccelerateDecelerateInterpolator()
             start()
         }
@@ -217,7 +219,7 @@ class AdminDashboardFragment : Fragment() {
 
     private fun startFloatingAnimation() {
         ObjectAnimator.ofFloat(fabAdd, "translationY", 0f, -10f, 0f).apply {
-            duration = 2000
+            ObjectAnimator.setDuration = 2000
             repeatCount = ValueAnimator.INFINITE
             interpolator = AccelerateDecelerateInterpolator()
             start()
@@ -234,7 +236,7 @@ class AdminDashboardFragment : Fragment() {
         }
     }
     private fun navigtateToAddCoral(){
-        findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment2)
+        findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment)
     }
 
     private fun performLogout() {

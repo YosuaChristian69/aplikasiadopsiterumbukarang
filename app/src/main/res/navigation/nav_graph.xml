@@ -6,7 +6,7 @@
     app:startDestination="@id/loginFragment">
     <fragment
         android:id="@+id/loginFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.fragments.LoginFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.fragments.RegisterFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.RegisterFragment"
         android:label="Register"
         tools:layout="@layout/fragment_register">
         <action
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/userDashboardFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.fragments.dashboard.UserDashboardFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.UserDashboardFragment"
         android:label="fragment_user_dashboard"
         tools:layout="@layout/fragment_user_dashboard" >
         <action
@@ -43,19 +43,19 @@
     </fragment>
     <fragment
         android:id="@+id/adminDashboardFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.fragments.dashboard.AdminDashboardFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.AdminDashboardFragment"
         android:label="fragment_admin_dashboard"
         tools:layout="@layout/fragment_admin_dashboard" >
         <action
             android:id="@+id/action_adminDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
-            android:id="@+id/action_adminDashboardFragment_to_addCoralFragment2"
-            app:destination="@id/addCoralFragment2" />
+            android:id="@+id/action_adminDashboardFragment_to_addCoralFragment"
+            app:destination="@id/addCoralFragment" />
     </fragment>
     <fragment
         android:id="@+id/workerDashboardFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.fragments.dashboard.WorkerDashboardFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.WorkerDashboardFragment"
         android:label="fragment_worker_dashboard"
         tools:layout="@layout/fragment_worker_dashboard" >
         <action
@@ -63,12 +63,11 @@
             app:destination="@id/loginFragment" />
     </fragment>
     <fragment
-        android:id="@+id/addCoralFragment2"
-        android:name="id.istts.aplikasiadopsiterumbukarang.fragments.adminpage.AddCoralFragment"
-        android:label="fragment_add_coral"
-        tools:layout="@layout/fragment_add_coral" >
+        android:id="@+id/addCoralFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.AddCoralFragment"
+        android:label="AddCoralFragment" >
         <action
-            android:id="@+id/action_addCoralFragment2_to_adminDashboardFragment"
+            android:id="@+id/action_addCoralFragment_to_adminDashboardFragment"
             app:destination="@id/adminDashboardFragment" />
     </fragment>
 

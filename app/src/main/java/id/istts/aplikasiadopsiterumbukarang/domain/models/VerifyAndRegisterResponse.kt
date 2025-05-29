@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.RegisterLogic
+package id.istts.aplikasiadopsiterumbukarang.domain.models
 
 data class VerifyAndRegisterResponse(
     val msg: String

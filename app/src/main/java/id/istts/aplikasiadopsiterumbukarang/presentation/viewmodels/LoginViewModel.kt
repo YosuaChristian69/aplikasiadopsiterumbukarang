@@ -1,0 +1,176 @@
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
+
+import android.util.Base64
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginResponse
+import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class LoginViewModel : ViewModel() {
+
+    // LiveData untuk UI state
+    private val _loginState = MutableLiveData<LoginState>()
+    val loginState: LiveData<LoginState> = _loginState
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
+
+    private val _successMessage = MutableLiveData<String>()
+    val successMessage: LiveData<String> = _successMessage
+
+    private val _navigationEvent = MutableLiveData<NavigationEvent>()
+    val navigationEvent: LiveData<NavigationEvent> = _navigationEvent
+
+    private val _fieldError = MutableLiveData<FieldError>()
+    val fieldError: LiveData<FieldError> = _fieldError
+
+    // Session manager
+    private var sessionManager: SessionManager? = null
+
+    fun initSessionManager(sessionManager: SessionManager) {
+        this.sessionManager = sessionManager
+    }
+
+    fun checkExistingSession() {
+        sessionManager?.let { sm ->
+            if (sm.isLoggedIn()) {
+                val userStatus = sm.fetchUserStatus()
+                navigateBasedOnRole(userStatus)
+            }
+        }
+    }
+
+    fun performLogin(email: String, password: String) {
+        // Validation
+        if (!validateInput(email, password)) {
+            return
+        }
+
+        // Set loading state
+        _isLoading.value = true
+        _loginState.value = LoginState.Loading
+
+        // API call
+        RetrofitClient.instance.login(LoginRequest(email, password))
+            .enqueue(object : Callback<LoginResponse> {
+                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                    _isLoading.value = false
+                    handleLoginResponse(response)
+                }
+
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    _isLoading.value = false
+                    _loginState.value = LoginState.Error("Network error: ${t.message}")
+                    _errorMessage.value = "Network error: ${t.message}"
+                }
+            })
+    }
+
+    private fun validateInput(email: String, password: String): Boolean {
+        when {
+            email.isEmpty() -> {
+                _fieldError.value = FieldError(FieldType.EMAIL, "Email is required")
+                return false
+            }
+            password.isEmpty() -> {
+                _fieldError.value = FieldError(FieldType.PASSWORD, "Password is required")
+                return false
+            }
+            else -> return true
+        }
+    }
+
+    private fun handleLoginResponse(response: Response<LoginResponse>) {
+        if (response.isSuccessful && response.body()?.msg?.equals("success login", true) == true) {
+            response.body()?.token?.let { token ->
+                sessionManager?.saveAuthToken(token)
+
+                try {
+                    val userDetails = decodeTokenPayload(token)
+                    sessionManager?.saveUserDetails(
+                        userDetails.getString("full_name"),
+                        userDetails.getString("email"),
+                        userDetails.getString("status")
+                    )
+
+                    _loginState.value = LoginState.Success
+                    _successMessage.value = "Login successful"
+                    navigateBasedOnRole(userDetails.getString("status"))
+
+                } catch (e: Exception) {
+                    Log.e("LoginViewModel", "Token decode error", e)
+                    _loginState.value = LoginState.Error("Authentication error")
+                    _errorMessage.value = "Authentication error"
+                }
+            }
+        } else {
+            val errorMsg = try {
+                val errorJson = JSONObject(response.errorBody()?.string() ?: "{}")
+                errorJson.optString("msg", "Login failed")
+            } catch (e: Exception) {
+                "Login failed: ${response.code()}"
+            }
+            _loginState.value = LoginState.Error(errorMsg)
+            _errorMessage.value = errorMsg
+        }
+    }
+
+    private fun decodeTokenPayload(token: String): JSONObject {
+        val payload = token.split(".")[1]
+        val decodedBytes = Base64.decode(
+            normalizeBase64(payload),
+            Base64.DEFAULT
+        )
+        return JSONObject(String(decodedBytes))
+    }
+
+    private fun normalizeBase64(input: String): String {
+        val padding = when (input.length % 4) {
+            1 -> "==="
+            2 -> "=="
+            3 -> "="
+            else -> ""
+        }
+        return input + padding
+    }
+
+    private fun navigateBasedOnRole(status: String?) {
+        val navigationTarget = when (status) {
+            "user" -> NavigationTarget.USER_DASHBOARD
+            "admin" -> NavigationTarget.ADMIN_DASHBOARD
+            else -> NavigationTarget.WORKER_DASHBOARD
+        }
+        _navigationEvent.value = NavigationEvent(navigationTarget)
+    }
+
+    // Sealed classes untuk state management
+    sealed class LoginState {
+        object Idle : LoginState()
+        object Loading : LoginState()
+        object Success : LoginState()
+        data class Error(val message: String) : LoginState()
+    }
+
+    data class FieldError(val field: FieldType, val message: String)
+
+    enum class FieldType {
+        EMAIL, PASSWORD
+    }
+
+    data class NavigationEvent(val target: NavigationTarget)
+
+    enum class NavigationTarget {
+        USER_DASHBOARD, ADMIN_DASHBOARD, WORKER_DASHBOARD
+    }
+}

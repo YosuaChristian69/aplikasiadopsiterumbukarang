@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.LoginLogic
+package id.istts.aplikasiadopsiterumbukarang.domain.models
 
 data class LoginRequest(
     val email: String,
