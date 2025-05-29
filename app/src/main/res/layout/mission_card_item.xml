@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/mission_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_mission_placeholder"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="8dp"
+        app:tint="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/mission_card_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mission Title"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/mission_card_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Brief description of the mission and what it entails."
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

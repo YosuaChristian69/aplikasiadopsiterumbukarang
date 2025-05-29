@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user
 
 import android.os.Bundle
 import android.view.LayoutInflater

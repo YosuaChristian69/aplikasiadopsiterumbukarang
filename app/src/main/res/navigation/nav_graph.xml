@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/userDashboardFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.UserDashboardFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.UserDashboardFragment"
         android:label="fragment_user_dashboard"
         tools:layout="@layout/fragment_user_dashboard" >
         <action
@@ -55,7 +55,7 @@
     </fragment>
     <fragment
         android:id="@+id/workerDashboardFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.WorkerDashboardFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker.WorkerDashboardFragment"
         android:label="fragment_worker_dashboard"
         tools:layout="@layout/fragment_worker_dashboard" >
         <action
