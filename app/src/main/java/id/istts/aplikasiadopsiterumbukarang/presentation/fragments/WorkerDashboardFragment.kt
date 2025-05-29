@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.fragments.dashboard
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater

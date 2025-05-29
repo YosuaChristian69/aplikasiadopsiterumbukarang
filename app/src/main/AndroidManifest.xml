@@ -38,7 +38,7 @@
         android:theme="@style/Theme.AplikasiAdopsiTerumbuKarang"
         tools:targetApi="33">
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.fragments.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

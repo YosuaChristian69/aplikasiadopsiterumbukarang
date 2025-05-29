@@ -1,9 +1,10 @@
-package id.istts.aplikasiadopsiterumbukarang
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import id.istts.aplikasiadopsiterumbukarang.R
 
 class MainActivity : AppCompatActivity() {
 
