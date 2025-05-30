@@ -23,13 +23,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintDimensionRatio="H,16:11"
-            android:src="@drawable/placeholder_underwater_bg" />
+            android:src="@drawable/backgroun_worker_card" />
         <ImageView
             android:id="@+id/iv_worker_photo"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_placeholder_person_dark"
+            android:src="@drawable/ic_person"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +87,6 @@
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_cake_24_white"
                 tools:text="DoB: DD/MM/YYYY" />
 
             <TextView
@@ -97,7 +96,6 @@
                 android:layout_marginTop="4dp"
                 android:textColor="@android:color/white"
                 android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_email_24_white"
                 tools:text="Email: worker@example.com" />
 
             <TextView
@@ -107,7 +105,6 @@
                 android:layout_marginTop="4dp"
                 android:textColor="@android:color/white"
                 android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_phone_24_white"
                 tools:text="Phone: 081234567890" />
 
             <TextView
@@ -117,7 +114,6 @@
                 android:layout_marginTop="4dp"
                 android:textColor="@android:color/white"
                 android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_calendar_today_24_white"
                 tools:text="Joined: DD/MM/YYYY" />
         </LinearLayout>
 
@@ -137,7 +133,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:src="@drawable/ic_coral_seed_white_24"
+                android:src="@drawable/ic_coral_logo"
                 app:tint="@android:color/white"/>
 
             <TextView
@@ -153,7 +149,7 @@
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:src="@drawable/ic_coral_seed_white_24"
+                android:src="@drawable/ic_coral_logo"
                 app:tint="@android:color/white"/>
         </LinearLayout>
 

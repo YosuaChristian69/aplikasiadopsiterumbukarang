@@ -35,14 +35,14 @@ class WorkerDashboardFragment : Fragment() {
     private fun setupBottomNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_mission -> {
-                    // Handle klik "My Mission"
-                    true
-                }
-                R.id.navigation_profile -> {
-                    // Handle klik "My Profile"
-                    true
-                }
+//                R.id.navigation_mission -> {
+//                    // Handle klik "My Mission"
+//                    true
+//                }
+//                R.id.navigation_profile -> {
+//                    // Handle klik "My Profile"
+//                    true
+//                }
                 else -> false
             }
         }
