@@ -10,6 +10,20 @@ class CorralRepository() {
         return local.TerumbuKarangDAO().getAllTerumbuKarang()
     }
     suspend fun remoteGetAllCorral(): List<TerumbuKarangEntities> {
-       return RetrofitClient.instance.getTk("asdf")
+        val response = RetrofitClient.instance.getTk("asdf")
+       return response.body()!!
+    }
+    suspend fun hybridGetAllCorral(): List<TerumbuKarangEntities>{
+        try {
+            val response = RetrofitClient.instance.getTk("asdf")
+            if(response.isSuccessful){
+                return response.body()!!
+            }else{
+                return local.TerumbuKarangDAO().getAllTerumbuKarang()
+            }
+        }catch(e: Exception){
+            println(e.message)
+            return local.TerumbuKarangDAO().getAllTerumbuKarang()
+        }
     }
 }

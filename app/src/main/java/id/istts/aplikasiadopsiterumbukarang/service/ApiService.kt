@@ -9,6 +9,7 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterReque
 import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -42,6 +43,6 @@ interface ApiService {
     @GET("/tk/getTk")
     fun getTk(
         @Header("x-auth-token") token: String,
-    ): List<TerumbuKarangEntities>
+    ): retrofit2.Response<List<TerumbuKarangEntities>>
 
 }
