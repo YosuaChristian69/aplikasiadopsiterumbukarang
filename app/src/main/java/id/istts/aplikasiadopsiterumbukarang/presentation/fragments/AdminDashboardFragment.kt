@@ -264,8 +264,60 @@ class AdminDashboardFragment : Fragment() {
         }
 
         profileCard.setOnClickListener { animateClick(profileCard) }
-    }
+        bottomNavigation.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_coral_seed -> {
+                    true
+                }
+                R.id.nav_place -> {
+                    animateBottomNavClick(menuItem) {
+                        navigateToAdminPlace()
+                    }
+                    true
+                }
+                R.id.nav_worker -> {
+                    animateBottomNavClick(menuItem) {
+                        navigateToAdminWorker()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
 
+        bottomNavigation.setOnItemReselectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_coral_seed -> {
+                    recyclerView.smoothScrollToPosition(0)
+                }
+                R.id.nav_place -> {
+                    recyclerView.smoothScrollToPosition(1)
+                }
+                R.id.nav_worker -> {
+                    recyclerView.smoothScrollToPosition(2)
+                }
+            }
+        }
+    }
+    private fun animateBottomNavClick(menuItem: android.view.MenuItem, action: () -> Unit) {
+        val scaleAnimation = ObjectAnimator.ofFloat(bottomNavigation, "scaleY", 1f, 0.95f, 1f)
+        scaleAnimation.apply {
+            duration = 150
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+
+        lifecycleScope.launch {
+            delay(100)
+            action()
+        }
+    }
+    private fun navigateToAdminPlace(){
+        findNavController().navigate(R.id.action_adminDashboardFragment_to_adminPlaceDashboardFragment)
+    }
+    private fun navigateToAdminWorker(){
+        findNavController().navigate(R.id.action_adminDashboardFragment_to_adminWorkerDashboardFragment)
+    }
     private fun animateClick(view: View, action: (() -> Unit)? = null) {
         val scale = if (view == logoutCard) 0.9f else 1.05f
         val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, scale, 1f)
