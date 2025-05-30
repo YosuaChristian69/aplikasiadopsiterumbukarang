@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/nav_coral_seed"
-        android:icon="@drawable/ic_coral_logo"
-        android:title="Coral Seed" />
+    <menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <item
+            android:id="@+id/nav_coral_seed"
+            android:icon="@drawable/ic_coral_logo"
+            android:title="Coral Seed" />
 
-    <item
-        android:id="@+id/nav_place"
-        android:icon="@drawable/ic_place"
-        android:title="Place" />
+        <item
+            android:id="@+id/nav_place"
+            android:icon="@drawable/ic_place"
+            android:title="Place" />
 
-    <item
-        android:id="@+id/nav_worker"
-        android:icon="@drawable/ic_worker"
-        android:title="Worker" />
-</menu>
+        <item
+            android:id="@+id/nav_worker"
+            android:icon="@drawable/ic_worker"
+            android:title="Worker" />
+    </menu>

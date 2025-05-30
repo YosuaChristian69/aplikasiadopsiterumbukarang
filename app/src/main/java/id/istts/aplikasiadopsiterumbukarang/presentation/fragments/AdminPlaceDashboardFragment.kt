@@ -1,60 +1,154 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
 
+import android.animation.ObjectAnimator
+import android.animation.AnimatorSet
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AdminPlaceDashboardFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AdminPlaceDashboardFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var sessionManager: SessionManager
+    private lateinit var bottomNavigation: BottomNavigationView
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_admin_place_dashboard, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AdminPlaceDashboardFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AdminPlaceDashboardFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        sessionManager = SessionManager(requireContext())
+
+        // Validate access before setting up views
+        if (validateAccess()) {
+            setupViews(view)
+        }
+    }
+
+    private fun validateAccess(): Boolean {
+        if (!isAdded || isDetached) return false
+
+        if (!sessionManager.isLoggedIn() || sessionManager.fetchUserStatus() != "admin") {
+            navigateToLogin()
+            return false
+        }
+        return true
+    }
+
+    private fun setupViews(view: View) {
+        // Initialize views
+        bottomNavigation = view.findViewById(R.id.bottomNavigation)
+        setupBottomNavigation()
+    }
+
+    private fun setupBottomNavigation() {
+        // Set current selected item for place dashboard
+        bottomNavigation.selectedItemId = R.id.nav_place
+
+        bottomNavigation.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_coral_seed -> {
+                    animateBottomNavClick(menuItem) {
+                        navigateToAdminDashboard()
+                    }
+                    true
+                }
+                R.id.nav_place -> {
+                    true
+                }
+                R.id.nav_worker -> {
+                    animateBottomNavClick(menuItem) {
+                        navigateToAdminWorker()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+
+        bottomNavigation.setOnItemReselectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_coral_seed -> {
+                    navigateToAdminDashboard()
+                }
+                R.id.nav_place -> {
+                    if (::recyclerView.isInitialized) {
+                        recyclerView.smoothScrollToPosition(0)
+                    }
+                }
+                R.id.nav_worker -> {
+                    // Navigate to worker dashboard
+                    navigateToAdminWorker()
                 }
             }
+        }
+    }
+
+    private fun animateBottomNavClick(menuItem: android.view.MenuItem, action: () -> Unit) {
+        val scaleAnimation = ObjectAnimator.ofFloat(bottomNavigation, "scaleY", 1f, 0.95f, 1f)
+        scaleAnimation.apply {
+            duration = 150
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+
+        lifecycleScope.launch {
+            delay(100)
+            action()
+        }
+    }
+
+    private fun navigateToLogin() {
+        if (isAdded && !isDetached && !isRemoving) {
+            try {
+                findNavController().navigate(R.id.action_adminPlaceDashboardFragment_to_loginFragment)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun navigateToAdminDashboard() {
+        if (isAdded && !isDetached && !isRemoving) {
+            try {
+                findNavController().navigate(R.id.action_adminPlaceDashboardFragment_to_adminDashboardFragment)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun navigateToAdminWorker() {
+        if (isAdded && !isDetached && !isRemoving) {
+            try {
+                findNavController().navigate(R.id.action_adminPlaceDashboardFragment_to_adminWorkerDashboardFragment)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        validateAccess()
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = AdminPlaceDashboardFragment()
     }
 }

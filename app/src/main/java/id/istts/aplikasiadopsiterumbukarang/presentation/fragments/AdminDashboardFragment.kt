@@ -178,7 +178,6 @@ class AdminDashboardFragment : Fragment() {
         }
 
         fabAdd.setOnClickListener {
-            // FAB specific animation with rotation
             val animators = listOf(
                 ObjectAnimator.ofFloat(fabAdd, "scaleX", 1f, 1.2f, 1f),
                 ObjectAnimator.ofFloat(fabAdd, "scaleY", 1f, 1.2f, 1f),
@@ -187,17 +186,63 @@ class AdminDashboardFragment : Fragment() {
 
             AnimatorSet().apply {
                 playTogether(animators)
-                // ✅ FIX: Changed from 'AnimatorSet.setDuration' to 'this.duration'
                 this.duration = 300
                 interpolator = AccelerateDecelerateInterpolator()
                 start()
             }
-            navigtateToAddCoral()
+            navigateToAddCoral()
         }
 
         profileCard.setOnClickListener { animateClick(profileCard) }
+        bottomNavigation.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_coral_seed -> {
+                    true
+                }
+                R.id.nav_place -> {
+                    animateBottomNavClick(menuItem) {
+                        navigateToAdminPlace()
+                    }
+                    true
+                }
+                R.id.nav_worker -> {
+                    animateBottomNavClick(menuItem) {
+                        navigateToAdminWorker()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+
+        bottomNavigation.setOnItemReselectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_coral_seed -> {
+                    recyclerView.smoothScrollToPosition(0)
+                }
+                R.id.nav_place -> {
+                    recyclerView.smoothScrollToPosition(1)
+                }
+                R.id.nav_worker -> {
+                    recyclerView.smoothScrollToPosition(2)
+                }
+            }
+        }
     }
 
+    private fun animateBottomNavClick(menuItem: android.view.MenuItem, action: () -> Unit) {
+        val scaleAnimation = ObjectAnimator.ofFloat(bottomNavigation, "scaleY", 1f, 0.95f, 1f)
+        scaleAnimation.apply {
+            duration = 150
+            interpolator = AccelerateDecelerateInterpolator()
+            start()
+        }
+
+        lifecycleScope.launch {
+            delay(100)
+            action()
+        }
+    }
     private fun animateClick(view: View, action: (() -> Unit)? = null) {
         val scale = if (view == logoutCard) 0.9f else 1.05f
         val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, scale, 1f)
@@ -205,7 +250,6 @@ class AdminDashboardFragment : Fragment() {
 
         AnimatorSet().apply {
             playTogether(scaleX, scaleY)
-            // ✅ FIX: Changed from 'AnimatorSet.setDuration' to 'this.duration'
             this.duration = 200
             interpolator = AccelerateDecelerateInterpolator()
             start()
@@ -221,7 +265,6 @@ class AdminDashboardFragment : Fragment() {
 
     private fun startFloatingAnimation() {
         ObjectAnimator.ofFloat(fabAdd, "translationY", 0f, -10f, 0f).apply {
-            // ✅ FIX: Changed from 'ObjectAnimator.setDuration' to 'this.duration'
             this.duration = 2000
             repeatCount = ValueAnimator.INFINITE
             interpolator = AccelerateDecelerateInterpolator()
@@ -238,8 +281,14 @@ class AdminDashboardFragment : Fragment() {
             }
         }
     }
-    private fun navigtateToAddCoral(){
+    private fun navigateToAddCoral(){
         findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment)
+    }
+    private fun navigateToAdminPlace(){
+        findNavController().navigate(R.id.action_adminDashboardFragment_to_adminPlaceDashboardFragment)
+    }
+    private fun navigateToAdminWorker(){
+        findNavController().navigate(R.id.action_adminDashboardFragment_to_adminWorkerDashboardFragment)
     }
 
     private fun performLogout() {
