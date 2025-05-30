@@ -1,5 +1,6 @@
 package id.istts.aplikasiadopsiterumbukarang.service
 
+import id.istts.aplikasiadopsiterumbukarang.data.sources.local.Entities.TerumbuKarangEntities
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationRequest
@@ -11,6 +12,7 @@ import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -36,5 +38,10 @@ interface ApiService {
         @Part("stok") stok: RequestBody,
         @Part profile_picture: MultipartBody.Part
     ): Call<ResponseBody>
+
+    @GET("/tk/getTk")
+    fun getTk(
+        @Header("x-auth-token") token: String,
+    ): List<TerumbuKarangEntities>
 
 }
