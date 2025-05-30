@@ -1,7 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.usecases
 
+import CoralRepository
 import android.net.Uri
-import id.istts.aplikasiadopsiterumbukarang.domain.repositories.CoralRepository
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody

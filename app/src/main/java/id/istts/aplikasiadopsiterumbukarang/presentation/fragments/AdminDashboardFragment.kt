@@ -1,10 +1,12 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
 
+import CoralRepository
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +17,12 @@ import android.view.animation.Interpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -26,9 +30,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
+import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralAdapter
+import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
+import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 
 class AdminDashboardFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
+    private lateinit var coralRepository: CoralRepository
+    private lateinit var coralAdapter: CoralAdapter
+
     private lateinit var welcomeTextView: TextView
     private lateinit var logoutButton: ImageButton
     private lateinit var profileCard: CardView
@@ -46,10 +56,13 @@ class AdminDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sessionManager = SessionManager(requireContext())
+        coralRepository = CoralRepositoryImpl()
 
         lifecycleScope.launch {
             if (validateAccess()) {
                 setupViews(view)
+                setupRecyclerView()
+                loadCoralData()
                 startAnimations()
             }
         }
@@ -84,6 +97,65 @@ class AdminDashboardFragment : Fragment() {
         setupClickListeners()
     }
 
+    private fun setupRecyclerView() {
+        coralAdapter = CoralAdapter { coral ->
+            onCoralItemClick(coral)
+        }
+
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = coralAdapter
+            setHasFixedSize(true)
+        }
+    }
+
+    private fun onCoralItemClick(coral: Coral) {
+        Toast.makeText(requireContext(), "Clicked: ${coral.tk_name}", Toast.LENGTH_SHORT).show()
+        // Example: navigate to detail fragment
+        // findNavController().navigate(R.id.action_adminDashboardFragment_to_coralDetailFragment)
+    }
+
+    private fun loadCoralData() {
+        val token = sessionManager.fetchAuthToken()
+
+        if (token.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Authentication token not found", Toast.LENGTH_SHORT).show()
+            navigateToLogin()
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                val authToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+                val result = coralRepository.getCoralList(authToken)
+
+                if (result.isSuccess) {
+                    val coralList = result.getOrNull() ?: emptyList()
+                    coralAdapter.updateData(coralList)
+
+                    val count = coralList.size
+                    collectionTitle.text = "MY CORAL'S SEEDS COLLECTION ($count)"
+
+                    Log.d("AdminDashboard", "Successfully loaded ${coralList.size} corals")
+                } else {
+                    val error = result.exceptionOrNull()
+                    Log.e("AdminDashboard", "Failed to load coral data", error)
+
+                    val errorMessage = error?.message ?: "Unknown error occurred"
+                    if (errorMessage.contains("Invalid or Expired Token") || errorMessage.contains("401")) {
+                        Toast.makeText(requireContext(), "Session expired. Please login again.", Toast.LENGTH_LONG).show()
+                        navigateToLogin()
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to load coral data: $errorMessage", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AdminDashboard", "Exception while loading coral data", e)
+                Toast.makeText(requireContext(), "Network error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     private fun setInitialStates() {
         listOf(headerLayout, recyclerView, fabAdd, bottomNavigation,
             profileCard, logoutCard, welcomeTextView, collectionTitle).forEach {
@@ -103,7 +175,6 @@ class AdminDashboardFragment : Fragment() {
     }
 
     private suspend fun startAnimations() {
-        // Staggered entrance animations
         animateView(headerLayout, translationY = Pair(-100f, 0f), duration = 600)
         delay(200)
 
@@ -124,7 +195,6 @@ class AdminDashboardFragment : Fragment() {
 
         animateView(bottomNavigation, translationY = Pair(100f, 0f), duration = 500)
 
-        // Start floating animation
         delay(2000)
         if (isAdded) startFloatingAnimation()
     }
@@ -186,7 +256,7 @@ class AdminDashboardFragment : Fragment() {
 
             AnimatorSet().apply {
                 playTogether(animators)
-                this.duration = 300
+                duration = 300
                 interpolator = AccelerateDecelerateInterpolator()
                 start()
             }
@@ -194,55 +264,8 @@ class AdminDashboardFragment : Fragment() {
         }
 
         profileCard.setOnClickListener { animateClick(profileCard) }
-        bottomNavigation.setOnItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_coral_seed -> {
-                    true
-                }
-                R.id.nav_place -> {
-                    animateBottomNavClick(menuItem) {
-                        navigateToAdminPlace()
-                    }
-                    true
-                }
-                R.id.nav_worker -> {
-                    animateBottomNavClick(menuItem) {
-                        navigateToAdminWorker()
-                    }
-                    true
-                }
-                else -> false
-            }
-        }
-
-        bottomNavigation.setOnItemReselectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_coral_seed -> {
-                    recyclerView.smoothScrollToPosition(0)
-                }
-                R.id.nav_place -> {
-                    recyclerView.smoothScrollToPosition(1)
-                }
-                R.id.nav_worker -> {
-                    recyclerView.smoothScrollToPosition(2)
-                }
-            }
-        }
     }
 
-    private fun animateBottomNavClick(menuItem: android.view.MenuItem, action: () -> Unit) {
-        val scaleAnimation = ObjectAnimator.ofFloat(bottomNavigation, "scaleY", 1f, 0.95f, 1f)
-        scaleAnimation.apply {
-            duration = 150
-            interpolator = AccelerateDecelerateInterpolator()
-            start()
-        }
-
-        lifecycleScope.launch {
-            delay(100)
-            action()
-        }
-    }
     private fun animateClick(view: View, action: (() -> Unit)? = null) {
         val scale = if (view == logoutCard) 0.9f else 1.05f
         val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, scale, 1f)
@@ -250,7 +273,7 @@ class AdminDashboardFragment : Fragment() {
 
         AnimatorSet().apply {
             playTogether(scaleX, scaleY)
-            this.duration = 200
+            duration = 200
             interpolator = AccelerateDecelerateInterpolator()
             start()
         }
@@ -265,7 +288,7 @@ class AdminDashboardFragment : Fragment() {
 
     private fun startFloatingAnimation() {
         ObjectAnimator.ofFloat(fabAdd, "translationY", 0f, -10f, 0f).apply {
-            this.duration = 2000
+            duration = 2000
             repeatCount = ValueAnimator.INFINITE
             interpolator = AccelerateDecelerateInterpolator()
             start()
@@ -281,14 +304,9 @@ class AdminDashboardFragment : Fragment() {
             }
         }
     }
-    private fun navigateToAddCoral(){
+
+    private fun navigateToAddCoral() {
         findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment)
-    }
-    private fun navigateToAdminPlace(){
-        findNavController().navigate(R.id.action_adminDashboardFragment_to_adminPlaceDashboardFragment)
-    }
-    private fun navigateToAdminWorker(){
-        findNavController().navigate(R.id.action_adminDashboardFragment_to_adminWorkerDashboardFragment)
     }
 
     private fun performLogout() {
@@ -300,7 +318,9 @@ class AdminDashboardFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        validateAccess()
+        if (validateAccess()) {
+            loadCoralData()
+        }
     }
 
     companion object {

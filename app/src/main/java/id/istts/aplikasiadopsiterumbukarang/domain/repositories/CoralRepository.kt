@@ -1,5 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.domain.repositories
-
+import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -12,4 +11,6 @@ interface CoralRepository {
         stok: RequestBody,
         profilePicture: MultipartBody.Part
     ): Result<String>
+
+    suspend fun getCoralList(token: String): Result<List<Coral>>
 }
