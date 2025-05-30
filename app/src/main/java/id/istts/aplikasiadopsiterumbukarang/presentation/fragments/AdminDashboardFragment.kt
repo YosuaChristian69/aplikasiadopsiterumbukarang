@@ -187,7 +187,8 @@ class AdminDashboardFragment : Fragment() {
 
             AnimatorSet().apply {
                 playTogether(animators)
-                AnimatorSet.setDuration = 300
+                // ✅ FIX: Changed from 'AnimatorSet.setDuration' to 'this.duration'
+                this.duration = 300
                 interpolator = AccelerateDecelerateInterpolator()
                 start()
             }
@@ -204,7 +205,8 @@ class AdminDashboardFragment : Fragment() {
 
         AnimatorSet().apply {
             playTogether(scaleX, scaleY)
-            AnimatorSet.setDuration = 200
+            // ✅ FIX: Changed from 'AnimatorSet.setDuration' to 'this.duration'
+            this.duration = 200
             interpolator = AccelerateDecelerateInterpolator()
             start()
         }
@@ -219,7 +221,8 @@ class AdminDashboardFragment : Fragment() {
 
     private fun startFloatingAnimation() {
         ObjectAnimator.ofFloat(fabAdd, "translationY", 0f, -10f, 0f).apply {
-            ObjectAnimator.setDuration = 2000
+            // ✅ FIX: Changed from 'ObjectAnimator.setDuration' to 'this.duration'
+            this.duration = 2000
             repeatCount = ValueAnimator.INFINITE
             interpolator = AccelerateDecelerateInterpolator()
             start()

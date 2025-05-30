@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_teal"
+    android:background="@drawable/gradient_background"
     tools:context=".presentation.fragments.AdminPlaceDashboardFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -82,8 +82,8 @@
         android:layout_margin="24dp"
         android:src="@drawable/ic_add"
         android:contentDescription="Tambah Tempat"
-        app:backgroundTint="@color/light_cyan_fab"
-        app:tint="@color/dark_teal"
+        app:backgroundTint="#00BCD4"
+        app:tint="#FFFFFF"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"
         app:layout_anchor="@id/bottomNavigation"
