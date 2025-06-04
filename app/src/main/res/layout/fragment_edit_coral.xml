@@ -4,30 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
+    android:background="@drawable/coral_header_gradient"
     tools:context=".presentation.fragments.EditCoralFragment">
+
+    <!-- Animated Wave Background -->
+    <ImageView
+        android:id="@+id/waveBackground"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/wave_pattern"
+        android:scaleType="centerCrop"
+        android:alpha="0.1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="24dp"
-        android:paddingTop="40dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="24dp"
+        android:paddingStart="20dp"
+        android:paddingTop="50dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="30dp"
         android:clipChildren="false"
         android:clipToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Enhanced Back Button with Ripple Effect -->
         <androidx.cardview.widget.CardView
             android:id="@+id/backCard"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
-            app:cardCornerRadius="22dp"
-            app:cardElevation="6dp"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="12dp"
             app:cardBackgroundColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -43,50 +56,91 @@
                 app:tint="#1a4d52" />
         </androidx.cardview.widget.CardView>
 
-        <!-- Title Text -->
-        <TextView
-            android:id="@+id/titleText"
+        <!-- Enhanced Title with Ocean Theme -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="Edit Coral Seed"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:shadowColor="#4C1a4d52"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="2"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="vertical"
             android:gravity="center"
             app:layout_constraintStart_toEndOf="@+id/backCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/backCard"
-            app:layout_constraintBottom_toBottomOf="@+id/backCard" />
+            app:layout_constraintBottom_toBottomOf="@+id/backCard">
+
+            <TextView
+                android:id="@+id/titleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🪸 Edit Coral Seed"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:shadowColor="#4C1a4d52"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:letterSpacing="0.05" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enhance your coral collection"
+                android:textColor="#B3FFFFFF"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp"
+                android:fontFamily="sans-serif-light" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Loading Indicator -->
-    <ProgressBar
-        android:id="@+id/loadingIndicator"
+    <!-- Loading Indicator with Coral Theme -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/loadingContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminateTint="#4CDDCF"
+        android:background="@drawable/loading_background"
+        android:padding="32dp"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Scrollable Content -->
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminateTint="#4CDDCF"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Updating coral..."
+            android:textColor="#1a4d52"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/loadingIndicator"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Enhanced Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/contentScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:fillViewport="true"
         android:overScrollMode="never"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -99,14 +153,14 @@
             android:paddingEnd="20dp"
             android:paddingBottom="32dp">
 
-            <!-- Form Card -->
+            <!-- Enhanced Form Card with Ocean Theme -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/formCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="8dp"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="16dp"
                 app:cardBackgroundColor="#FFFFFF"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -116,91 +170,149 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="28dp">
 
-                    <!-- Form Header -->
+                    <!-- Enhanced Form Header with Marine Icons -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
+                        android:background="@drawable/coral_info_header_bg"
+                        android:padding="16dp"
                         android:layout_marginBottom="24dp">
+
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Edit Coral Information"
-                            android:textSize="18sp"
+                            android:text="Coral Information"
+                            android:textSize="20sp"
                             android:textStyle="bold"
                             android:textColor="#1a4d52"
-                            android:fontFamily="sans-serif-medium"
-                            android:gravity="center" />
+                            android:fontFamily="sans-serif-medium" />
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_edit"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:src="@drawable/ic_edit_coral"
                             android:contentDescription="Edit Icon"
                             app:tint="#4CDDCF" />
 
                     </LinearLayout>
 
-                    <!-- Current Image Display -->
+                    <!-- Enhanced Current Image Display -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Current Image"
-                        android:textSize="14sp"
+                        android:text="🖼️ Current Coral Image"
+                        android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#1a4d52"
-                        android:layout_marginBottom="8dp" />
+                        android:layout_marginBottom="12dp"
+                        android:drawablePadding="8dp" />
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
-                        android:layout_height="160dp"
-                        android:layout_marginBottom="16dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="4dp">
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="8dp"
+                        app:cardBackgroundColor="#F8FFFE">
 
-                        <ImageView
-                            android:id="@+id/currentImageView"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:background="#F5F5F5"
-                            android:contentDescription="Current Coral Image" />
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/currentImageView"
+                                android:layout_width="match_parent"
+                                android:layout_height="220dp"
+                                android:scaleType="centerInside"
+                                android:adjustViewBounds="true"
+                                android:background="@drawable/image_placeholder_bg"
+                                android:contentDescription="Current Coral Image"
+                                android:padding="12dp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <!-- Image overlay for camera button -->
+                            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                                android:id="@+id/changeImageFab"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="16dp"
+                                android:src="@drawable/ic_camera_coral"
+                                app:backgroundTint="#4CDDCF"
+                                app:tint="#FFFFFF"
+                                app:fabSize="mini"
+                                app:elevation="8dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:contentDescription="Change Image" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </androidx.cardview.widget.CardView>
 
-
-
-                    <!-- Preview New Image -->
-                    <ImageView
-                        android:id="@+id/newImagePreview"
+                    <!-- Preview New Image with Animation -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/newImageCard"
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:layout_marginBottom="16dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerCrop"
-                        android:background="#EEEEEE"
-                        android:contentDescription="New Image Preview"
-                        android:visibility="gone" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="8dp"
+                        app:cardBackgroundColor="#E8F8F5"
+                        android:visibility="gone">
 
-                    <!-- Coral Name Input -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="8dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="📸 New Image Preview"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:textColor="#1a4d52"
+                                android:padding="8dp" />
+
+                            <ImageView
+                                android:id="@+id/newImagePreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="180dp"
+                                android:adjustViewBounds="true"
+                                android:scaleType="centerCrop"
+                                android:background="#EEEEEE"
+                                android:contentDescription="New Image Preview" />
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Enhanced Coral Name Input -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/coralNameInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:hint="Coral Name"
+                        android:layout_marginBottom="18dp"
+                        android:hint="🪸 Coral Name"
                         app:boxStrokeColor="#4CDDCF"
                         app:hintTextColor="#1a4d52"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
                         app:startIconTint="#4CDDCF"
+                        app:endIconMode="clear_text"
+                        app:endIconTint="#4CDDCF"
+                        app:boxStrokeWidth="2dp"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -209,24 +321,28 @@
                             android:layout_height="wrap_content"
                             android:inputType="textCapWords"
                             android:textColor="#1a4d52"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:fontFamily="sans-serif-medium" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Coral Species Input -->
+                    <!-- Enhanced Coral Species Input -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/coralSpeciesInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:hint="Coral Species"
+                        android:layout_marginBottom="18dp"
+                        android:hint="🧬 Coral Species"
                         app:boxStrokeColor="#4CDDCF"
                         app:hintTextColor="#1a4d52"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
                         app:startIconTint="#4CDDCF"
+                        app:endIconMode="clear_text"
+                        app:endIconTint="#4CDDCF"
+                        app:boxStrokeWidth="2dp"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -235,33 +351,35 @@
                             android:layout_height="wrap_content"
                             android:inputType="textCapWords"
                             android:textColor="#1a4d52"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:fontFamily="sans-serif-medium" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Price and Stock Row -->
+                    <!-- Enhanced Price and Stock Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginBottom="16dp">
+                        android:layout_marginBottom="18dp">
 
-                        <!-- Price Input -->
+                        <!-- Enhanced Price Input -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/priceInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            android:hint="Price (Rp)"
+                            android:layout_marginEnd="12dp"
+                            android:hint="💰 Price (Rp)"
                             app:boxStrokeColor="#4CDDCF"
                             app:hintTextColor="#1a4d52"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
+                            app:boxCornerRadiusTopStart="16dp"
+                            app:boxCornerRadiusTopEnd="16dp"
+                            app:boxCornerRadiusBottomStart="16dp"
+                            app:boxCornerRadiusBottomEnd="16dp"
                             app:startIconDrawable="@drawable/ic_money"
                             app:startIconTint="#4CDDCF"
+                            app:boxStrokeWidth="2dp"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -270,26 +388,28 @@
                                 android:layout_height="wrap_content"
                                 android:inputType="number"
                                 android:textColor="#1a4d52"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:fontFamily="sans-serif-medium" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <!-- Stock Input -->
+                        <!-- Enhanced Stock Input -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/stockInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:hint="Stock"
+                            android:layout_marginStart="12dp"
+                            android:hint="📦 Stock"
                             app:boxStrokeColor="#4CDDCF"
                             app:hintTextColor="#1a4d52"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusBottomEnd="12dp"
+                            app:boxCornerRadiusTopStart="16dp"
+                            app:boxCornerRadiusTopEnd="16dp"
+                            app:boxCornerRadiusBottomStart="16dp"
+                            app:boxCornerRadiusBottomEnd="16dp"
                             app:startIconDrawable="@drawable/ic_inventory"
                             app:startIconTint="#4CDDCF"
+                            app:boxStrokeWidth="2dp"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -298,27 +418,30 @@
                                 android:layout_height="wrap_content"
                                 android:inputType="number"
                                 android:textColor="#1a4d52"
-                                android:textSize="16sp" />
+                                android:textSize="16sp"
+                                android:fontFamily="sans-serif-medium" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
 
-                    <!-- Description Input -->
+                    <!-- Enhanced Description Input -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/descriptionInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="24dp"
-                        android:hint="Description"
+                        android:layout_marginBottom="28dp"
+                        android:hint="📝 Description"
                         app:boxStrokeColor="#4CDDCF"
                         app:hintTextColor="#1a4d52"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:startIconDrawable="@drawable/ic_description"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
                         app:startIconTint="#4CDDCF"
+                        app:endIconMode="clear_text"
+                        app:endIconTint="#4CDDCF"
+                        app:boxStrokeWidth="2dp"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -327,10 +450,11 @@
                             android:layout_height="wrap_content"
                             android:inputType="textMultiLine|textCapSentences"
                             android:lines="4"
-                            android:maxLines="6"
+                            android:maxLines="8"
                             android:gravity="top"
                             android:textColor="#1a4d52"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:fontFamily="sans-serif" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -338,11 +462,11 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Action Buttons -->
+            <!-- Enhanced Action Buttons with Ocean Theme -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal"
                 app:layout_constraintTop_toBottomOf="@+id/formCard"
                 app:layout_constraintStart_toStartOf="parent"
@@ -351,68 +475,48 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/updateButton"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="60dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="12dp"
                     android:text="Update Coral"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#FFFFFF"
+                    android:letterSpacing="0.02"
                     app:backgroundTint="#4CDDCF"
-                    app:cornerRadius="16dp"
-                    app:elevation="6dp"
+                    app:cornerRadius="20dp"
+                    app:elevation="12dp"
                     app:icon="@drawable/ic_update"
                     app:iconTint="#FFFFFF"
                     app:iconGravity="textStart"
-                    app:rippleColor="#FFFFFF" />
-
-
+                    app:iconSize="24dp"
+                    app:rippleColor="#FFFFFF"
+                    android:fontFamily="sans-serif-medium" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/cancelButton"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="0.7"
-                    android:layout_marginStart="8dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="0.75"
+                    android:layout_marginStart="12dp"
                     android:text="Cancel"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#1a4d52"
-                    app:backgroundTint="#E0E0E0"
-                    app:cornerRadius="16dp"
-                    app:elevation="6dp"
+                    android:letterSpacing="0.02"
+                    app:backgroundTint="#F0F0F0"
+                    app:cornerRadius="20dp"
+                    app:elevation="12dp"
                     app:icon="@drawable/ic_cancel"
                     app:iconTint="#1a4d52"
                     app:iconGravity="textStart"
-                    app:rippleColor="#1a4d52" />
+                    app:iconSize="24dp"
+                    app:rippleColor="#1a4d52"
+                    android:fontFamily="sans-serif-medium" />
 
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <!-- Decorative Elements -->
-    <View
-        android:id="@+id/decorativeCircle1"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="-50dp"
-        android:layout_marginEnd="-50dp"
-        android:background="@drawable/circle_gradient_decoration"
-        android:alpha="0.25"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/decorativeCircle2"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="-30dp"
-        android:layout_marginBottom="-30dp"
-        android:background="@drawable/circle_gradient_decoration_2"
-        android:alpha="0.2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

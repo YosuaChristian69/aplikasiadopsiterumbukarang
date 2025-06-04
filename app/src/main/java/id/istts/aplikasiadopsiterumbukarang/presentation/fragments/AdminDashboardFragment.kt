@@ -94,7 +94,12 @@ class AdminDashboardFragment : Fragment() {
     private fun setupRecyclerView() {
         coralAdapter = CoralAdapter(
             onItemClick = { coral -> viewModel.onCoralItemClick(coral) },
-            onEditClick = { coral -> viewModel.onCoralEditClick(coral) },
+            onEditClick = { coral ->
+                val bundle = Bundle().apply {
+                    putInt("coral_id", coral.id_tk)
+                }
+                findNavController().navigate(R.id.action_adminDashboardFragment_to_editCoralFragment, bundle)
+            },
             onDeleteClick = { coral, position -> viewModel.onCoralDeleteClick(coral, position) }
         )
 

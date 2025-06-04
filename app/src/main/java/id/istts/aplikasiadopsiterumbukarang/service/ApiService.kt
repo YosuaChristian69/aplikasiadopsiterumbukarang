@@ -1,10 +1,12 @@
 package id.istts.aplikasiadopsiterumbukarang.service
 
+import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.GetCoralResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.SingleCoralResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.WorkerResponse
@@ -49,6 +51,7 @@ interface ApiService {
         @Path("id") id: Int,
         @Header("x-auth-token") token: String
     ): Response<ResponseBody>
+
     @GET("/tk/getTk")
     suspend fun getTerumbuKarang(
         @Header("x-auth-token") token: String
@@ -58,4 +61,18 @@ interface ApiService {
     suspend fun fetchAllUsers(
         @Header("x-auth-token") token: String
     ): Response<WorkerResponse>
+
+    // New endpoints for edit functionality
+    @GET("/tk/getSingleTk/{id}")
+    suspend fun getSingleTerumbuKarang(
+        @Path("id") id: Int,
+        @Header("x-auth-token") token: String
+    ): Response<SingleCoralResponse>
+
+    @POST("/tk/editTk/{id}")
+    suspend fun editTerumbuKarang(
+        @Path("id") id: Int,
+        @Header("x-auth-token") token: String,
+        @Body editRequest: EditCoralRequest
+    ): Response<ResponseBody>
 }
