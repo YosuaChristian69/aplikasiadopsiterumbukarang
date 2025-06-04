@@ -173,20 +173,7 @@
 
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Change Image Button -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/updateImageButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginBottom="16dp"
-                        android:text="Change Coral Image"
-                        android:textSize="16sp"
-                        android:textColor="#FFFFFF"
-                        app:backgroundTint="#4CDDCF"
-                        app:cornerRadius="12dp"
-                        app:icon="@drawable/ic_camera"
-                        app:iconTint="#FFFFFF"
-                        app:iconGravity="textStart" />
+
 
                     <!-- Preview New Image -->
                     <ImageView
