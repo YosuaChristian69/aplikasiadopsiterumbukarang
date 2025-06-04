@@ -2,7 +2,6 @@ package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
 
 import CoralRepository
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,8 +18,21 @@ class AdminDashboardViewModel(
     private val _uiState = MutableStateFlow(AdminDashboardUiState())
     val uiState: StateFlow<AdminDashboardUiState> = _uiState.asStateFlow()
 
-    private val _navigationEvent = MutableStateFlow<NavigationEvent?>(null)
-    val navigationEvent: StateFlow<NavigationEvent?> = _navigationEvent.asStateFlow()
+    // Simple navigation flags
+    private val _shouldNavigateToLogin = MutableStateFlow(false)
+    val shouldNavigateToLogin: StateFlow<Boolean> = _shouldNavigateToLogin.asStateFlow()
+
+    private val _shouldNavigateToAddCoral = MutableStateFlow(false)
+    val shouldNavigateToAddCoral: StateFlow<Boolean> = _shouldNavigateToAddCoral.asStateFlow()
+
+    private val _shouldNavigateToPlace = MutableStateFlow(false)
+    val shouldNavigateToPlace: StateFlow<Boolean> = _shouldNavigateToPlace.asStateFlow()
+
+    private val _shouldNavigateToWorker = MutableStateFlow(false)
+    val shouldNavigateToWorker: StateFlow<Boolean> = _shouldNavigateToWorker.asStateFlow()
+
+    private val _selectedCoral = MutableStateFlow<Coral?>(null)
+    val selectedCoral: StateFlow<Coral?> = _selectedCoral.asStateFlow()
 
     init {
         validateUserAccess()
@@ -28,7 +40,7 @@ class AdminDashboardViewModel(
 
     fun validateUserAccess() {
         if (!sessionManager.isLoggedIn() || sessionManager.fetchUserStatus() != "admin") {
-            _navigationEvent.value = NavigationEvent.NavigateToLogin
+            _shouldNavigateToLogin.value = true
         } else {
             loadUserInfo()
             loadCoralData()
@@ -51,7 +63,7 @@ class AdminDashboardViewModel(
                 isLoading = false,
                 error = "Authentication token not found"
             )
-            _navigationEvent.value = NavigationEvent.NavigateToLogin
+            _shouldNavigateToLogin.value = true
             return
         }
 
@@ -84,7 +96,7 @@ class AdminDashboardViewModel(
                             isLoading = false,
                             error = "Session expired. Please login again."
                         )
-                        _navigationEvent.value = NavigationEvent.NavigateToLogin
+                        _shouldNavigateToLogin.value = true
                     } else {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
@@ -101,30 +113,35 @@ class AdminDashboardViewModel(
         }
     }
 
-
+    // Simple navigation functions
     fun onCoralItemClick(coral: Coral) {
-        _navigationEvent.value = NavigationEvent.ShowCoralDetail(coral)
+        _selectedCoral.value = coral
     }
 
     fun onLogoutClick() {
         sessionManager.clearSession()
-        _navigationEvent.value = NavigationEvent.NavigateToLogin
+        _shouldNavigateToLogin.value = true
     }
 
     fun onAddCoralClick() {
-        _navigationEvent.value = NavigationEvent.NavigateToAddCoral
+        _shouldNavigateToAddCoral.value = true
     }
 
     fun onPlaceNavClick() {
-        _navigationEvent.value = NavigationEvent.NavigateToAdminPlace
+        _shouldNavigateToPlace.value = true
     }
 
     fun onWorkerNavClick() {
-        _navigationEvent.value = NavigationEvent.NavigateToAdminWorker
+        _shouldNavigateToWorker.value = true
     }
 
-    fun clearNavigationEvent() {
-        _navigationEvent.value = null
+    // Reset navigation flags after handling
+    fun clearNavigationFlags() {
+        _shouldNavigateToLogin.value = false
+        _shouldNavigateToAddCoral.value = false
+        _shouldNavigateToPlace.value = false
+        _shouldNavigateToWorker.value = false
+        _selectedCoral.value = null
     }
 
     fun refreshData() {
@@ -142,23 +159,3 @@ data class AdminDashboardUiState(
     val lowStockCount: Int = 0,
     val error: String? = null
 )
-sealed class NavigationEvent {
-    object NavigateToLogin : NavigationEvent()
-    object NavigateToAddCoral : NavigationEvent()
-    object NavigateToAdminPlace : NavigationEvent()
-    object NavigateToAdminWorker : NavigationEvent()
-    data class ShowCoralDetail(val coral: Coral) : NavigationEvent()
-}
-
-class AdminDashboardViewModelFactory(
-    private val coralRepository: CoralRepository,
-    private val sessionManager: SessionManager
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AdminDashboardViewModel::class.java)) {
-            return AdminDashboardViewModel(coralRepository, sessionManager) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

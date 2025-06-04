@@ -19,7 +19,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,19 +32,12 @@ import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralAdapter
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AdminDashboardUiState
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AdminDashboardViewModel
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AdminDashboardViewModelFactory
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.NavigationEvent
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 
 class AdminDashboardFragment : Fragment() {
 
-    private val viewModel: AdminDashboardViewModel by viewModels {
-        AdminDashboardViewModelFactory(
-            CoralRepositoryImpl(/* inject your API service here */),
-            SessionManager(requireContext())
-        )
-    }
-
+    // Simple ViewModel initialization without factory
+    private lateinit var viewModel: AdminDashboardViewModel
     private lateinit var coralAdapter: CoralAdapter
 
     // View references
@@ -65,6 +57,12 @@ class AdminDashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize ViewModel
+        viewModel = AdminDashboardViewModel(
+            CoralRepositoryImpl(/* inject your API service here */),
+            SessionManager(requireContext())
+        )
 
         setupViews(view)
         setupRecyclerView()
@@ -112,13 +110,64 @@ class AdminDashboardFragment : Fragment() {
             }
         }
 
-        // Observe navigation events
+        // Observe navigation to login
         lifecycleScope.launch {
-            viewModel.navigationEvent.collect { event ->
-                event?.let {
-                    handleNavigationEvent(it)
-                    viewModel.clearNavigationEvent()
+            viewModel.shouldNavigateToLogin.collect { shouldNavigate ->
+                if (shouldNavigate) {
+                    navigateToLogin()
+                    viewModel.clearNavigationFlags()
                 }
+            }
+        }
+
+        // Observe navigation to add coral
+        lifecycleScope.launch {
+            viewModel.shouldNavigateToAddCoral.collect { shouldNavigate ->
+                if (shouldNavigate) {
+                    findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment)
+                    viewModel.clearNavigationFlags()
+                }
+            }
+        }
+
+        // Observe navigation to place
+        lifecycleScope.launch {
+            viewModel.shouldNavigateToPlace.collect { shouldNavigate ->
+                if (shouldNavigate) {
+                    findNavController().navigate(R.id.action_adminDashboardFragment_to_adminPlaceDashboardFragment)
+                    viewModel.clearNavigationFlags()
+                }
+            }
+        }
+
+        // Observe navigation to worker
+        lifecycleScope.launch {
+            viewModel.shouldNavigateToWorker.collect { shouldNavigate ->
+                if (shouldNavigate) {
+                    findNavController().navigate(R.id.action_adminDashboardFragment_to_adminWorkerDashboardFragment)
+                    viewModel.clearNavigationFlags()
+                }
+            }
+        }
+
+        // Observe selected coral
+        lifecycleScope.launch {
+            viewModel.selectedCoral.collect { coral ->
+                coral?.let {
+                    Toast.makeText(requireContext(), "Clicked: ${it.tk_name}", Toast.LENGTH_SHORT).show()
+                    // Navigate to detail if needed
+                    viewModel.clearNavigationFlags()
+                }
+            }
+        }
+    }
+
+    private fun navigateToLogin() {
+        if (isAdded && !isDetached && !isRemoving) {
+            try {
+                findNavController().navigate(R.id.action_adminDashboardFragment_to_loginFragment)
+            } catch (e: Exception) {
+                Log.e("AdminDashboard", "Navigation error", e)
             }
         }
     }
@@ -136,12 +185,12 @@ class AdminDashboardFragment : Fragment() {
         coralAdapter.updateData(uiState.coralList)
 
         // Update Total Corals
-        val totalCoralsView = view?.findViewById<TextView>(R.id.totalCoralsText) // Use safe call ?.
-        totalCoralsView?.text = uiState.totalCorals.toString()                   // Use safe call ?.
+        val totalCoralsView = view?.findViewById<TextView>(R.id.totalCoralsText)
+        totalCoralsView?.text = uiState.totalCorals.toString()
 
         // Update Low Stock
-        val lowStockView = view?.findViewById<TextView>(R.id.lowStockText)       // Use safe call ?.
-        lowStockView?.text = uiState.lowStockCount.toString()                    // Use safe call ?.
+        val lowStockView = view?.findViewById<TextView>(R.id.lowStockText)
+        lowStockView?.text = uiState.lowStockCount.toString()
 
         // Handle loading state
         if (uiState.isLoading) {
@@ -155,33 +204,6 @@ class AdminDashboardFragment : Fragment() {
         }
 
         Log.d("AdminDashboard", "UI updated with ${uiState.coralList.size} corals")
-    }
-
-    private fun handleNavigationEvent(event: NavigationEvent) {
-        when (event) {
-            is NavigationEvent.NavigateToLogin -> {
-                if (isAdded && !isDetached && !isRemoving) {
-                    try {
-                        findNavController().navigate(R.id.action_adminDashboardFragment_to_loginFragment)
-                    } catch (e: Exception) {
-                        Log.e("AdminDashboard", "Navigation error", e)
-                    }
-                }
-            }
-            is NavigationEvent.NavigateToAddCoral -> {
-                findNavController().navigate(R.id.action_adminDashboardFragment_to_addCoralFragment)
-            }
-            is NavigationEvent.NavigateToAdminPlace -> {
-                findNavController().navigate(R.id.action_adminDashboardFragment_to_adminPlaceDashboardFragment)
-            }
-            is NavigationEvent.NavigateToAdminWorker -> {
-                findNavController().navigate(R.id.action_adminDashboardFragment_to_adminWorkerDashboardFragment)
-            }
-            is NavigationEvent.ShowCoralDetail -> {
-                Toast.makeText(requireContext(), "Clicked: ${event.coral.tk_name}", Toast.LENGTH_SHORT).show()
-                // Navigate to detail if needed
-            }
-        }
     }
 
     private fun setInitialStates() {
