@@ -1,5 +1,6 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.adapters
 
+import android.app.Dialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -104,20 +105,20 @@ class CoralAdapter(
         }
 
         private fun setupClickListeners(coral: Coral, position: Int) {
-            // Card click - show details
+            // Card click - toggle quick actions (CHANGED)
             cardContainer.setOnClickListener {
-                onItemClick(coral)
+                toggleQuickActions()
             }
 
-            // Long click - toggle quick actions
+            // Long click - show details popup (CHANGED - moved from card click)
             cardContainer.setOnLongClickListener {
-                toggleQuickActions()
+                showCoralDetailsDialog(coral)
                 true
             }
 
-            // Menu options click - show popup menu
-            menuOptions.setOnClickListener { view ->
-                showPopupMenu(view, coral, position)
+            // Menu options click - show details dialog (CHANGED)
+            menuOptions.setOnClickListener {
+                showCoralDetailsDialog(coral)
             }
 
             // Edit button click
@@ -140,6 +141,120 @@ class CoralAdapter(
             btnDeleteCard.setOnClickListener {
                 hideQuickActions()
                 showDeleteConfirmation(coral, position)
+            }
+        }
+
+        private fun showCoralDetailsDialog(coral: Coral) {
+            val context = itemView.context
+
+            // Create custom dialog
+            val dialog = Dialog(context, R.style.CoralDialogTheme)
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_coral_details, null)
+
+            dialog.setContentView(dialogView)
+
+            // Set proper dialog window parameters
+            dialog.window?.let { window ->
+                window.setLayout(
+                    (context.resources.displayMetrics.widthPixels * 0.9).toInt(), // 90% of screen width
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                window.setGravity(android.view.Gravity.CENTER)
+                // Add background dimming
+                window.setDimAmount(0.5f)
+                window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            }
+
+            // Find views in the custom dialog
+            val tvDialogCoralName = dialogView.findViewById<TextView>(R.id.tvDialogCoralName)
+            val tvDialogCoralType = dialogView.findViewById<TextView>(R.id.tvDialogCoralType)
+            val tvDialogCoralPrice = dialogView.findViewById<TextView>(R.id.tvDialogCoralPrice)
+            val tvDialogCoralStock = dialogView.findViewById<TextView>(R.id.tvDialogCoralStock)
+            val tvDialogStockStatus = dialogView.findViewById<TextView>(R.id.tvDialogStockStatus)
+            val tvDialogDescription = dialogView.findViewById<TextView>(R.id.tvDialogDescription)
+            val ivDialogCoralImage = dialogView.findViewById<ImageView>(R.id.ivDialogCoralImage)
+            val stockIndicatorDialog = dialogView.findViewById<View>(R.id.stockIndicatorDialog)
+            val llStockStatusContainer = dialogView.findViewById<LinearLayout>(R.id.llStockStatusContainer)
+            val tvChecklist= dialogView.findViewById<TextView>(R.id.tvchecklist)
+
+            // Action buttons (only close button now)
+            val btnDialogClose = dialogView.findViewById<CardView>(R.id.btnDialogClose)
+
+            // Populate dialog with coral data
+            tvDialogCoralName.text = coral.tk_name
+            tvDialogCoralType.text = coral.tk_jenis
+            tvDialogCoralPrice.text = formatPrice(coral.harga_tk)
+            tvDialogCoralStock.text = "${coral.stok_tersedia} units"
+            tvDialogStockStatus.text = getStockStatusText(coral.stok_tersedia)
+            tvDialogDescription.text = coral.description.ifEmpty { "No description available" }
+
+            // Load coral image
+            coral.img_path?.let { imageUrl ->
+                if (imageUrl.isNotEmpty()) {
+                    Glide.with(context)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_coral_logo)
+                        .error(R.drawable.ic_coral_logo)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .centerCrop()
+                        .into(ivDialogCoralImage)
+                } else {
+                    ivDialogCoralImage.setImageResource(R.drawable.ic_coral_logo)
+                }
+            } ?: run {
+                ivDialogCoralImage.setImageResource(R.drawable.ic_coral_logo)
+            }
+
+            // Update stock status styling in dialog
+            updateDialogStockStatus(coral.stok_tersedia, stockIndicatorDialog, llStockStatusContainer, context,tvChecklist)
+
+            // Set up button listener (only close button)
+            btnDialogClose.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            // Show the dialog
+            dialog.show()
+        }
+
+        private fun updateDialogStockStatus(
+            stock: Int,
+            stockIndicator: View,
+            statusContainer: LinearLayout,
+            context: android.content.Context,
+            tvChecklist: TextView
+        ) {
+            when {
+                stock == 0 -> {
+                    // Out of Stock - Deep coral red
+                    tvChecklist.text="❌"
+                    statusContainer.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark))
+                    stockIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
+                }
+                stock < 5 -> {
+                    // Critical Low - Orange coral
+                    statusContainer.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark))
+                    stockIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
+                }
+                stock < 10 -> {
+                    // Low Stock - Amber/Yellow coral
+                    statusContainer.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_orange_light))
+                    stockIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
+                }
+                else -> {
+                    // In Stock - Keep original color
+                    statusContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.coral_accent))
+                    stockIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
+                }
+            }
+        }
+
+        private fun getStockStatusText(stock: Int): String {
+            return when {
+                stock == 0 -> "Out of Stock"
+                stock < 5 -> "Critical Low"
+                stock < 10 -> "Low Stock"
+                else -> "In Stock"
             }
         }
 
@@ -192,34 +307,7 @@ class CoralAdapter(
                 .start()
         }
 
-        private fun showPopupMenu(view: View, coral: Coral, position: Int) {
-            val popup = PopupMenu(view.context, view)
-
-            // Create menu programmatically
-            popup.menu.add(0, 1, 0, "Edit")
-            popup.menu.add(0, 2, 0, "Delete")
-            popup.menu.add(0, 3, 0, "View Details")
-
-            popup.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    1 -> { // Edit
-                        onEditClick(coral)
-                        true
-                    }
-                    2 -> { // Delete
-                        showDeleteConfirmation(coral, position)
-                        true
-                    }
-                    3 -> { // View Details
-                        onItemClick(coral)
-                        true
-                    }
-                    else -> false
-                }
-            }
-
-            popup.show()
-        }
+        // REMOVED: showPopupMenu function as it's no longer needed
 
         private fun showDeleteConfirmation(coral: Coral, position: Int) {
             val context = itemView.context
@@ -254,13 +342,13 @@ class CoralAdapter(
                 stock < 10 -> {
                     // Low Stock - Amber/Yellow coral
                     stockStatusTextView.text = "Low Stock"
-                    stockStatusTextView.setTextColor(ContextCompat.getColor(context, R.color.coral_dark_text)) // Dark teal text
+                    stockStatusTextView.setTextColor(ContextCompat.getColor(context, R.color.coral_dark_text))
                     stockIndicator.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_orange_light))
                 }
                 else -> {
                     stockStatusTextView.text = "In Stock"
-                    stockStatusTextView.setTextColor(ContextCompat.getColor(context, R.color.coral_dark_text)) // Dark teal text
-                    stockIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.coral_accent)) // #4CDDCF
+                    stockStatusTextView.setTextColor(ContextCompat.getColor(context, R.color.coral_dark_text))
+                    stockIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.coral_accent))
                 }
             }
         }

@@ -6,6 +6,7 @@ data class Coral(
     val tk_jenis: String,
     val harga_tk: Int,
     val stok_tersedia: Int,
+    val description: String,
     val is_deleted: Boolean,
     val img_path: String?,
     val public_id: String?

@@ -147,19 +147,6 @@ class AdminDashboardFragment : Fragment() {
 //            }
         }
 
-        // Observe navigation to coral detail
-        lifecycleScope.launch {
-//            viewModel.shouldNavigateToCoralDetail.collect { coral ->
-//                coral?.let {
-//                    // Navigate to coral detail fragment with coral data
-//                    val bundle = Bundle().apply {
-//                        putParcelable("coral_data", it)
-//                    }
-//                    findNavController().navigate(R.id.action_adminDashboardFragment_to_coralDetailFragment, bundle)
-//                    viewModel.clearNavigationFlags()
-//                }
-//            }
-        }
 
         // Observe navigation to place
         lifecycleScope.launch {

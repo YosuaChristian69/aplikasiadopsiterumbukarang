@@ -152,9 +152,6 @@ class AdminDashboardViewModel(
     fun dismissDeleteDialog() {
         _showDeleteDialog.value = null
     }
-
-    // Replace the commented delete function in AdminDashboardViewModel with this:
-
     private fun deleteCoral(coral: Coral) {
         val token = sessionManager.fetchAuthToken()
         if (token.isNullOrEmpty()) {
@@ -194,8 +191,6 @@ class AdminDashboardViewModel(
         }
     }
 
-
-    // Navigation functions
     fun onLogoutClick() {
         sessionManager.clearSession()
         _shouldNavigateToLogin.value = true
@@ -213,7 +208,6 @@ class AdminDashboardViewModel(
         _shouldNavigateToWorker.value = true
     }
 
-    // Reset navigation flags and messages after handling
     fun clearNavigationFlags() {
         _shouldNavigateToLogin.value = false
         _shouldNavigateToAddCoral.value = false
