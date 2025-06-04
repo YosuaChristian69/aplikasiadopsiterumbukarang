@@ -87,6 +87,9 @@
         <action
             android:id="@+id/action_adminWorkerDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_adminWorkerDashboardFragment_to_adminPlaceDashboardFragment"
+            app:destination="@id/adminPlaceDashboardFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminPlaceDashboardFragment"

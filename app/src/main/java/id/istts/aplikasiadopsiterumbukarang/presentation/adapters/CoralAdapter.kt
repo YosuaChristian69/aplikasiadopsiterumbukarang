@@ -1,4 +1,3 @@
-// CoralAdapter.kt - Final version with proper Glide implementation
 package id.istts.aplikasiadopsiterumbukarang.presentation.adapters
 
 import android.view.LayoutInflater

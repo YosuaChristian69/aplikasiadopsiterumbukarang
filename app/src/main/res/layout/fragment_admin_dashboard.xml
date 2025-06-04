@@ -7,42 +7,44 @@
     android:background="@drawable/gradient_background"
     tools:context=".presentation.fragments.AdminDashboardFragment">
 
-    <!-- Header Section with improved styling and animation support -->
+    <!-- Header Section with Coral Green Theme -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#1a4d52"
         android:paddingStart="24dp"
         android:paddingTop="40dp"
         android:paddingEnd="24dp"
         android:paddingBottom="24dp"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:elevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Profile Icon with enhanced animation support -->
+        <!-- Profile Icon with Coral Theme -->
         <androidx.cardview.widget.CardView
             android:id="@+id/profileCard"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
-            app:cardCornerRadius="22dp"
-            app:cardElevation="6dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
             app:cardBackgroundColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_person"
-                app:tint="#1a4d52" />
+                app:tint="#2a6e73" />
         </androidx.cardview.widget.CardView>
 
-        <!-- Welcome Text with enhanced styling -->
+        <!-- Welcome Text with Better Contrast -->
         <TextView
             android:id="@+id/welcomeTextView"
             android:layout_width="0dp"
@@ -50,26 +52,22 @@
             android:layout_marginStart="16dp"
             android:text="Hi, ADMIN"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
-            android:shadowColor="#4C1a4d52"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="2"
             app:layout_constraintStart_toEndOf="@+id/profileCard"
             app:layout_constraintTop_toTopOf="@+id/profileCard"
             app:layout_constraintBottom_toBottomOf="@+id/profileCard"
             app:layout_constraintEnd_toStartOf="@+id/logoutCard" />
 
-        <!-- Logout Button with enhanced animation support -->
+        <!-- Logout Button with Coral Theme -->
         <androidx.cardview.widget.CardView
             android:id="@+id/logoutCard"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
-            app:cardCornerRadius="22dp"
-            app:cardElevation="6dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
             app:cardBackgroundColor="#FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -82,105 +80,203 @@
                 android:src="@drawable/ic_logout"
                 android:contentDescription="Logout"
                 android:scaleType="center"
-                app:tint="#1a4d52" />
+                app:tint="#2a6e73" />
         </androidx.cardview.widget.CardView>
 
-        <!-- Collection Title with enhanced styling -->
+        <!-- Collection Title with Better Spacing -->
         <TextView
             android:id="@+id/collectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="32dp"
             android:text="MY CORAL'S SEEDS COLLECTION"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textColor="#B8E6E1"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.05"
-            android:shadowColor="#4C1a4d52"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="2"
+            android:letterSpacing="0.08"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profileCard" />
 
+        <!-- Stats Section -->
+        <LinearLayout
+            android:id="@+id/statsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/collectionTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Total Corals Stats -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#2a6e73">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/totalCoralsText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Corals"
+                        android:textColor="#B8E6E1"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+            <!-- Low Stock Alert -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#4CDDCF">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/lowStockText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#1a4d52"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Low Stock"
+                        android:textColor="#1a4d52"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- RecyclerView with enhanced animation support -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCorals"
+    <!-- Content Area with Coral Background -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="16dp"
-        android:clipToPadding="false"
-        android:paddingBottom="120dp"
-        android:scrollbars="none"
-        android:overScrollMode="never"
-        android:layoutAnimation="@anim/layout_animation_slide_up"
+        android:background="#E8F5F3"
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Enhanced Floating Action Button with animation support -->
+        <!-- RecyclerView with Better Styling -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewCorals"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="120dp"
+            android:scrollbars="none"
+            android:overScrollMode="never"
+            android:layoutAnimation="@anim/layout_animation_slide_up"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Empty State Message -->
+        <LinearLayout
+            android:id="@+id/emptyStateLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🪸"
+                android:textSize="48sp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No corals in collection yet"
+                android:textColor="#7B8794"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tap + to add your first coral"
+                android:textColor="#B0BEC5"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Coral Themed Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="28dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginBottom="100dp"
         android:src="@drawable/ic_add"
         android:contentDescription="Add New Coral"
-        app:backgroundTint="#00BCD4"
-        app:tint="#FFFFFF"
+        app:backgroundTint="#4CDDCF"
+        app:tint="#1a4d52"
         app:elevation="12dp"
         app:pressedTranslationZ="16dp"
-        app:rippleColor="#FFFFFF"
+        app:rippleColor="#1a4d52"
         app:borderWidth="0dp"
         app:fabSize="normal"
         app:maxImageSize="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Enhanced Bottom Navigation with animation support -->
+    <!-- Coral Themed Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#4CDDCF"
-        android:elevation="12dp"
+        android:elevation="16dp"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/bottom_nav_color"
-        app:itemRippleColor="#FFFFFF"
+        app:itemRippleColor="#1a4d52"
         app:menu="@menu/admin_bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- Decorative Elements for Enhanced Visual Appeal -->
-    <View
-        android:id="@+id/decorativeCircle1"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="-60dp"
-        android:layout_marginEnd="-60dp"
-        android:background="@drawable/circle_gradient_decoration"
-        android:alpha="0.3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/decorativeCircle2"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="-40dp"
-        android:layout_marginBottom="-40dp"
-        android:background="@drawable/circle_gradient_decoration_2"
-        android:alpha="0.2"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

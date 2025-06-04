@@ -7,6 +7,7 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationReq
 import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.WorkerResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -44,4 +45,8 @@ interface ApiService {
     suspend fun getTerumbuKarang(
         @Header("x-auth-token") token: String
     ): Response<GetCoralResponse>
+    @GET("/users/fetchAllUsers")
+    suspend fun fetchAllUsers(
+        @Header("x-auth-token") token: String
+    ): Response<WorkerResponse>
 }
