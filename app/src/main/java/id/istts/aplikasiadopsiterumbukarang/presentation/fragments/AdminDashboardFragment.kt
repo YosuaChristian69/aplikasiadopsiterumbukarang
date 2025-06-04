@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -36,7 +37,7 @@ import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 
 class AdminDashboardFragment : Fragment() {
 
-    // Simple ViewModel initialization without factory
+    // ViewModel initialization
     private lateinit var viewModel: AdminDashboardViewModel
     private lateinit var coralAdapter: CoralAdapter
 
@@ -91,9 +92,11 @@ class AdminDashboardFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        coralAdapter = CoralAdapter { coral ->
-            viewModel.onCoralItemClick(coral)
-        }
+        coralAdapter = CoralAdapter(
+            onItemClick = { coral -> viewModel.onCoralItemClick(coral) },
+            onEditClick = { coral -> viewModel.onCoralEditClick(coral) },
+            onDeleteClick = { coral, position -> viewModel.onCoralDeleteClick(coral, position) }
+        )
 
         recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -130,6 +133,34 @@ class AdminDashboardFragment : Fragment() {
             }
         }
 
+        // Observe navigation to edit coral
+        lifecycleScope.launch {
+//            viewModel.shouldNavigateToEditCoral.collect { coral ->
+//                coral?.let {
+//                    // Navigate to edit coral fragment with coral data
+//                    val bundle = Bundle().apply {
+//                        putParcelable("coral_data", it)
+//                    }
+//                    findNavController().navigate(R.id.action_adminDashboardFragment_to_editCoralFragment, bundle)
+//                    viewModel.clearNavigationFlags()
+//                }
+//            }
+        }
+
+        // Observe navigation to coral detail
+        lifecycleScope.launch {
+//            viewModel.shouldNavigateToCoralDetail.collect { coral ->
+//                coral?.let {
+//                    // Navigate to coral detail fragment with coral data
+//                    val bundle = Bundle().apply {
+//                        putParcelable("coral_data", it)
+//                    }
+//                    findNavController().navigate(R.id.action_adminDashboardFragment_to_coralDetailFragment, bundle)
+//                    viewModel.clearNavigationFlags()
+//                }
+//            }
+        }
+
         // Observe navigation to place
         lifecycleScope.launch {
             viewModel.shouldNavigateToPlace.collect { shouldNavigate ->
@@ -150,16 +181,47 @@ class AdminDashboardFragment : Fragment() {
             }
         }
 
-        // Observe selected coral
+        // Observe delete dialog
         lifecycleScope.launch {
-            viewModel.selectedCoral.collect { coral ->
+            viewModel.showDeleteDialog.collect { coral ->
                 coral?.let {
-                    Toast.makeText(requireContext(), "Clicked: ${it.tk_name}", Toast.LENGTH_SHORT).show()
-                    // Navigate to detail if needed
-                    viewModel.clearNavigationFlags()
+                    showDeleteConfirmationDialog(it)
                 }
             }
         }
+
+        // Observe messages
+        lifecycleScope.launch {
+            viewModel.showMessage.collect { message ->
+                message?.let {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    viewModel.clearMessage()
+                }
+            }
+        }
+
+        // Observe selected coral (for debugging or other purposes)
+        lifecycleScope.launch {
+            viewModel.selectedCoral.collect { coral ->
+                coral?.let {
+                    Log.d("AdminDashboard", "Selected coral: ${it.tk_name}")
+                }
+            }
+        }
+    }
+
+    private fun showDeleteConfirmationDialog(coral: id.istts.aplikasiadopsiterumbukarang.domain.models.Coral) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Coral")
+            .setMessage("Are you sure you want to delete '${coral.tk_name}'?\n\nThis action cannot be undone.")
+            .setPositiveButton("Delete") { _, _ ->
+                viewModel.confirmDeleteCoral()
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                viewModel.dismissDeleteDialog()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     private fun navigateToLogin() {
@@ -194,7 +256,6 @@ class AdminDashboardFragment : Fragment() {
 
         // Handle loading state
         if (uiState.isLoading) {
-            // Show loading indicator if needed
             Log.d("AdminDashboard", "Loading coral data...")
         }
 

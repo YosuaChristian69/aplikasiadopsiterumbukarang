@@ -13,4 +13,5 @@ interface CoralRepository {
     ): Result<String>
 
     suspend fun getCoralList(token: String): Result<List<Coral>>
+    suspend fun deleteCoral(id: Int, token: String): Result<String>
 }

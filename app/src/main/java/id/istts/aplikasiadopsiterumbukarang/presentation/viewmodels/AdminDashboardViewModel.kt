@@ -18,7 +18,7 @@ class AdminDashboardViewModel(
     private val _uiState = MutableStateFlow(AdminDashboardUiState())
     val uiState: StateFlow<AdminDashboardUiState> = _uiState.asStateFlow()
 
-    // Simple navigation flags
+    // Navigation flags
     private val _shouldNavigateToLogin = MutableStateFlow(false)
     val shouldNavigateToLogin: StateFlow<Boolean> = _shouldNavigateToLogin.asStateFlow()
 
@@ -31,8 +31,22 @@ class AdminDashboardViewModel(
     private val _shouldNavigateToWorker = MutableStateFlow(false)
     val shouldNavigateToWorker: StateFlow<Boolean> = _shouldNavigateToWorker.asStateFlow()
 
+    private val _shouldNavigateToEditCoral = MutableStateFlow<Coral?>(null)
+    val shouldNavigateToEditCoral: StateFlow<Coral?> = _shouldNavigateToEditCoral.asStateFlow()
+
+    private val _shouldNavigateToCoralDetail = MutableStateFlow<Coral?>(null)
+    val shouldNavigateToCoralDetail: StateFlow<Coral?> = _shouldNavigateToCoralDetail.asStateFlow()
+
     private val _selectedCoral = MutableStateFlow<Coral?>(null)
     val selectedCoral: StateFlow<Coral?> = _selectedCoral.asStateFlow()
+
+    // Delete confirmation dialog
+    private val _showDeleteDialog = MutableStateFlow<Coral?>(null)
+    val showDeleteDialog: StateFlow<Coral?> = _showDeleteDialog.asStateFlow()
+
+    // Success/Error messages
+    private val _showMessage = MutableStateFlow<String?>(null)
+    val showMessage: StateFlow<String?> = _showMessage.asStateFlow()
 
     init {
         validateUserAccess()
@@ -113,11 +127,75 @@ class AdminDashboardViewModel(
         }
     }
 
-    // Simple navigation functions
+    // Coral interaction functions
     fun onCoralItemClick(coral: Coral) {
         _selectedCoral.value = coral
+        _shouldNavigateToCoralDetail.value = coral
     }
 
+    fun onCoralEditClick(coral: Coral) {
+        _shouldNavigateToEditCoral.value = coral
+    }
+
+    fun onCoralDeleteClick(coral: Coral, position: Int) {
+        _showDeleteDialog.value = coral
+    }
+
+    fun confirmDeleteCoral() {
+        val coralToDelete = _showDeleteDialog.value
+        if (coralToDelete != null) {
+            deleteCoral(coralToDelete)
+            _showDeleteDialog.value = null
+        }
+    }
+
+    fun dismissDeleteDialog() {
+        _showDeleteDialog.value = null
+    }
+
+    // Replace the commented delete function in AdminDashboardViewModel with this:
+
+    private fun deleteCoral(coral: Coral) {
+        val token = sessionManager.fetchAuthToken()
+        if (token.isNullOrEmpty()) {
+            _showMessage.value = "Authentication token not found"
+            _shouldNavigateToLogin.value = true
+            return
+        }
+
+        _uiState.value = _uiState.value.copy(isLoading = true)
+
+        viewModelScope.launch {
+            try {
+                val result = coralRepository.deleteCoral(coral.id_tk, token)
+
+                if (result.isSuccess) {
+                    val successMessage = result.getOrNull() ?: "Coral deleted successfully"
+                    _showMessage.value = "Coral '${coral.tk_name}' deleted successfully"
+                    loadCoralData() // Refresh data after deletion
+                } else {
+                    val error = result.exceptionOrNull()
+                    val errorMessage = error?.message ?: "Failed to delete coral"
+
+                    if (errorMessage.contains("Invalid or Expired Token") ||
+                        errorMessage.contains("401") ||
+                        errorMessage.contains("expired token", ignoreCase = true)) {
+                        _showMessage.value = "Session expired. Please login again."
+                        _shouldNavigateToLogin.value = true
+                    } else {
+                        _showMessage.value = "Failed to delete coral: $errorMessage"
+                    }
+                }
+            } catch (e: Exception) {
+                _showMessage.value = "Network error: ${e.message}"
+            } finally {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+            }
+        }
+    }
+
+
+    // Navigation functions
     fun onLogoutClick() {
         sessionManager.clearSession()
         _shouldNavigateToLogin.value = true
@@ -135,13 +213,19 @@ class AdminDashboardViewModel(
         _shouldNavigateToWorker.value = true
     }
 
-    // Reset navigation flags after handling
+    // Reset navigation flags and messages after handling
     fun clearNavigationFlags() {
         _shouldNavigateToLogin.value = false
         _shouldNavigateToAddCoral.value = false
         _shouldNavigateToPlace.value = false
         _shouldNavigateToWorker.value = false
+        _shouldNavigateToEditCoral.value = null
+        _shouldNavigateToCoralDetail.value = null
         _selectedCoral.value = null
+    }
+
+    fun clearMessage() {
+        _showMessage.value = null
     }
 
     fun refreshData() {

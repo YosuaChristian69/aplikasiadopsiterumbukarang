@@ -3,20 +3,24 @@ package id.istts.aplikasiadopsiterumbukarang.repositories
 import CoralRepository
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.google.gson.Gson
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
+import id.istts.aplikasiadopsiterumbukarang.domain.models.DeleteResponse
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import kotlin.math.log
 
 class CoralRepositoryImpl : CoralRepository {
+
+    private val apiService = RetrofitClient.instance
+
     override suspend fun getCoralList(token: String): Result<List<Coral>> = withContext(Dispatchers.IO) {
         try {
             val tokenWithBearer = token
             val tokenfix = tokenWithBearer.replace("Bearer ", "", ignoreCase = true)
-            val response = RetrofitClient.instance.getTerumbuKarang(tokenfix)
+            val response = apiService.getTerumbuKarang(tokenfix)
             Log.d(TAG, "Response: ${response.body().toString()}")
 
             if (response.isSuccessful) {
@@ -63,7 +67,7 @@ class CoralRepositoryImpl : CoralRepository {
         profilePicture: MultipartBody.Part
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val response = RetrofitClient.instance.addTerumbuKarang(
+            val response = apiService.addTerumbuKarang(
                 token = token,
                 name = name,
                 jenis = jenis,
@@ -84,6 +88,67 @@ class CoralRepositoryImpl : CoralRepository {
             }
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteCoral(id: Int, token: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            // Remove Bearer prefix if present since backend expects raw token
+            val cleanToken = token.replace("Bearer ", "", ignoreCase = true)
+            val response = apiService.deleteTerumbuKarang(id, cleanToken)
+
+            Log.d(TAG, "Delete response code: ${response.code()}")
+
+            if (response.isSuccessful) {
+                val responseBody = response.body()?.string()
+                Log.d(TAG, "Delete response body: $responseBody")
+
+                if (responseBody != null && responseBody.isNotEmpty()) {
+                    try {
+                        val gson = Gson()
+                        val deleteResponse = gson.fromJson(responseBody, DeleteResponse::class.java)
+                        Result.success(deleteResponse.msg)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error parsing delete response", e)
+                        Result.success("Coral deleted successfully")
+                    }
+                } else {
+                    Result.success("Coral deleted successfully")
+                }
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e(TAG, "Delete error body: $errorBody")
+
+                val errorMessage = if (errorBody != null && errorBody.isNotEmpty()) {
+                    try {
+                        val gson = Gson()
+                        val errorResponse = gson.fromJson(errorBody, DeleteResponse::class.java)
+                        errorResponse.msg
+                    } catch (e: Exception) {
+                        when (response.code()) {
+                            400 -> "Coral not found or unauthorized access"
+                            401 -> "Invalid or expired token. Please login again."
+                            403 -> "Access forbidden"
+                            404 -> "Coral not found"
+                            500 -> "Internal server error"
+                            else -> "Failed to delete coral. Error: ${response.code()}"
+                        }
+                    }
+                } else {
+                    when (response.code()) {
+                        400 -> "Coral not found or unauthorized access"
+                        401 -> "Invalid or expired token. Please login again."
+                        403 -> "Access forbidden"
+                        404 -> "Coral not found"
+                        500 -> "Internal server error"
+                        else -> "Failed to delete coral. Error: ${response.code()}"
+                    }
+                }
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Network error in deleteCoral", e)
+            Result.failure(Exception("Network error: ${e.message}", e))
         }
     }
 }

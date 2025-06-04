@@ -128,10 +128,11 @@
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        app:tint="#4CDDCF"
-                        android:layout_marginBottom="4dp" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:src="@drawable/ic_total_worker"
+                        app:tint="#4CDDCF" />
 
                     <TextView
                         android:id="@+id/totalWorkersCount"

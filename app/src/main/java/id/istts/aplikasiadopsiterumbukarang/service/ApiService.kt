@@ -14,11 +14,13 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface ApiService {
     @POST("/users/login")
@@ -41,10 +43,16 @@ interface ApiService {
         @Part profile_picture: MultipartBody.Part
     ): Call<ResponseBody>
 
+    @DELETE("/tk/deleteTk/{id}")
+    suspend fun deleteTerumbuKarang(
+        @Path("id") id: Int,
+        @Header("x-auth-token") token: String
+    ): Response<ResponseBody>
     @GET("/tk/getTk")
     suspend fun getTerumbuKarang(
         @Header("x-auth-token") token: String
     ): Response<GetCoralResponse>
+
     @GET("/users/fetchAllUsers")
     suspend fun fetchAllUsers(
         @Header("x-auth-token") token: String
