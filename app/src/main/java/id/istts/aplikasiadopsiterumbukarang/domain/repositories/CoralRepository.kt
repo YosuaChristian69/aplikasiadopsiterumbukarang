@@ -9,6 +9,7 @@ interface CoralRepository {
         jenis: RequestBody,
         harga: RequestBody,
         stok: RequestBody,
+        description: RequestBody,
         profilePicture: MultipartBody.Part
     ): Result<String>
 

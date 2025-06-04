@@ -58,6 +58,9 @@
         <action
             android:id="@+id/action_adminDashboardFragment_to_adminPlaceDashboardFragment"
             app:destination="@id/adminPlaceDashboardFragment" />
+        <action
+            android:id="@+id/action_adminDashboardFragment_to_editCoralFragment"
+            app:destination="@id/editCoralFragment" />
     </fragment>
     <fragment
         android:id="@+id/workerDashboardFragment"
@@ -74,6 +77,9 @@
         android:label="AddCoralFragment" >
         <action
             android:id="@+id/action_addCoralFragment_to_adminDashboardFragment"
+            app:destination="@id/adminDashboardFragment" />
+        <action
+            android:id="@+id/action_addCoralFragment_to_adminDashboardFragment2"
             app:destination="@id/adminDashboardFragment" />
     </fragment>
     <fragment
@@ -105,6 +111,15 @@
         <action
             android:id="@+id/action_adminPlaceDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editCoralFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.EditCoralFragment"
+        android:label="fragment_edit_coral"
+        tools:layout="@layout/fragment_edit_coral" >
+        <action
+            android:id="@+id/action_editCoralFragment_to_adminDashboardFragment"
+            app:destination="@id/adminDashboardFragment" />
     </fragment>
 
 </navigation>

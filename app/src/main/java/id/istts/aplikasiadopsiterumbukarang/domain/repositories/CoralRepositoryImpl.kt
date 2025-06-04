@@ -64,6 +64,7 @@ class CoralRepositoryImpl : CoralRepository {
         jenis: RequestBody,
         harga: RequestBody,
         stok: RequestBody,
+        description: RequestBody,
         profilePicture: MultipartBody.Part
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
@@ -73,6 +74,7 @@ class CoralRepositoryImpl : CoralRepository {
                 jenis = jenis,
                 harga = harga,
                 stok = stok,
+                description = description,
                 profile_picture = profilePicture
             ).execute()
 

@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.service.controls.ControlsProviderService.TAG
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -241,7 +242,6 @@ class AddCoralFragment : Fragment() {
                 return false
             }
             else -> {
-                // Clear errors
                 coralNameInput.error = null
                 coralTypeInput.error = null
                 coralDescriptionInput.error = null
@@ -263,7 +263,7 @@ class AddCoralFragment : Fragment() {
         val type = coralTypeEditText.text.toString().trim()
         val harga = coralhargaEditText.text.toString().trim()
         val stok = coralTotalEditText.text.toString().trim()
-
+        val description= coralDescriptionEditText.text.toString().trim()
         selectedImageUri?.let { uri ->
             setLoading(true)
 
@@ -273,6 +273,7 @@ class AddCoralFragment : Fragment() {
                 jenis = type,
                 harga = harga,
                 stok = stok,
+                description=description,
                 imageUri = uri
             )
 

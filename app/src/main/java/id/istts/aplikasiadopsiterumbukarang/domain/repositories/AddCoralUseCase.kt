@@ -19,6 +19,7 @@ class AddCoralUseCase(
         val jenis: String,
         val harga: String,
         val stok: String,
+        val description:String,
         val imageUri: Uri
     )
 
@@ -34,6 +35,7 @@ class AddCoralUseCase(
             val jenisBody = params.jenis.toRequestBody("text/plain".toMediaTypeOrNull())
             val hargaBody = params.harga.toRequestBody("text/plain".toMediaTypeOrNull())
             val stokBody = params.stok.toRequestBody("text/plain".toMediaTypeOrNull())
+            val descriptionBody = params.description.toRequestBody("text/plain".toMediaTypeOrNull())
 
             // Call repository
             coralRepository.addCoral(
@@ -42,6 +44,7 @@ class AddCoralUseCase(
                 jenis = jenisBody,
                 harga = hargaBody,
                 stok = stokBody,
+                description = descriptionBody,
                 profilePicture = body
             )
         } catch (e: Exception) {

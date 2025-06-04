@@ -40,6 +40,7 @@ interface ApiService {
         @Part("jenis") jenis: RequestBody,
         @Part("harga") harga: RequestBody,
         @Part("stok") stok: RequestBody,
+        @Part("description") description: RequestBody,
         @Part profile_picture: MultipartBody.Part
     ): Call<ResponseBody>
 
