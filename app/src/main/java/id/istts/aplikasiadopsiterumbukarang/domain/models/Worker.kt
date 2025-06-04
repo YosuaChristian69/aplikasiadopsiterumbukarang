@@ -11,8 +11,3 @@ data class Worker(
     val user_status:String,
     val joined_at: Date
 )
-
-data class WorkerResponse(
-    val msg: String,
-    val users: List<Worker>
-)
