@@ -33,8 +33,6 @@ class EditUserFragment : Fragment() {
     private lateinit var userIdText: TextView
     private lateinit var fullNameEditText: TextInputEditText
     private lateinit var emailText: TextView
-    private lateinit var passwordEditText: TextInputEditText
-    private lateinit var statusDropdown: AutoCompleteTextView
     private lateinit var balanceEditText: TextInputEditText
     private lateinit var userStatusDropdown: AutoCompleteTextView
     private lateinit var joinedAtText: TextView
@@ -81,8 +79,6 @@ class EditUserFragment : Fragment() {
         userIdText = view.findViewById(R.id.userIdText)
         fullNameEditText = view.findViewById(R.id.fullNameEditText)
         emailText = view.findViewById(R.id.emailEditText)
-        passwordEditText = view.findViewById(R.id.passwordEditText)
-        statusDropdown = view.findViewById(R.id.statusDropdown)
         balanceEditText = view.findViewById(R.id.balanceEditText)
         userStatusDropdown = view.findViewById(R.id.userStatusDropdown)
         joinedAtText = view.findViewById(R.id.joinedAtText)
@@ -90,10 +86,6 @@ class EditUserFragment : Fragment() {
         cancelButton = view.findViewById(R.id.cancelButton)
         loadingContainer = view.findViewById(R.id.loadingContainer)
 
-
-        // Make password display only
-        passwordEditText.setText("••••••••")
-        passwordEditText.isEnabled = false
 
         // Get worker ID from arguments
         workerId = arguments?.getString("workerId")
@@ -113,10 +105,6 @@ class EditUserFragment : Fragment() {
     }
 
     private fun setupDropdowns() {
-        // Setup Status (Role) dropdown
-        val statusOptions = arrayOf("user", "admin", "worker")
-        val statusAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, statusOptions)
-        statusDropdown.setAdapter(statusAdapter)
 
         // Setup User Status dropdown
         val userStatusOptions = arrayOf("active", "inactive")
@@ -162,8 +150,6 @@ class EditUserFragment : Fragment() {
         fullNameEditText.setText(user.full_name)
         emailText.text = user.email
 
-        // Set status dropdown
-        statusDropdown.setText(user.status, false)
 
         // Set balance
         balanceEditText.setText(user.balance)
@@ -191,7 +177,6 @@ class EditUserFragment : Fragment() {
         // Convert all values to String to avoid type mismatch
         val updateData = mapOf(
             "full_name" to fullNameEditText.text.toString().trim(),
-            "status" to statusDropdown.text.toString(),
             "balance" to balanceEditText.text.toString().trim(), // Keep as String
             "user_status" to userStatusDropdown.text.toString()
         )
@@ -210,11 +195,6 @@ class EditUserFragment : Fragment() {
             isValid = false
         }
 
-        // Validate status
-        if (statusDropdown.text.toString().isEmpty()) {
-            statusDropdown.error = "Role is required"
-            isValid = false
-        }
 
         // Validate balance
         val balanceText = balanceEditText.text.toString().trim()

@@ -288,7 +288,6 @@ class AdminWorkerDashboardFragment : Fragment() {
                     putString("workerId", worker.id_user)
                     putString("workerName", worker.full_name)
                     putString("workerEmail", worker.email)
-                    putString("workerRole",worker.status)
                     putString("workerBalance", worker.balance)
                     putString("workerStatus", worker.user_status)
                 }

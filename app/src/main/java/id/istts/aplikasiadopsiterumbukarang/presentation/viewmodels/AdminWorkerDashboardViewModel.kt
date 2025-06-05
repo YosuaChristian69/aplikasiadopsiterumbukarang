@@ -51,7 +51,9 @@ class AdminWorkerDashboardViewModel : ViewModel() {
                     // Filter hanya worker (bukan admin)
                     val workersList = allUsers.filter { user ->
                         user.user_status?.lowercase() != "admin" &&
-                                user.status?.lowercase() != "admin"
+                                user.status?.lowercase() != "admin"&&
+                        user.user_status?.lowercase() != "user" &&
+                                user.status?.lowercase() != "user"
                     }
 
                     _workers.value = workersList
