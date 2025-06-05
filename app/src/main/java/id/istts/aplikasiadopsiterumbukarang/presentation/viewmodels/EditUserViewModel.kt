@@ -68,7 +68,7 @@ class EditUserViewModel : ViewModel() {
         }
     }
 
-    // FIXED: Changed parameter type to Map<String, String>
+    // Updated: Now handles email instead of balance
     fun updateUser(userId: String, updateData: Map<String, String>, sessionManager: SessionManager) {
         viewModelScope.launch {
             try {
@@ -84,6 +84,14 @@ class EditUserViewModel : ViewModel() {
 
                 Log.d("EditUserViewModel", "Updating user with ID: $userId")
                 Log.d("EditUserViewModel", "Update data: $updateData")
+
+                // Validate email if present in updateData
+                updateData["email"]?.let { email ->
+                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        _error.value = "Invalid email format"
+                        return@launch
+                    }
+                }
 
                 val response = apiService.updateUserById(userId, token, updateData)
 
@@ -103,6 +111,8 @@ class EditUserViewModel : ViewModel() {
                         400 -> "Invalid data provided"
                         401 -> "Authentication failed"
                         404 -> "User not found"
+                        409 -> "Email already exists" // Common error for duplicate email
+                        422 -> "Invalid email format or data validation failed"
                         else -> "Failed to update user: ${response.message()}"
                     }
                     _error.value = errorMsg

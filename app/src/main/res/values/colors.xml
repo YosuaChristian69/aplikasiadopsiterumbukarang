@@ -98,4 +98,8 @@
     <color name="text_primary_ocean">#1a4d52</color>
     <color name="text_secondary_ocean">#4A7C7E</color>
     <color name="text_hint_ocean">#80CBC4</color>
+
+    <color name="success_green">#4CAF50</color>
+    <color name="error_red">#F44336</color>
+    <color name="warning_orange">#FF9800</color>
 </resources>

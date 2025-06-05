@@ -76,7 +76,7 @@ interface ApiService {
     suspend fun updateUserById(
         @Path("id") id: String,
         @Header("x-auth-token") token: String,
-        @Body updateData: Map<String, String>  // Changed from Map<String, Any> to Map<String, String>
+        @Body updateData: Map<String, String>
     ): Response<UpdateUserResponse>
 
     // New endpoints for edit functionality

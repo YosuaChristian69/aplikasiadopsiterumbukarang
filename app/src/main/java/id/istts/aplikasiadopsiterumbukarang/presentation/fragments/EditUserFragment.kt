@@ -32,8 +32,8 @@ class EditUserFragment : Fragment() {
     private lateinit var backButton: ImageButton
     private lateinit var userIdText: TextView
     private lateinit var fullNameEditText: TextInputEditText
-    private lateinit var emailText: TextView
-    private lateinit var balanceEditText: TextInputEditText
+    private lateinit var emailEditText: TextInputEditText // Changed from TextView to TextInputEditText
+    private lateinit var balanceText: TextView // Changed from TextInputEditText to TextView
     private lateinit var userStatusDropdown: AutoCompleteTextView
     private lateinit var joinedAtText: TextView
     private lateinit var updateButton: MaterialButton
@@ -78,14 +78,13 @@ class EditUserFragment : Fragment() {
         backButton = view.findViewById(R.id.backButton)
         userIdText = view.findViewById(R.id.userIdText)
         fullNameEditText = view.findViewById(R.id.fullNameEditText)
-        emailText = view.findViewById(R.id.emailEditText)
-        balanceEditText = view.findViewById(R.id.balanceEditText)
+        emailEditText = view.findViewById(R.id.emailEditText) // Now editable
+        balanceText = view.findViewById(R.id.balanceText) // Now read-only
         userStatusDropdown = view.findViewById(R.id.userStatusDropdown)
         joinedAtText = view.findViewById(R.id.joinedAtText)
         updateButton = view.findViewById(R.id.updateButton)
         cancelButton = view.findViewById(R.id.cancelButton)
         loadingContainer = view.findViewById(R.id.loadingContainer)
-
 
         // Get worker ID from arguments
         workerId = arguments?.getString("workerId")
@@ -105,7 +104,6 @@ class EditUserFragment : Fragment() {
     }
 
     private fun setupDropdowns() {
-
         // Setup User Status dropdown
         val userStatusOptions = arrayOf("active", "inactive")
         val userStatusAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, userStatusOptions)
@@ -148,11 +146,10 @@ class EditUserFragment : Fragment() {
     private fun populateUserData(user: id.istts.aplikasiadopsiterumbukarang.domain.models.Worker) {
         userIdText.text = "#${user.id_user}"
         fullNameEditText.setText(user.full_name)
-        emailText.text = user.email
+        emailEditText.setText(user.email) // Now editable - use setText for TextInputEditText
 
-
-        // Set balance
-        balanceEditText.setText(user.balance)
+        // Set balance as read-only text
+        balanceText.text = "Rp ${user.balance}"
 
         // Set user status dropdown
         userStatusDropdown.setText(user.user_status, false)
@@ -171,13 +168,14 @@ class EditUserFragment : Fragment() {
             Log.w("EditUserFragment", "joined_at is null for user ${user.id_user}")
         }
     }
+
     private fun updateUser() {
         if (!validateInputs()) return
 
-        // Convert all values to String to avoid type mismatch
+        // Update data now includes email instead of balance
         val updateData = mapOf(
             "full_name" to fullNameEditText.text.toString().trim(),
-            "balance" to balanceEditText.text.toString().trim(), // Keep as String
+            "email" to emailEditText.text.toString().trim(), // Now email is editable
             "user_status" to userStatusDropdown.text.toString()
         )
 
@@ -195,18 +193,14 @@ class EditUserFragment : Fragment() {
             isValid = false
         }
 
-
-        // Validate balance
-        val balanceText = balanceEditText.text.toString().trim()
-        if (balanceText.isEmpty()) {
-            balanceEditText.error = "Balance is required"
+        // Validate email
+        val emailText = emailEditText.text.toString().trim()
+        if (emailText.isEmpty()) {
+            emailEditText.error = "Email is required"
             isValid = false
-        } else {
-            val balance = balanceText.toDoubleOrNull()
-            if (balance == null || balance < 0) {
-                balanceEditText.error = "Please enter a valid balance"
-                isValid = false
-            }
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
+            emailEditText.error = "Please enter a valid email address"
+            isValid = false
         }
 
         // Validate user status
@@ -242,13 +236,13 @@ class EditUserFragment : Fragment() {
     }
 
     private fun navigateToLogin() {
-//        if (isAdded && !isDetached && !isRemoving) {
-//            try {
-//                findNavController().navigate(R.id.action_editUserFragment_to_loginFragment)
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
+        if (isAdded && !isDetached && !isRemoving) {
+            try {
+                findNavController().navigate(R.id.action_editUserFragment_to_loginFragment)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     companion object {

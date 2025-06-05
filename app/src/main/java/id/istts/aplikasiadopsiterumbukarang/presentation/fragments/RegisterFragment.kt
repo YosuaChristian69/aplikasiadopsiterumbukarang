@@ -11,13 +11,15 @@ import android.text.Spanned
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.text.style.ForegroundColorSpan
-import android.text.style.UnderlineSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
+import android.webkit.JavascriptInterface
+import android.webkit.WebView
 import android.widget.CheckBox
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.VideoView
@@ -26,6 +28,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import id.istts.aplikasiadopsiterumbukarang.R
@@ -47,9 +52,21 @@ class RegisterFragment : Fragment() {
     private lateinit var registerButton: MaterialButton
     private lateinit var loginLink: TextView
 
+    // reCAPTCHA Components
+    private lateinit var recaptchaButton: MaterialButton
+    private lateinit var recaptchaProgress: ProgressBar
+    private lateinit var recaptchaStatus: TextView
+
     // Timer for countdown
     private var timer: CountDownTimer? = null
     private var isTimerRunning = false
+
+    // reCAPTCHA Site Key - Replace with your actual site key
+    private val RECAPTCHA_SITE_KEY = "6LfAxlYrAAAAAKJXzqB-dHwA-2FiJMZwrw9XXqWu"
+
+    companion object {
+        private const val TAG = "RegisterFragment"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,8 +83,9 @@ class RegisterFragment : Fragment() {
         setupVideoBackground(view)
         animateRegisterCard(view)
         setupClickListeners()
-        setupTermsAndConditionsLink() // Add this call
+        setupTermsAndConditionsLink()
         observeViewModel()
+        updateRegisterButtonState() // Initial state check
     }
 
     private fun initializeViews(view: View) {
@@ -77,10 +95,15 @@ class RegisterFragment : Fragment() {
         confirmPasswordEditText = view.findViewById(R.id.confirmPasswordEditText)
         verificationCodeEditText = view.findViewById(R.id.verificationCodeEditText)
         getCodeButton = view.findViewById(R.id.getCodeButton)
-        termsCheckbox = view.findViewById(R.id.termsCheckbox) // Ensure this ID matches your XML
+        termsCheckbox = view.findViewById(R.id.termsCheckbox)
         registerButton = view.findViewById(R.id.registerButton)
         loginLink = view.findViewById(R.id.loginLink)
         videoView = view.findViewById(R.id.videoBackground)
+
+        // reCAPTCHA views
+        recaptchaButton = view.findViewById(R.id.recaptchaButton)
+        recaptchaProgress = view.findViewById(R.id.recaptchaProgress)
+        recaptchaStatus = view.findViewById(R.id.recaptchaStatus)
     }
 
     private fun initializeViewModel() {
@@ -144,27 +167,285 @@ class RegisterFragment : Fragment() {
                 viewModel.verifyAndRegister(email, verificationCode)
             }
         }
+
+        // reCAPTCHA button click listener
+        recaptchaButton.setOnClickListener {
+            startRecaptchaVerification()
+        }
+
+        // Add listeners to enable/disable register button based on form completion
+        setupFormValidationListeners()
     }
 
-    // New function to make "Terms and Conditions" clickable
+    private fun setupFormValidationListeners() {
+        val textWatcher = object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                updateRegisterButtonState()
+            }
+        }
+
+        fullNameEditText.addTextChangedListener(textWatcher)
+        emailEditText.addTextChangedListener(textWatcher)
+        passwordEditText.addTextChangedListener(textWatcher)
+        confirmPasswordEditText.addTextChangedListener(textWatcher)
+        verificationCodeEditText.addTextChangedListener(textWatcher)
+
+        termsCheckbox.setOnCheckedChangeListener { _, _ ->
+            updateRegisterButtonState()
+        }
+    }
+
+    private fun updateRegisterButtonState() {
+        val fullName = fullNameEditText.text.toString().trim()
+        val email = emailEditText.text.toString().trim()
+        val password = passwordEditText.text.toString()
+        val confirmPassword = confirmPasswordEditText.text.toString()
+        val verificationCode = verificationCodeEditText.text.toString().trim()
+        val termsAccepted = termsCheckbox.isChecked
+        val recaptchaVerified = viewModel.isRecaptchaVerified()
+
+        val isFormValid = fullName.isNotEmpty() &&
+                email.isNotEmpty() &&
+                password.isNotEmpty() &&
+                confirmPassword.isNotEmpty() &&
+                verificationCode.isNotEmpty() &&
+                termsAccepted &&
+                recaptchaVerified
+
+        registerButton.isEnabled = isFormValid
+
+        // Update button appearance based on state
+        if (isFormValid) {
+            registerButton.alpha = 1.0f
+        } else {
+            registerButton.alpha = 0.6f
+        }
+    }
+    private fun showRecaptchaWebView() {
+        val webView = WebView(requireContext())
+
+        // Enable all necessary WebView settings
+        webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            loadWithOverviewMode = true
+            useWideViewPort = true
+            builtInZoomControls = false
+            displayZoomControls = false
+            setSupportZoom(false)
+            allowContentAccess = true
+            allowFileAccess = true
+            javaScriptCanOpenWindowsAutomatically = true
+            mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            cacheMode = android.webkit.WebSettings.LOAD_DEFAULT
+        }
+
+        // Add WebView client to handle page loading
+        webView.webViewClient = object : android.webkit.WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                Log.d(TAG, "WebView page finished loading")
+            }
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: android.webkit.WebResourceRequest?,
+                error: android.webkit.WebResourceError?
+            ) {
+                super.onReceivedError(view, request, error)
+                Log.e(TAG, "WebView error: ${error?.description}")
+            }
+        }
+
+        // Improved HTML content
+        val htmlContent = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>reCAPTCHA Verification</title>
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 200px;
+                    margin: 0;
+                    padding: 20px;
+                    background-color: #f5f5f5;
+                }
+                .recaptcha-container {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    text-align: center;
+                }
+                .loading {
+                    color: #666;
+                    font-size: 14px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="recaptcha-container">
+                <div id="loading" class="loading">Loading reCAPTCHA...</div>
+                <div id="recaptcha-element"></div>
+            </div>
+            
+            <script>
+                console.log('Script started');
+                
+                function onRecaptchaReady() {
+                    console.log('reCAPTCHA ready');
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    try {
+                        grecaptcha.render('recaptcha-element', {
+                            'sitekey': '$RECAPTCHA_SITE_KEY',
+                            'callback': function(token) {
+                                console.log('reCAPTCHA success, token:', token);
+                                if (typeof Android !== 'undefined') {
+                                    Android.onRecaptchaSuccess(token);
+                                } else {
+                                    console.error('Android interface not available');
+                                }
+                            },
+                            'expired-callback': function() {
+                                console.log('reCAPTCHA expired');
+                                if (typeof Android !== 'undefined') {
+                                    Android.onRecaptchaExpired();
+                                } else {
+                                    console.error('Android interface not available');
+                                }
+                            },
+                            'error-callback': function() {
+                                console.log('reCAPTCHA error');
+                                if (typeof Android !== 'undefined') {
+                                    Android.onRecaptchaError();
+                                } else {
+                                    console.error('Android interface not available');
+                                }
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error rendering reCAPTCHA:', error);
+                        document.getElementById('loading').innerHTML = 'Error loading reCAPTCHA: ' + error.message;
+                    }
+                }
+                
+                // Wait for grecaptcha to be available
+                function waitForRecaptcha() {
+                    if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
+                        onRecaptchaReady();
+                    } else {
+                        console.log('Waiting for grecaptcha...');
+                        setTimeout(waitForRecaptcha, 100);
+                    }
+                }
+                
+                // Start checking when DOM is ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', waitForRecaptcha);
+                } else {
+                    waitForRecaptcha();
+                }
+            </script>
+        </body>
+        </html>
+    """.trimIndent()
+
+        // Enhanced JavaScript interface
+        webView.addJavascriptInterface(object {
+            @JavascriptInterface
+            fun onRecaptchaSuccess(token: String) {
+                Log.d(TAG, "reCAPTCHA success: $token")
+                requireActivity().runOnUiThread {
+                    viewModel.onRecaptchaSuccess(token)
+                    dismissRecaptchaDialog()
+                }
+            }
+
+            @JavascriptInterface
+            fun onRecaptchaExpired() {
+                Log.d(TAG, "reCAPTCHA expired")
+                requireActivity().runOnUiThread {
+                    viewModel.onRecaptchaFailure("reCAPTCHA expired")
+                    dismissRecaptchaDialog()
+                }
+            }
+
+            @JavascriptInterface
+            fun onRecaptchaError() {
+                Log.d(TAG, "reCAPTCHA error")
+                requireActivity().runOnUiThread {
+                    viewModel.onRecaptchaFailure("reCAPTCHA error occurred")
+                    dismissRecaptchaDialog()
+                }
+            }
+        }, "Android")
+
+        // Create dialog with larger size
+        recaptchaDialog = AlertDialog.Builder(requireContext())
+            .setTitle("Verify you're not a robot")
+            .setView(webView)
+            .setNegativeButton("Cancel") { dialog, _ ->
+                viewModel.onRecaptchaFailure("Cancelled by user")
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .create()
+
+        // Set dialog size
+        recaptchaDialog?.setOnShowListener {
+            val window = recaptchaDialog?.window
+            window?.setLayout(
+                (resources.displayMetrics.widthPixels * 0.9).toInt(),
+                (resources.displayMetrics.heightPixels * 0.7).toInt()
+            )
+        }
+
+        recaptchaDialog?.show()
+
+        // Load HTML content
+        webView.loadDataWithBaseURL(
+            "https://www.google.com",
+            htmlContent,
+            "text/html",
+            "UTF-8",
+            null
+        )
+    }
+
+    private fun startRecaptchaVerification() {
+        showRecaptchaWebView()
+    }
+    private var recaptchaDialog: AlertDialog? = null
+
+    private fun dismissRecaptchaDialog() {
+        recaptchaDialog?.dismiss()
+        recaptchaDialog = null
+    }
     private fun setupTermsAndConditionsLink() {
-        val fullText = getString(R.string.terms_and_conditions_checkbox_text) // "I agree to the Terms and Conditions"
-        val linkText = getString(R.string.terms_and_conditions_link_text) // "Terms and Conditions"
+        val fullText = getString(R.string.terms_and_conditions_checkbox_text)
+        val linkText = getString(R.string.terms_and_conditions_link_text)
 
         val spannableString = SpannableString(Html.fromHtml(fullText, Html.FROM_HTML_MODE_LEGACY))
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                // Prevent checkbox from toggling when clicking the link
                 widget.cancelPendingInputEvents()
                 showTermsAndConditionsDialog()
             }
 
             override fun updateDrawState(ds: TextPaint) {
                 super.updateDrawState(ds)
-                // Style the link (optional, as HTML string already has some styling)
-                // ds.isUnderlineText = true // Already handled by HTML <b><u>
-                ds.color = ContextCompat.getColor(requireContext(), R.color.ocean_blue) // Ensure this color is defined
+                ds.color = ContextCompat.getColor(requireContext(), R.color.ocean_blue)
             }
         }
 
@@ -172,18 +453,13 @@ class RegisterFragment : Fragment() {
         if (startIndex != -1) {
             val endIndex = startIndex + linkText.length
             spannableString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            // If you don't use HTML for styling in strings.xml, you can add spans here:
-            // spannableString.setSpan(UnderlineSpan(), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            // spannableString.setSpan(StyleSpan(Typeface.BOLD), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            // spannableString.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.ocean_blue)), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
 
         termsCheckbox.text = spannableString
-        termsCheckbox.movementMethod = LinkMovementMethod.getInstance() // Important to make links clickable
-        termsCheckbox.highlightColor = ContextCompat.getColor(requireContext(), android.R.color.transparent) // Optional: remove link highlight on click
+        termsCheckbox.movementMethod = LinkMovementMethod.getInstance()
+        termsCheckbox.highlightColor = ContextCompat.getColor(requireContext(), android.R.color.transparent)
     }
 
-    // New function to show the Terms and Conditions Dialog
     private fun showTermsAndConditionsDialog() {
         val termsAndConditionsHtml = getString(R.string.terms_and_conditions_content)
         val message = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -197,90 +473,119 @@ class RegisterFragment : Fragment() {
             .setTitle(getString(R.string.dialog_title_terms_and_conditions))
             .setMessage(message)
             .setPositiveButton(getString(R.string.dialog_action_accept)) { dialog, _ ->
-                termsCheckbox.isChecked = true // Optionally auto-check the box upon "Accept"
+                termsCheckbox.isChecked = true
                 dialog.dismiss()
             }
-            .setNegativeButton(getString(R.string.dialog_action_close)) {dialog, _ ->
+            .setNegativeButton(getString(R.string.dialog_action_close)) { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
     }
 
     private fun observeViewModel() {
-        // Observe get code loading state
         viewModel.isGetCodeLoading.observe(viewLifecycleOwner) { isLoading ->
             setGetCodeButtonLoading(isLoading)
         }
 
-        // Observe register loading state
         viewModel.isRegisterLoading.observe(viewLifecycleOwner) { isLoading ->
             setRegisterButtonLoading(isLoading)
         }
 
-        // Observe verification state
+        // Observe reCAPTCHA loading state
+        viewModel.isRecaptchaLoading.observe(viewLifecycleOwner) { isLoading ->
+            setRecaptchaLoading(isLoading)
+        }
+
         viewModel.verificationState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is RegisterViewModel.VerificationState.Idle -> {
-                    // Reset state
-                }
+                is RegisterViewModel.VerificationState.Idle -> {}
                 is RegisterViewModel.VerificationState.Loading -> {
                     clearFieldErrors()
                 }
-                is RegisterViewModel.VerificationState.Success -> {
-                    // Success handled by other observers
-                }
-                is RegisterViewModel.VerificationState.Error -> {
-                    // Error handled by errorMessage observer
-                }
+                is RegisterViewModel.VerificationState.Success -> {}
+                is RegisterViewModel.VerificationState.Error -> {}
             }
         }
 
-        // Observe register state
         viewModel.registerState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is RegisterViewModel.RegisterState.Idle -> {
-                    // Reset state
-                }
+                is RegisterViewModel.RegisterState.Idle -> {}
                 is RegisterViewModel.RegisterState.Loading -> {
                     clearFieldErrors()
                 }
-                is RegisterViewModel.RegisterState.Success -> {
-                    // Success handled by navigationEvent observer
-                }
-                is RegisterViewModel.RegisterState.Error -> {
-                    // Error handled by errorMessage observer
-                }
+                is RegisterViewModel.RegisterState.Success -> {}
+                is RegisterViewModel.RegisterState.Error -> {}
             }
         }
 
-        // Observe field errors
+        // Observe reCAPTCHA state
+        viewModel.recaptchaState.observe(viewLifecycleOwner) { state ->
+            handleRecaptchaState(state)
+        }
+
         viewModel.fieldError.observe(viewLifecycleOwner) { fieldError ->
             showFieldError(fieldError)
         }
 
-        // Observe success messages
         viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             showSuccessMessage(message)
         }
 
-        // Observe error messages
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             showErrorMessage(message)
         }
 
-        // Observe navigation events
         viewModel.navigationEvent.observe(viewLifecycleOwner) { event ->
             handleNavigationEvent(event)
         }
 
-        // Observe timer events
         viewModel.timerEvent.observe(viewLifecycleOwner) { event ->
             handleTimerEvent(event)
         }
 
-        // Observe fields enabled state
         viewModel.fieldsEnabledState.observe(viewLifecycleOwner) { enabled ->
             setFieldsEnabled(enabled)
+        }
+    }
+
+    private fun handleRecaptchaState(state: RegisterViewModel.RecaptchaState) {
+        when (state) {
+            is RegisterViewModel.RecaptchaState.Idle -> {
+                recaptchaStatus.visibility = View.GONE
+                recaptchaButton.text = "Verify I'm not a robot"
+                recaptchaButton.isEnabled = true
+                updateRegisterButtonState()
+            }
+            is RegisterViewModel.RecaptchaState.Loading -> {
+                recaptchaStatus.visibility = View.GONE
+                recaptchaButton.text = "Verifying..."
+                recaptchaButton.isEnabled = false
+            }
+            is RegisterViewModel.RecaptchaState.Success -> {
+                recaptchaStatus.visibility = View.VISIBLE
+                recaptchaStatus.text = "✓ Verification successful"
+                recaptchaStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.sea_green))
+                recaptchaButton.text = "✓ Verified"
+                recaptchaButton.isEnabled = false
+                updateRegisterButtonState()
+            }
+            is RegisterViewModel.RecaptchaState.Error -> {
+                recaptchaStatus.visibility = View.VISIBLE
+                recaptchaStatus.text = "✗ ${state.message}"
+                recaptchaStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.error_color))
+                recaptchaButton.text = "Retry Verification"
+                recaptchaButton.isEnabled = true
+                updateRegisterButtonState()
+            }
+        }
+    }
+
+    private fun setRecaptchaLoading(isLoading: Boolean) {
+        if (isLoading) {
+            recaptchaProgress.visibility = View.VISIBLE
+            recaptchaButton.isEnabled = false
+        } else {
+            recaptchaProgress.visibility = View.GONE
         }
     }
 
@@ -386,7 +691,7 @@ class RegisterFragment : Fragment() {
             registerButton.isEnabled = false
             registerButton.text = "REGISTERING..."
         } else {
-            registerButton.isEnabled = true
+            updateRegisterButtonState() // Use the validation logic instead of just enabling
             registerButton.text = "REGISTER"
         }
     }
@@ -427,8 +732,6 @@ class RegisterFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         timer?.cancel()
-        if (::videoView.isInitialized) {
-            videoView.stopPlayback()
-        }
+
     }
 }

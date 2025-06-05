@@ -26,7 +26,13 @@
     <string name="dialog_title_terms_and_conditions">Terms and Conditions</string>
     <string name="dialog_action_accept">Accept</string>
     <string name="dialog_action_close">Close</string>
-
+    <string name="recaptcha_site_key">YOUR_SITE_KEY_HERE</string>
+    <string name="recaptcha_verify_button">Verify I\'m not a robot</string>
+    <string name="recaptcha_verifying">Verifying...</string>
+    <string name="recaptcha_verified">Verification successful</string>
+    <string name="recaptcha_failed">Verification failed. Please try again.</string>
+    <string name="recaptcha_error">Unable to load reCAPTCHA. Check your connection.</string>
+    <string name="registration_disabled">Please complete security verification first</string>
     <string name="terms_and_conditions_content">
         <![CDATA[
         <h1>Terms and Conditions</h1>

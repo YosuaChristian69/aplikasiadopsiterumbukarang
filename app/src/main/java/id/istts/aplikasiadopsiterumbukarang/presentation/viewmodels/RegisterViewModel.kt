@@ -21,11 +21,17 @@ class RegisterViewModel : ViewModel() {
     private val _verificationState = MutableLiveData<VerificationState>()
     val verificationState: LiveData<VerificationState> = _verificationState
 
+    private val _recaptchaState = MutableLiveData<RecaptchaState>()
+    val recaptchaState: LiveData<RecaptchaState> = _recaptchaState
+
     private val _isGetCodeLoading = MutableLiveData<Boolean>()
     val isGetCodeLoading: LiveData<Boolean> = _isGetCodeLoading
 
     private val _isRegisterLoading = MutableLiveData<Boolean>()
     val isRegisterLoading: LiveData<Boolean> = _isRegisterLoading
+
+    private val _isRecaptchaLoading = MutableLiveData<Boolean>()
+    val isRecaptchaLoading: LiveData<Boolean> = _isRecaptchaLoading
 
     private val _fieldError = MutableLiveData<FieldError>()
     val fieldError: LiveData<FieldError> = _fieldError
@@ -44,6 +50,9 @@ class RegisterViewModel : ViewModel() {
 
     private val _fieldsEnabledState = MutableLiveData<Boolean>()
     val fieldsEnabledState: LiveData<Boolean> = _fieldsEnabledState
+
+    // reCAPTCHA token storage
+    private var recaptchaToken: String? = null
 
     fun requestVerificationCode(fullName: String, email: String, password: String, confirmPassword: String) {
 
@@ -92,12 +101,19 @@ class RegisterViewModel : ViewModel() {
             return
         }
 
+        // Validate reCAPTCHA
+        if (!validateRecaptcha()) {
+            return
+        }
+
         _isRegisterLoading.value = true
         _registerState.value = RegisterState.Loading
 
         val request = VerifyAndRegisterRequest(
             email = email,
             verificationCode = verificationCode
+            // You can add recaptcha token to your request model if needed
+            // recaptchaToken = recaptchaToken
         )
 
         RetrofitClient.instance.verifyAndRegister(request).enqueue(object :
@@ -141,6 +157,10 @@ class RegisterViewModel : ViewModel() {
         }
 
         if (!validateVerificationCode(verificationCode)) {
+            return false
+        }
+
+        if (!validateRecaptcha()) {
             return false
         }
 
@@ -209,6 +229,51 @@ class RegisterViewModel : ViewModel() {
         return true
     }
 
+    private fun validateRecaptcha(): Boolean {
+        if (recaptchaToken.isNullOrEmpty()) {
+            _errorMessage.value = "Please complete reCAPTCHA verification"
+            return false
+        }
+        return true
+    }
+
+    // reCAPTCHA related functions
+    fun startRecaptchaVerification() {
+        _isRecaptchaLoading.value = true
+        _recaptchaState.value = RecaptchaState.Loading
+    }
+
+    fun onRecaptchaSuccess(token: String) {
+        recaptchaToken = token
+        _isRecaptchaLoading.value = false
+        _recaptchaState.value = RecaptchaState.Success
+        _successMessage.value = "reCAPTCHA verification successful"
+        updateRegisterButtonState()
+    }
+
+    fun onRecaptchaFailure(errorMessage: String? = null) {
+        recaptchaToken = null
+        _isRecaptchaLoading.value = false
+        _recaptchaState.value = RecaptchaState.Error(errorMessage ?: "reCAPTCHA verification failed")
+        _errorMessage.value = errorMessage ?: "reCAPTCHA verification failed. Please try again."
+        updateRegisterButtonState()
+    }
+
+    fun resetRecaptcha() {
+        recaptchaToken = null
+        _recaptchaState.value = RecaptchaState.Idle
+        updateRegisterButtonState()
+    }
+
+    private fun updateRegisterButtonState() {
+        // You can use this to enable/disable register button based on reCAPTCHA state
+        // This will be observed in the fragment
+    }
+
+    fun isRecaptchaVerified(): Boolean {
+        return !recaptchaToken.isNullOrEmpty() && _recaptchaState.value is RecaptchaState.Success
+    }
+
     fun onTimerFinished() {
         _fieldsEnabledState.value = true
         _timerEvent.value = TimerEvent.Finished
@@ -231,6 +296,13 @@ class RegisterViewModel : ViewModel() {
         object Loading : VerificationState()
         object Success : VerificationState()
         data class Error(val message: String) : VerificationState()
+    }
+
+    sealed class RecaptchaState {
+        object Idle : RecaptchaState()
+        object Loading : RecaptchaState()
+        object Success : RecaptchaState()
+        data class Error(val message: String) : RecaptchaState()
     }
 
     data class FieldError(val field: FieldType, val message: String)
