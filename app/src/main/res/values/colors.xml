@@ -81,4 +81,21 @@
     <color name="coral_dark_text">#1a4d52</color>
     <color name="coral_warning">#FF9800</color>
     <color name="coral_danger">#D32F2F</color>
+
+
+    <color name="coral_primary_dark">#1a4d52</color>
+    <color name="coral_background">#F8FFFE</color>
+    <color name="coral_surface">#FFFFFF</color>
+    <color name="coral_on_surface">#1a4d52</color>
+
+    <!-- Status Colors with Ocean Theme -->
+    <color name="ocean_success">#00C853</color>
+    <color name="ocean_warning">#FF8F00</color>
+    <color name="ocean_error">#D32F2F</color>
+    <color name="ocean_info">#0277BD</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary_ocean">#1a4d52</color>
+    <color name="text_secondary_ocean">#4A7C7E</color>
+    <color name="text_hint_ocean">#80CBC4</color>
 </resources>
