@@ -9,5 +9,5 @@ data class Worker(
     val status: String,
     val balance: String,
     val user_status:String,
-    val joined_at: Date
+    val joined_at: Date?
 )

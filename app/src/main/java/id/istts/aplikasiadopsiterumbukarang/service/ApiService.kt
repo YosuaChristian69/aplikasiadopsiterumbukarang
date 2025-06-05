@@ -7,6 +7,8 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.SingleCoralResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.SingleUserResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.UpdateUserResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.WorkerResponse
@@ -21,6 +23,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -61,6 +64,20 @@ interface ApiService {
     suspend fun fetchAllUsers(
         @Header("x-auth-token") token: String
     ): Response<WorkerResponse>
+
+    @GET("/users/fetchUser/{id}")
+    suspend fun fetchUserById(
+        @Path("id") id: String,
+        @Header("x-auth-token") token: String
+    ): Response<SingleUserResponse>
+
+    // FIXED: Change the parameter type to avoid wildcard issues
+    @PUT("/users/updateUser/{id}")
+    suspend fun updateUserById(
+        @Path("id") id: String,
+        @Header("x-auth-token") token: String,
+        @Body updateData: Map<String, String>  // Changed from Map<String, Any> to Map<String, String>
+    ): Response<UpdateUserResponse>
 
     // New endpoints for edit functionality
     @GET("/tk/getSingleTk/{id}")

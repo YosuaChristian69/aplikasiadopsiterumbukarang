@@ -280,35 +280,59 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Email Input -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/emailInput"
+                    <!-- Ganti Email Input section di fragment_edit_user.xml dengan ini -->
+
+                    <!-- Email Display (Read Only) -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="18dp"
-                        android:hint="📧 Email Address"
-                        app:boxStrokeColor="#4CDDCF"
-                        app:hintTextColor="#1a4d52"
-                        app:boxCornerRadiusTopStart="16dp"
-                        app:boxCornerRadiusTopEnd="16dp"
-                        app:boxCornerRadiusBottomStart="16dp"
-                        app:boxCornerRadiusBottomEnd="16dp"
-                        app:startIconDrawable="@drawable/ic_email"
-                        app:startIconTint="#4CDDCF"
-                        app:endIconMode="clear_text"
-                        app:endIconTint="#4CDDCF"
-                        app:boxStrokeWidth="2dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp"
+                        app:cardBackgroundColor="#F8FFFE">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/emailEditText"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textEmailAddress"
-                            android:textColor="#1a4d52"
-                            android:textSize="16sp"
-                            android:fontFamily="sans-serif-medium" />
+                            android:orientation="horizontal"
+                            android:padding="16dp"
+                            android:gravity="center_vertical">
 
-                    </com.google.android.material.textfield.TextInputLayout>
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_email"
+                                app:tint="#4CDDCF"
+                                android:layout_marginEnd="12dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="📧 Email Address"
+                                    android:textSize="12sp"
+                                    android:textColor="#666666"
+                                    android:fontFamily="sans-serif-light" />
+
+                                <TextView
+                                    android:id="@+id/emailEditText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="user@example.com"
+                                    android:textSize="16sp"
+                                    android:textColor="#1a4d52"
+                                    android:textStyle="bold"
+                                    android:fontFamily="sans-serif-medium" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
 
                     <!-- Password Input -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -341,7 +365,7 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Status Dropdown -->
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/statusInput"
                         android:layout_width="match_parent"
