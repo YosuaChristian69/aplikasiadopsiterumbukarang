@@ -7,13 +7,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.DiffUtil
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class WorkerAdapter : RecyclerView.Adapter<WorkerAdapter.WorkerViewHolder>() {
+class WorkerAdapter(
+    private val onEditClick: (Worker) -> Unit = {}
+) : RecyclerView.Adapter<WorkerAdapter.WorkerViewHolder>() {
 
     private var workers: List<Worker> = emptyList()
 
@@ -26,6 +29,7 @@ class WorkerAdapter : RecyclerView.Adapter<WorkerAdapter.WorkerViewHolder>() {
         val workerId: TextView = itemView.findViewById(R.id.tv_worker_id)
         val statusText: TextView = itemView.findViewById(R.id.tv_status)
         val statusDot: View = itemView.findViewById(R.id.status_dot)
+        val btnEditWorker: FloatingActionButton = itemView.findViewById(R.id.btn_edit_worker)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkerViewHolder {
@@ -72,6 +76,32 @@ class WorkerAdapter : RecyclerView.Adapter<WorkerAdapter.WorkerViewHolder>() {
             else -> {
                 holder.statusDot.setBackgroundResource(R.drawable.circle_inactive)
             }
+        }
+
+        // Set edit button click listener with animation
+        holder.btnEditWorker.setOnClickListener {
+            // Add subtle animation on click
+            it.animate()
+                .scaleX(0.9f)
+                .scaleY(0.9f)
+                .setDuration(100)
+                .withEndAction {
+                    it.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(100)
+                        .start()
+                }
+                .start()
+
+            // Trigger edit callback
+            onEditClick(worker)
+        }
+
+        // Optional: Add ripple effect for the entire card
+        holder.itemView.setOnClickListener {
+            // You can add card click functionality here if needed
+            // For now, we'll just focus on the edit button
         }
     }
 

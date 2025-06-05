@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.R
@@ -111,8 +112,10 @@ class AdminWorkerDashboardFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        workerAdapter = WorkerAdapter()
-        recyclerView?.apply {
+        workerAdapter = WorkerAdapter { worker ->
+            navigateToEditWorker(worker)
+        }
+            recyclerView?.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = workerAdapter
         }
@@ -277,7 +280,38 @@ class AdminWorkerDashboardFragment : Fragment() {
             }
         }
     }
+    private fun navigateToEditWorker(worker: Worker) {
+        if (isAdded && !isDetached && !isRemoving) {
+            try {
+                // Create bundle to pass worker data
+                val bundle = Bundle().apply {
+                    putString("workerId", worker.id_user)
+                    putString("workerName", worker.full_name)
+                    putString("workerEmail", worker.email)
+                    putString("workerBalance", worker.balance)
+                    putString("workerStatus", worker.user_status)
+                    // Add other worker data as needed
+                }
 
+                // Show feedback to user
+                view?.let {
+                    Snackbar.make(it, "Opening edit for ${worker.full_name}", Snackbar.LENGTH_SHORT).show()
+                }
+
+                // Navigate to edit worker fragment
+                // Replace with your actual navigation action
+                findNavController().navigate(
+                    R.id.action_adminWorkerDashboardFragment_to_editUserFragment,
+                    bundle
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                view?.let {
+                    Snackbar.make(it, "Error opening edit screen", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     private fun navigateToAdminDashboard() {
         if (isAdded && !isDetached && !isRemoving) {
             try {

@@ -37,7 +37,7 @@
             app:cardElevation="2dp"
             app:cardBackgroundColor="#4CDDCF"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintStart_toStartOf="parent">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -64,6 +64,24 @@
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Edit Button with Modern Design -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_edit_worker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            app:fabSize="mini"
+            app:backgroundTint="#FFFFFF"
+            app:tint="#2a6e73"
+            app:elevation="4dp"
+            app:pressedTranslationZ="8dp"
+            app:rippleColor="#4CDDCF"
+            android:src="@drawable/ic_edit"
+            app:borderWidth="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="Edit Worker" />
 
         <!-- Worker Photo with Enhanced Styling -->
         <androidx.cardview.widget.CardView

@@ -192,12 +192,7 @@
                             android:textColor="#1a4d52"
                             android:fontFamily="sans-serif-medium" />
 
-                        <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@drawable/ic_edit_user"
-                            android:contentDescription="Edit User Icon"
-                            app:tint="#4CDDCF" />
+
 
                     </LinearLayout>
 
@@ -352,7 +347,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="18dp"
-                        android:hint="⚡ Status"
+                        android:hint="⚡ Role"
                         app:boxStrokeColor="#4CDDCF"
                         app:hintTextColor="#1a4d52"
                         app:boxCornerRadiusTopStart="16dp"
