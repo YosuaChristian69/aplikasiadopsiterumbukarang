@@ -4,6 +4,7 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.GetCoralResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.LokasiResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.SingleCoralResponse
@@ -92,4 +93,11 @@ interface ApiService {
         @Header("x-auth-token") token: String,
         @Body editRequest: EditCoralRequest
     ): Response<ResponseBody>
+
+
+    //LOKASI
+    @GET("/lokasi/Lokasi")
+    suspend fun getLokasi(
+        @Header("x-auth-token") token: String
+    ): Response<LokasiResponse>
 }
