@@ -61,4 +61,11 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3" )
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+
+    //Google Maps
+    implementation ("com.google.android.gms:play-services-maps:18.2.0")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+
+    // Google Places API (untuk geocoding dan reverse geocoding)
+    implementation ("com.google.android.libraries.places:places:3.3.0")
 }
