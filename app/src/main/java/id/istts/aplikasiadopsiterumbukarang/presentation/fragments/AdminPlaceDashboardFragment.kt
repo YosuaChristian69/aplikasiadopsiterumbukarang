@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Lokasi
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.LokasiAdapter
+import id.istts.aplikasiadopsiterumbukarang.service.ApiService
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 
@@ -39,6 +40,7 @@ class AdminPlaceDashboardFragment : Fragment() {
     private lateinit var totalPlacesCount: TextView
     private lateinit var activePlacesCount: TextView
     private lateinit var greetingText: TextView
+    private val apiService: ApiService = RetrofitClient.instance
 
     private lateinit var lokasiAdapter: LokasiAdapter
     private var allLokasi = listOf<Lokasi>()
@@ -134,8 +136,8 @@ class AdminPlaceDashboardFragment : Fragment() {
                     navigateToLogin()
                     return@launch
                 }
-                Log.d(TAG, "token: ${token }")
-                val response = RetrofitClient.instance.getLokasi("Bearer $token")
+                Log.d(TAG, "tokenLokasi Nih Ges: ${token }")
+                val response = apiService.getLokasi(token)
                 Log.d(TAG, "loadLokasi: ${response}")
 
                 if (response.isSuccessful) {
