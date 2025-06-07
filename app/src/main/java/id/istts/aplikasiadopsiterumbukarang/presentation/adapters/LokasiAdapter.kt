@@ -142,7 +142,6 @@ class LokasiAdapter(
         }
 
         private fun extractShortAddress(fullAddress: String): String {
-            // Extract meaningful parts of the address
             val parts = fullAddress.split(", ")
             return when {
                 parts.size >= 3 -> {

@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,7 +30,6 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentAddPlaceBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var viewModel: AddPlaceViewModel
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -82,6 +82,9 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         // Add button
         binding.btnAddPlace.setOnClickListener {
             viewModel.addLocationToBackend()
+        }
+        binding.btnCancelAdd.setOnClickListener {
+            findNavController().navigate(R.id.action_addPlaceFragment4_to_adminPlaceDashboardFragment)
         }
 
         setupSearchFunctionality()

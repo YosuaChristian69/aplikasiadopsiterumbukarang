@@ -116,4 +116,5 @@
 
     <!-- Overlay Colors -->
     <color name="overlay_dark">#80000000</color>
+    <color name="light_blue">#E8F5E9</color>
 </resources>
