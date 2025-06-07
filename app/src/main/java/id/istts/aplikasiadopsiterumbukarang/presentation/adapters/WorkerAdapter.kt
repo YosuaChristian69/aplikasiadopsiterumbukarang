@@ -21,7 +21,6 @@ class WorkerAdapter(
     private var workers: List<Worker> = emptyList()
 
     class WorkerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val workerPhoto: ImageView = itemView.findViewById(R.id.iv_worker_photo)
         val workerName: TextView = itemView.findViewById(R.id.tv_worker_name)
         val workerEmail: TextView = itemView.findViewById(R.id.tv_worker_email)
         val workerBalance: TextView = itemView.findViewById(R.id.tv_worker_balance)
@@ -29,6 +28,7 @@ class WorkerAdapter(
         val workerId: TextView = itemView.findViewById(R.id.tv_worker_id)
         val statusText: TextView = itemView.findViewById(R.id.tv_status)
         val statusDot: View = itemView.findViewById(R.id.status_dot)
+        val tvWorkerInitials: TextView= itemView.findViewById(R.id.tv_worker_initials)
         val btnEditWorker: FloatingActionButton = itemView.findViewById(R.id.btn_edit_worker)
     }
 
@@ -64,7 +64,7 @@ class WorkerAdapter(
 
         // Set status (using user_status for display, status for logic)
         holder.statusText.text = worker.user_status
-
+        holder.tvWorkerInitials.text = getInitials(worker.full_name)
         // Set status indicator color based on user_status
         when (worker.user_status.lowercase()) {
             "active", "aktif" -> {
@@ -114,6 +114,13 @@ class WorkerAdapter(
         workers = newWorkers
         diffResult.dispatchUpdatesTo(this)
     }
+    fun getInitials(fullName: String): String {
+        return fullName.split(" ")
+            .take(2)
+            .map { it.first().uppercase() }
+            .joinToString("")
+    }
+
 
     private class WorkerDiffCallback(
         private val oldList: List<Worker>,

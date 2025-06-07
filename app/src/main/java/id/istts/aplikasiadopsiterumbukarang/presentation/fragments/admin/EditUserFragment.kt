@@ -1,7 +1,8 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin
 
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,13 +12,12 @@ import android.widget.AutoCompleteTextView
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.EditUserViewModel
 import java.text.SimpleDateFormat
@@ -143,7 +143,7 @@ class EditUserFragment : Fragment() {
         }
     }
 
-    private fun populateUserData(user: id.istts.aplikasiadopsiterumbukarang.domain.models.Worker) {
+    private fun populateUserData(user: Worker) {
         userIdText.text = "#${user.id_user}"
         fullNameEditText.setText(user.full_name)
         emailEditText.setText(user.email) // Now editable - use setText for TextInputEditText
@@ -198,7 +198,7 @@ class EditUserFragment : Fragment() {
         if (emailText.isEmpty()) {
             emailEditText.error = "Email is required"
             isValid = false
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
             emailEditText.error = "Please enter a valid email address"
             isValid = false
         }

@@ -1,5 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.service
 
+import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.GetCoralResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginRequest
@@ -72,7 +74,12 @@ interface ApiService {
         @Header("x-auth-token") token: String
     ): Response<SingleUserResponse>
 
-    // FIXED: Change the parameter type to avoid wildcard issues
+
+    @POST("/users/addUserWorker")
+    suspend fun addUserWorker(
+        @Header("x-auth-token") token: String,
+        @Body request: AddWorkerRequest
+    ): Response<AddWorkerResponse>
     @PUT("/users/updateUser/{id}")
     suspend fun updateUserById(
         @Path("id") id: String,

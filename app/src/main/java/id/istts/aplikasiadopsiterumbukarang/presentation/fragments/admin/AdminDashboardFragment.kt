@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin
 
 import android.animation.Animator
 import android.animation.AnimatorSet
@@ -8,6 +8,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -29,6 +30,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralAdapter
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AdminDashboardUiState
@@ -202,7 +204,7 @@ class AdminDashboardFragment : Fragment() {
         }
     }
 
-    private fun showDeleteConfirmationDialog(coral: id.istts.aplikasiadopsiterumbukarang.domain.models.Coral) {
+    private fun showDeleteConfirmationDialog(coral: Coral) {
         AlertDialog.Builder(requireContext())
             .setTitle("Delete Coral")
             .setMessage("Are you sure you want to delete '${coral.tk_name}'?\n\nThis action cannot be undone.")
@@ -404,7 +406,7 @@ class AdminDashboardFragment : Fragment() {
         }
     }
 
-    private fun animateBottomNavClick(menuItem: android.view.MenuItem, action: () -> Unit) {
+    private fun animateBottomNavClick(menuItem: MenuItem, action: () -> Unit) {
         val scaleAnimation = ObjectAnimator.ofFloat(bottomNavigation, "scaleY", 1f, 0.95f, 1f)
         scaleAnimation.apply {
             duration = 150

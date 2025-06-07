@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="worker_icon">Worker Icon</string>
+    <string name="add_worker_title">Add New Worker</string>
+    <string name="add_worker_subtitle">Register a new team member</string>
+    <string name="worker_information">Worker Information</string>
+    <string name="full_name_hint">Full Name</string>
+    <string name="email_hint">Email Address</string>
+    <string name="phone_hint">Phone Number</string>
+    <string name="job_position_hint">Job Position</string>
+    <string name="worker_id_hint">Worker ID (Optional)</string>
+    <string name="worker_id_helper">Leave empty for auto-generated ID</string>
+    <string name="initial_password_hint">Initial Password</string>
+    <string name="password_helper">Worker can change this after first login</string>
+    <string name="access_level_title">Access Level</string>
+    <string name="basic_access">Basic Access - Field worker permissions</string>
+    <string name="supervisor_access">Supervisor Access - Can manage other workers</string>
+    <string name="add_worker_button">ADD WORKER</string>
+    <string name="cancel_button">CANCEL</string>
+
+    <!-- Job Positions -->
+    <string-array name="job_positions">
+        <item>Field Coordinator</item>
+        <item>Marine Biologist</item>
+        <item>Dive Master</item>
+        <item>Research Assistant</item>
+        <item>Equipment Specialist</item>
+        <item>Data Analyst</item>
+        <item>Project Supervisor</item>
+        <item>Safety Officer</item>
+        <item>Maintenance Technician</item>
+        <item>Environmental Monitor</item>
+    </string-array>
+</resources>

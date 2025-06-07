@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
-    tools:context=".presentation.fragments.AdminWorkerDashboardFragment">
+    tools:context=".presentation.fragments.admin.AdminWorkerDashboardFragment">
 
     <!-- Header Section with Coral Green Theme -->
     <androidx.constraintlayout.widget.ConstraintLayout

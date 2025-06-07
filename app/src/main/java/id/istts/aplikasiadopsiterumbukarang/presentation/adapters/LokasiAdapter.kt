@@ -81,6 +81,7 @@ class LokasiAdapter(
 
         fun bind(lokasi: Lokasi) {
             placeName.text = lokasi.lokasiName
+            placeId.text = "ID: ${lokasi.idLokasi}"
             description.text = lokasi.description
             latitude.text = lokasi.latitude.toString()
             longitude.text = lokasi.longitude.toString()

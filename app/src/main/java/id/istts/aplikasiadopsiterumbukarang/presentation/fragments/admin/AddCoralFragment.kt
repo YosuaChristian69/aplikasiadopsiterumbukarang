@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin
 
 import android.Manifest
 import android.app.Activity
@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.service.controls.ControlsProviderService.TAG
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View

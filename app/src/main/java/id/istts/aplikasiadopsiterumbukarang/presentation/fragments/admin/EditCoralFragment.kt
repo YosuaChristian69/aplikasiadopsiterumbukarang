@@ -1,11 +1,12 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -15,7 +16,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -168,11 +168,11 @@ class EditCoralFragment : Fragment() {
                 val editRequest = EditCoralRequest(
                     name = coralNameEditText.text.toString().trim(),
                     jenis = coralSpeciesEditText.text.toString().trim(),
-                    harga = priceEditText.text.toString().toIntOrNull(),
-                    stok = stockEditText.text.toString().toIntOrNull(),
+                    harga = priceEditText.text.toString().toInt(),
+                    stok = stockEditText.text.toString().toInt(),
                     description = coralDescriptionEditText.text.toString().trim()
                 )
-
+                Log.d(TAG, "updateCoral: ${editRequest}")
                 val response = apiService.editTerumbuKarang(coralId, token, editRequest)
 
                 if (response.isSuccessful) {

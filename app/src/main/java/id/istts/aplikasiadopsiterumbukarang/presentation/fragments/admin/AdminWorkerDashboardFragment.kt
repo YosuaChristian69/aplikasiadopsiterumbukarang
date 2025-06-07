@@ -1,16 +1,15 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.fragments
+package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin
 
 import android.animation.ObjectAnimator
-import android.animation.AnimatorSet
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.Button
 import androidx.lifecycle.lifecycleScope
 import android.widget.ImageButton
 import android.widget.TextView
@@ -92,12 +91,9 @@ class AdminWorkerDashboardFragment : Fragment() {
             performLogout()
         }
 
-        // Setup FAB click listener
         fabAddWorker.setOnClickListener {
-            // TODO: Navigate to add worker screen
-            // navigateToAddWorker()
+            findNavController().navigate(R.id.action_adminWorkerDashboardFragment_to_addWorkerFragment)
         }
-
         setupRecyclerView()
         setupSearchFunctionality()
 
@@ -250,7 +246,7 @@ class AdminWorkerDashboardFragment : Fragment() {
         }
     }
 
-    private fun animateBottomNavClick(menuItem: android.view.MenuItem, action: () -> Unit) {
+    private fun animateBottomNavClick(menuItem: MenuItem, action: () -> Unit) {
         val scaleAnimation = ObjectAnimator.ofFloat(bottomNavigation, "scaleY", 1f, 0.95f, 1f)
         scaleAnimation.apply {
             duration = 150
