@@ -7,30 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAddWorkerBinding
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
-import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AddWorkerViewModel
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AddWorkerFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddWorkerFragment : Fragment() {
     private var _binding: FragmentAddWorkerBinding? = null
     private val binding get() = _binding!!
     private lateinit var sessionManager: SessionManager
+
+    // Initialize ViewModel
+    private val viewModel: AddWorkerViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +38,7 @@ class AddWorkerFragment : Fragment() {
 
         sessionManager = SessionManager(requireContext())
         setupClickListeners()
+        observeViewModel()
     }
 
     private fun setupClickListeners() {
@@ -63,6 +56,25 @@ class AddWorkerFragment : Fragment() {
         binding.cancelButton.setOnClickListener {
             clearInputs()
             // TODO: Navigate back or show confirmation dialog
+        }
+    }
+
+    private fun observeViewModel() {
+        // Observe loading state
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            setLoadingState(isLoading)
+        }
+
+        // Observe add worker result
+        viewModel.addWorkerResult.observe(viewLifecycleOwner) { result ->
+            result.fold(
+                onSuccess = { message ->
+                    showSuccessDialog(message)
+                },
+                onFailure = { exception ->
+                    showError(exception.message ?: "An error occurred")
+                }
+            )
         }
     }
 
@@ -116,43 +128,15 @@ class AddWorkerFragment : Fragment() {
             password = password
         )
 
-        // Show loading state
-        setLoadingState(true)
-
-        lifecycleScope.launch {
-            try {
-                val token = sessionManager.fetchAuthToken().toString()
-                if (token.isNullOrEmpty()) {
-                    showError("Authentication token not found. Please login again.")
-                    setLoadingState(false)
-                    return@launch
-                }
-
-                val response = RetrofitClient.instance.addUserWorker(token, request)
-
-                setLoadingState(false)
-
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    showSuccessDialog(responseBody?.msg ?: "Worker added successfully!")
-
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    // Try to parse error message from backend
-                    val errorMessage = try {
-                        val errorJson = com.google.gson.JsonParser.parseString(errorBody)
-                        errorJson.asJsonObject.get("msg").asString
-                    } catch (e: Exception) {
-                        "Failed to add worker. Please try again."
-                    }
-                    showError(errorMessage)
-                }
-
-            } catch (e: Exception) {
-                setLoadingState(false)
-                showError("Network error: ${e.localizedMessage}")
-            }
+        // Get token from session manager
+        val token = sessionManager.fetchAuthToken()
+        if (token.isNullOrEmpty()) {
+            showError("Authentication token not found. Please login again.")
+            return
         }
+
+        // Call ViewModel to add worker
+        viewModel.addWorker(token, request)
     }
 
     private fun setLoadingState(isLoading: Boolean) {
@@ -191,7 +175,6 @@ class AddWorkerFragment : Fragment() {
         binding.emailEditText.text?.clear()
         binding.passwordEditText.text?.clear()
 
-        // Clear any existing errors
         binding.fullNameInputLayout.error = null
         binding.emailInputLayout.error = null
         binding.passwordInputLayout.error = null

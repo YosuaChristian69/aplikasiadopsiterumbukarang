@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,10 +24,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import id.istts.aplikasiadopsiterumbukarang.R
-import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
-import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
-import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
-import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AddCoralViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AddCoralEvent
 import kotlinx.coroutines.launch
 
 class AddCoralFragment : Fragment() {
@@ -48,20 +45,13 @@ class AddCoralFragment : Fragment() {
     private lateinit var saveButton: MaterialButton
     private lateinit var cancelButton: MaterialButton
 
-    // Dependencies
-    private lateinit var sessionManager: SessionManager
-    private lateinit var addCoralUseCase: AddCoralUseCase
-    private lateinit var fileUtils: FileUtils
-
-    private var selectedImageUri: Uri? = null
-    private var isLoading = false
+    // ViewModel
+    private lateinit var viewModel: AddCoralViewModel
 
     // Modern Photo Picker (Android 13+) and fallback
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
-            selectedImageUri = uri
-            imagePreview.setImageURI(uri)
-            imagePreview.visibility = View.VISIBLE
+            viewModel.setSelectedImageUri(uri)
         }
     }
 
@@ -70,9 +60,7 @@ class AddCoralFragment : Fragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
-                selectedImageUri = uri
-                imagePreview.setImageURI(uri)
-                imagePreview.visibility = View.VISIBLE
+                viewModel.setSelectedImageUri(uri)
             }
         }
     }
@@ -94,9 +82,7 @@ class AddCoralFragment : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             val imageBitmap = result.data?.extras?.get("data") as? Bitmap
             imageBitmap?.let { bitmap ->
-                selectedImageUri = fileUtils.saveBitmapToFile(bitmap)
-                imagePreview.setImageBitmap(bitmap)
-                imagePreview.visibility = View.VISIBLE
+                viewModel.setSelectedImageBitmap(bitmap)
             }
         }
     }
@@ -107,16 +93,13 @@ class AddCoralFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_add_coral, container, false)
-        initDependencies()
+        initViewModel()
         initViews(view)
         return view
     }
 
-    private fun initDependencies() {
-        sessionManager = SessionManager(requireContext())
-        fileUtils = FileUtils(requireContext())
-        val coralRepository = CoralRepositoryImpl()
-        addCoralUseCase = AddCoralUseCase(coralRepository, fileUtils)
+    private fun initViewModel() {
+        viewModel = AddCoralViewModel(requireContext())
     }
 
     private fun initViews(view: View) {
@@ -139,6 +122,7 @@ class AddCoralFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
         setupUI()
+        observeViewModel()
     }
 
     private fun setupUI() {
@@ -155,13 +139,87 @@ class AddCoralFragment : Fragment() {
         }
 
         saveButton.setOnClickListener {
-            if (validateInputs()) {
-                saveCoral()
+            val name = coralNameEditText.text.toString()
+            val type = coralTypeEditText.text.toString()
+            val description = coralDescriptionEditText.text.toString()
+            val total = coralTotalEditText.text.toString()
+            val harga = coralhargaEditText.text.toString()
+
+            if (viewModel.validateInputs(name, type, description, total, harga)) {
+                viewModel.saveCoral(name, type, description, total, harga)
             }
         }
 
         cancelButton.setOnClickListener {
             showCancelDialog()
+        }
+    }
+
+    private fun observeViewModel() {
+        // Observe UI State
+        lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                coralNameInput.error = state.nameError
+                coralTypeInput.error = state.typeError
+                coralDescriptionInput.error = state.descriptionError
+
+                if (state.totalError != null) {
+                    coralTotalEditText.error = state.totalError
+                } else {
+                    coralTotalEditText.error = null
+                }
+
+                if (state.hargaError != null) {
+                    coralhargaEditText.error = state.hargaError
+                } else {
+                    coralhargaEditText.error = null
+                }
+            }
+        }
+
+        // Observe Loading State
+        lifecycleScope.launch {
+            viewModel.isLoading.collect { isLoading ->
+                saveButton.isEnabled = !isLoading
+                saveButton.text = if (isLoading) "Saving..." else "Save Coral"
+            }
+        }
+
+        // Observe Selected Image
+        lifecycleScope.launch {
+            viewModel.selectedImageUri.collect { uri ->
+                if (uri != null) {
+                    imagePreview.setImageURI(uri)
+                    imagePreview.visibility = View.VISIBLE
+                } else {
+                    imagePreview.setImageResource(0)
+                    imagePreview.visibility = View.GONE
+                }
+            }
+        }
+
+        // Observe Events
+        lifecycleScope.launch {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is AddCoralEvent.ShowError -> {
+                        Toast.makeText(requireContext(), event.message, Toast.LENGTH_LONG).show()
+                        viewModel.clearEvent()
+                    }
+                    is AddCoralEvent.ShowSuccess -> {
+                        Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
+                        clearForm()
+                        viewModel.clearEvent()
+                    }
+                    is AddCoralEvent.NavigateBack -> {
+                        findNavController().navigateUp()
+                        viewModel.clearEvent()
+                    }
+                    null -> {
+                        // No event
+                    }
+                }
+            }
         }
     }
 
@@ -208,115 +266,14 @@ class AddCoralFragment : Fragment() {
         }
     }
 
-    private fun validateInputs(): Boolean {
-        val name = coralNameEditText.text.toString().trim()
-        val type = coralTypeEditText.text.toString().trim()
-        val description = coralDescriptionEditText.text.toString().trim()
-        val total = coralTotalEditText.text.toString().trim()
-        val harga = coralhargaEditText.text.toString().trim()
-
-        when {
-            name.isEmpty() -> {
-                coralNameInput.error = "Coral name is required"
-                return false
-            }
-            type.isEmpty() -> {
-                coralTypeInput.error = "Coral species is required"
-                return false
-            }
-            total.isEmpty() -> {
-                coralTotalEditText.error = "Total is required"
-                return false
-            }
-            harga.isEmpty() -> {
-                coralhargaEditText.error = "Harga is required"
-                return false
-            }
-            description.isEmpty() -> {
-                coralDescriptionInput.error = "Description is required"
-                return false
-            }
-            selectedImageUri == null -> {
-                Toast.makeText(requireContext(), "Please select an image", Toast.LENGTH_SHORT).show()
-                return false
-            }
-            else -> {
-                coralNameInput.error = null
-                coralTypeInput.error = null
-                coralDescriptionInput.error = null
-                return true
-            }
-        }
-    }
-
-    private fun saveCoral() {
-        if (isLoading) return
-
-        val token = sessionManager.fetchAuthToken()
-        if (token == null) {
-            Toast.makeText(requireContext(), "Session expired. Please login again.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val name = coralNameEditText.text.toString().trim()
-        val type = coralTypeEditText.text.toString().trim()
-        val harga = coralhargaEditText.text.toString().trim()
-        val stok = coralTotalEditText.text.toString().trim()
-        val description= coralDescriptionEditText.text.toString().trim()
-        selectedImageUri?.let { uri ->
-            setLoading(true)
-
-            val params = AddCoralUseCase.AddCoralParams(
-                token = token,
-                name = name,
-                jenis = type,
-                harga = harga,
-                stok = stok,
-                description=description,
-                imageUri = uri
-            )
-
-            lifecycleScope.launch {
-                try {
-                    val result = addCoralUseCase.execute(params)
-
-                    result.fold(
-                        onSuccess = { message ->
-                            setLoading(false)
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                            clearForm()
-                            findNavController().navigateUp()
-                        },
-                        onFailure = { exception ->
-                            setLoading(false)
-                            Log.e("AddCoralFragment", "Error adding coral", exception)
-                            Toast.makeText(requireContext(), exception.message ?: "Unknown error", Toast.LENGTH_LONG).show()
-                        }
-                    )
-                } catch (e: Exception) {
-                    setLoading(false)
-                    Log.e("AddCoralFragment", "Unexpected error", e)
-                    Toast.makeText(requireContext(), "Error preparing image file", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-    private fun setLoading(loading: Boolean) {
-        isLoading = loading
-        saveButton.isEnabled = !loading
-        saveButton.text = if (loading) "Saving..." else "Save Coral"
-    }
-
     private fun clearForm() {
         coralNameEditText.text?.clear()
         coralTypeEditText.text?.clear()
         coralDescriptionEditText.text?.clear()
         coralhargaEditText.text?.clear()
         coralTotalEditText.text?.clear()
-        imagePreview.setImageResource(0)
-        imagePreview.visibility = View.GONE
-        selectedImageUri = null
+        viewModel.setSelectedImageUri(null)
+        viewModel.clearValidationErrors()
     }
 
     private fun showCancelDialog() {
