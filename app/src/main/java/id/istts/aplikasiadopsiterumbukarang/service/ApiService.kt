@@ -1,5 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.service
 
+import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
@@ -103,6 +105,13 @@ interface ApiService {
 
 
     //LOKASI
+    // Add this method to your existing ApiService interface
+
+    @POST("/lokasi/LokasiGoogle")
+    suspend fun addLokasiGoogle(
+        @Header("x-auth-token") token: String,
+        @Body request: AddLokasiRequest
+    ): Response<AddLokasiResponse>
     @GET("/lokasi/Lokasi")
     suspend fun getLokasi(
         @Header("x-auth-token") token: String

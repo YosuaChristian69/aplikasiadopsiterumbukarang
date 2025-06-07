@@ -117,6 +117,9 @@
         <action
             android:id="@+id/action_adminPlaceDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_adminPlaceDashboardFragment_to_addPlaceFragment4"
+            app:destination="@id/addPlaceFragment4" />
     </fragment>
     <fragment
         android:id="@+id/editCoralFragment"
@@ -147,6 +150,14 @@
         <action
             android:id="@+id/action_addWorkerFragment_to_adminWorkerDashboardFragment"
             app:destination="@id/adminWorkerDashboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPlaceFragment4"
+        android:name="id.istts.aplikasiadopsiterumbukarang.ui.fragments.AddPlaceFragment"
+        android:label="AddPlaceFragment" >
+        <action
+            android:id="@+id/action_addPlaceFragment4_to_adminPlaceDashboardFragment"
+            app:destination="@id/adminPlaceDashboardFragment" />
     </fragment>
 
 </navigation>

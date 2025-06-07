@@ -124,7 +124,7 @@ class AdminPlaceDashboardFragment : Fragment() {
 
     private fun setupFab() {
         fabAddPlace.setOnClickListener {
-            Toast.makeText(context, "Add new place", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_adminPlaceDashboardFragment_to_addPlaceFragment4)
         }
     }
 
