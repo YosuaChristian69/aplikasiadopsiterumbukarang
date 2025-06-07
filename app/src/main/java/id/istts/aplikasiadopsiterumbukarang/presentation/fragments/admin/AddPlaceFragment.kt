@@ -183,9 +183,12 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
             lifecycleScope.launch {
                 try {
                     val token = AutocompleteSessionToken.newInstance()
+
+                    // Updated request builder with proper configuration
                     val request = FindAutocompletePredictionsRequest.builder()
                         .setSessionToken(token)
                         .setQuery(query)
+                        .setCountries("ID") // Restrict to Indonesia
                         .build()
 
                     client.findAutocompletePredictions(request)
@@ -194,7 +197,7 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
                             val predictions = response.autocompletePredictions
                             if (predictions.isNotEmpty()) {
                                 val firstPrediction = predictions[0]
-                                // Use the new Places API to get place details
+                                // Use the Places API to get place details
                                 fetchPlaceDetails(firstPrediction.placeId)
                             } else {
                                 Log.d(TAG, "No predictions found")
@@ -205,8 +208,17 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
                         }
                         .addOnFailureListener { exception ->
                             Log.e(TAG, "Places search failed", exception)
-                            if (isAdded) {
-                                Toast.makeText(requireContext(), "Search failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+
+                            // Handle specific error codes
+                            if (exception.message?.contains("9011") == true) {
+                                Log.e(TAG, "Legacy API error - need to enable Places API (New)")
+                                if (isAdded) {
+                                    Toast.makeText(requireContext(), "Please enable Places API (New) in Google Cloud Console", Toast.LENGTH_LONG).show()
+                                }
+                            } else {
+                                if (isAdded) {
+                                    Toast.makeText(requireContext(), "Search failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                 } catch (e: Exception) {
@@ -224,14 +236,25 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
 
     private fun fetchPlaceDetails(placeId: String) {
         placesClient?.let { client ->
-            val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS)
+            // Use compatible place fields
+            val placeFields = listOf(
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.LAT_LNG,
+                Place.Field.ADDRESS
+            )
+
             val request = FetchPlaceRequest.newInstance(placeId, placeFields)
 
             client.fetchPlace(request)
                 .addOnSuccessListener { response ->
                     val place = response.place
                     place.latLng?.let { latLng ->
-                        val address = place.address ?: place.name ?: "Unknown location"
+                        // Use available address fields
+                        val address = place.address
+                            ?: place.name
+                            ?: "Unknown location"
+
                         Log.d(TAG, "Place details: $address at $latLng")
 
                         if (isMapReady && ::googleMap.isInitialized) {
