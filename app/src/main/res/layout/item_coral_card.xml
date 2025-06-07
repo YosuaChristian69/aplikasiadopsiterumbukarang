@@ -23,19 +23,23 @@
         android:padding="16dp">
 
         <!-- Menu Icon (Three Dots) - Top Right -->
-        <ImageView
-            android:id="@+id/ivMenuOptions"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_more_vert"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="4dp"
-            android:contentDescription="Menu Options"
+        <!-- Replace ImageView with a more visible button -->
+        <Button
+            android:id="@+id/btnDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Details"
+            android:textColor="#2a6e73"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:backgroundTint="#E8F5F3"
+            android:padding="8dp"
+            android:fontFamily="sans-serif-medium"
+            android:contentDescription="View Coral Details"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:tint="#2a6e73" />
+            app:backgroundTint="?attr/colorPrimary"
+            app:tint="#FFFFFF"/>
 
         <!-- Coral Image Container with Coral Theme -->
         <androidx.cardview.widget.CardView
@@ -46,7 +50,7 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="#E8F5F3"
-            app:layout_constraintTop_toBottomOf="@+id/ivMenuOptions"
+            app:layout_constraintTop_toBottomOf="@+id/btnDetails"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
