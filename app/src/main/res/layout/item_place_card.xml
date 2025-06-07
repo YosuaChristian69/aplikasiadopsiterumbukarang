@@ -81,25 +81,6 @@
             app:layout_constraintTop_toTopOf="@+id/iconCard"
             app:layout_constraintBottom_toBottomOf="@+id/iconCard">
 
-            <!-- Edit Button -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btn_edit"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="8dp"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="3dp"
-                app:cardBackgroundColor="#2a6e73">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_edit"
-                    app:tint="#FFFFFF" />
-            </androidx.cardview.widget.CardView>
-
             <!-- Delete Button -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/btn_delete"

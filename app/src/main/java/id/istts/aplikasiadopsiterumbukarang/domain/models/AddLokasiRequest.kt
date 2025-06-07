@@ -4,5 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class AddLokasiRequest(
     @SerializedName("address")
-    val address: String
+    val address: String,
+    @SerializedName("description")
+    val description: String
+
 )

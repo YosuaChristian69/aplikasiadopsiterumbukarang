@@ -75,7 +75,6 @@ class LokasiAdapter(
         private val longitude: TextView = itemView.findViewById(R.id.tv_longitude)
         private val preciseCoordinates: TextView = itemView.findViewById(R.id.tv_precise_coordinates)
         private val populationStatus: TextView = itemView.findViewById(R.id.tv_population_status)
-        private val editButton: CardView = itemView.findViewById(R.id.btn_edit)
         private val deleteButton: CardView = itemView.findViewById(R.id.btn_delete)
         private val viewMapsButton: CardView = itemView.findViewById(R.id.btn_view_maps)
 
@@ -90,8 +89,6 @@ class LokasiAdapter(
             // Load precise location using reverse geocoding
             loadPreciseLocation(lokasi.latitude, lokasi.longitude)
 
-            // Set click listeners
-            editButton.setOnClickListener { onEditClick(lokasi) }
             deleteButton.setOnClickListener { onDeleteClick(lokasi) }
             viewMapsButton.setOnClickListener {
                 openGoogleEarth(lokasi.latitude, lokasi.longitude, lokasi.lokasiName)

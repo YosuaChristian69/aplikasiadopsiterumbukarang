@@ -2,8 +2,6 @@ package id.istts.aplikasiadopsiterumbukarang.ui.fragments
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,7 +13,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -24,35 +22,17 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.AutocompletePrediction
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
-import com.google.android.libraries.places.api.net.PlacesClient
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAddPlaceBinding
-import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiRequest
-import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
-import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class AddPlaceFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentAddPlaceBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var viewModel: AddPlaceViewModel
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var placesClient: PlacesClient? = null
-    private lateinit var geocoder: Geocoder
-    private lateinit var sessionManager: SessionManager
-    private var selectedLatLng: LatLng? = null
-    private var selectedAddress: String = ""
     private var isMapReady = false
     private var mapFragment: SupportMapFragment? = null
 
@@ -73,56 +53,23 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Show loading initially
-        binding.progressBar.visibility = View.VISIBLE
+        // Initialize ViewModel
+        viewModel = ViewModelProvider(this)[AddPlaceViewModel::class.java]
 
         // Initialize services
         initializeServices()
         setupUI()
+        setupObservers()
         setupGoogleMaps()
     }
 
     private fun initializeServices() {
         try {
-            // Initialize session manager
-            sessionManager = SessionManager(requireContext())
-
             // Initialize location services
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-            geocoder = Geocoder(requireContext(), Locale.getDefault())
-
-            // Initialize Places API with better error handling
-            initializePlacesAPI()
-
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize services", e)
-            binding.progressBar.visibility = View.GONE
             Toast.makeText(requireContext(), "Failed to initialize services: ${e.message}", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun initializePlacesAPI() {
-        try {
-            val apiKey = getString(R.string.google_maps_key)
-            Log.d(TAG, "API Key length: ${apiKey.length}")
-
-            if (apiKey.isBlank() || apiKey.contains("YOUR_API_KEY")) {
-                Log.e(TAG, "Invalid Google Maps API key")
-                Toast.makeText(requireContext(), "Google Maps API key not configured properly", Toast.LENGTH_LONG).show()
-                return
-            }
-
-            if (!Places.isInitialized()) {
-                Places.initialize(requireContext(), apiKey)
-                Log.d(TAG, "Places API initialized successfully")
-            }
-
-            placesClient = Places.createClient(requireContext())
-            Log.d(TAG, "Places client created successfully")
-
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize Places API", e)
-            Toast.makeText(requireContext(), "Places API initialization failed: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -132,24 +79,85 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
             requireActivity().supportFragmentManager.popBackStack()
         }
 
-        // Add button - initially disabled
-        binding.btnAddPlace.isEnabled = false
-        binding.btnAddPlace.alpha = 0.6f
-
+        // Add button
         binding.btnAddPlace.setOnClickListener {
-            Log.d(TAG, "Add button clicked")
-            Log.d(TAG, "Selected LatLng: $selectedLatLng")
-            Log.d(TAG, "Selected Address: '$selectedAddress'")
+            viewModel.addLocationToBackend()
+        }
 
-            if (selectedLatLng != null && selectedAddress.isNotEmpty()) {
-                addLocationToBackend()
-            } else {
-                Toast.makeText(requireContext(), "Please select a location first", Toast.LENGTH_SHORT).show()
+        setupSearchFunctionality()
+        setupDescriptionFunctionality()
+    }
+
+    private fun setupObservers() {
+        // Loading state
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        // Add button state
+        viewModel.isAddButtonEnabled.observe(viewLifecycleOwner) { isEnabled ->
+            binding.btnAddPlace.isEnabled = isEnabled
+            binding.btnAddPlace.alpha = if (isEnabled) 1.0f else 0.6f
+        }
+
+        // Selected address
+        viewModel.selectedAddress.observe(viewLifecycleOwner) { address ->
+            if (!address.isNullOrEmpty()) {
+                updateAddressOverlay(address)
             }
         }
 
-        // Search functionality with debounce
-        setupSearchFunctionality()
+        // Move map to location (from search)
+        viewModel.moveMapToLocation.observe(viewLifecycleOwner) { locationData ->
+            locationData?.let { (latLng, address) ->
+                if (isMapReady && ::googleMap.isInitialized) {
+                    moveMapToLocation(latLng, address)
+                    viewModel.setLocationFromSearch(latLng, address)
+                }
+                viewModel.clearMoveMapEvent()
+            }
+        }
+
+        // Selected location (for map updates)
+        viewModel.selectedLocation.observe(viewLifecycleOwner) { latLng ->
+            latLng?.let {
+                if (isMapReady && ::googleMap.isInitialized) {
+                    updateMapMarker(it)
+                }
+            }
+        }
+
+        // Error messages
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                viewModel.clearMessages()
+            }
+        }
+
+        // Success messages
+        viewModel.successMessage.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                viewModel.clearMessages()
+            }
+        }
+
+        // Places API errors
+        viewModel.placesApiError.observe(viewLifecycleOwner) { error ->
+            if (!error.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
+                viewModel.clearMessages()
+            }
+        }
+
+        // Finish activity
+        viewModel.shouldFinish.observe(viewLifecycleOwner) { shouldFinish ->
+            if (shouldFinish) {
+                requireActivity().supportFragmentManager.popBackStack()
+                viewModel.clearFinishEvent()
+            }
+        }
     }
 
     private fun setupSearchFunctionality() {
@@ -168,7 +176,7 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
                 if (query.length > 2) {
                     // Debounce search by 500ms
                     searchRunnable = Runnable {
-                        searchPlaces(query)
+                        viewModel.searchPlaces(query)
                     }
                     binding.root.postDelayed(searchRunnable!!, 500)
                 }
@@ -176,99 +184,16 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-    private fun searchPlaces(query: String) {
-        Log.d(TAG, "Searching for: $query")
+    private fun setupDescriptionFunctionality() {
+        binding.etDescription.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-        placesClient?.let { client ->
-            lifecycleScope.launch {
-                try {
-                    val token = AutocompleteSessionToken.newInstance()
-
-                    // Updated request builder with proper configuration
-                    val request = FindAutocompletePredictionsRequest.builder()
-                        .setSessionToken(token)
-                        .setQuery(query)
-                        .setCountries("ID") // Restrict to Indonesia
-                        .build()
-
-                    client.findAutocompletePredictions(request)
-                        .addOnSuccessListener { response ->
-                            Log.d(TAG, "Places search success, found ${response.autocompletePredictions.size} results")
-                            val predictions = response.autocompletePredictions
-                            if (predictions.isNotEmpty()) {
-                                val firstPrediction = predictions[0]
-                                // Use the Places API to get place details
-                                fetchPlaceDetails(firstPrediction.placeId)
-                            } else {
-                                Log.d(TAG, "No predictions found")
-                                if (isAdded) {
-                                    Toast.makeText(requireContext(), "No places found for: $query", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                        .addOnFailureListener { exception ->
-                            Log.e(TAG, "Places search failed", exception)
-
-                            // Handle specific error codes
-                            if (exception.message?.contains("9011") == true) {
-                                Log.e(TAG, "Legacy API error - need to enable Places API (New)")
-                                if (isAdded) {
-                                    Toast.makeText(requireContext(), "Please enable Places API (New) in Google Cloud Console", Toast.LENGTH_LONG).show()
-                                }
-                            } else {
-                                if (isAdded) {
-                                    Toast.makeText(requireContext(), "Search failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error in searchPlaces", e)
-                    if (isAdded) {
-                        Toast.makeText(requireContext(), "Search error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            override fun afterTextChanged(s: Editable?) {
+                val description = s.toString().trim()
+                viewModel.onDescriptionChanged(description)
             }
-        } ?: run {
-            Log.e(TAG, "Places client is null")
-            Toast.makeText(requireContext(), "Search service not available", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun fetchPlaceDetails(placeId: String) {
-        placesClient?.let { client ->
-            // Use compatible place fields
-            val placeFields = listOf(
-                Place.Field.ID,
-                Place.Field.NAME,
-                Place.Field.LAT_LNG,
-                Place.Field.ADDRESS
-            )
-
-            val request = FetchPlaceRequest.newInstance(placeId, placeFields)
-
-            client.fetchPlace(request)
-                .addOnSuccessListener { response ->
-                    val place = response.place
-                    place.latLng?.let { latLng ->
-                        // Use available address fields
-                        val address = place.address
-                            ?: place.name
-                            ?: "Unknown location"
-
-                        Log.d(TAG, "Place details: $address at $latLng")
-
-                        if (isMapReady && ::googleMap.isInitialized) {
-                            moveMapToLocation(latLng, address)
-                        }
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "Failed to fetch place details", exception)
-                    if (isAdded) {
-                        Toast.makeText(requireContext(), "Failed to get place details", Toast.LENGTH_SHORT).show()
-                    }
-                }
-        }
+        })
     }
 
     private fun setupGoogleMaps() {
@@ -287,7 +212,6 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
             mapFragment?.getMapAsync(this)
         } catch (e: Exception) {
             Log.e(TAG, "Error setting up Google Maps", e)
-            binding.progressBar.visibility = View.GONE
             Toast.makeText(requireContext(), "Failed to load map: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
@@ -296,9 +220,6 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         Log.d(TAG, "Map is ready")
         googleMap = map
         isMapReady = true
-
-        // Hide loading indicator
-        binding.progressBar.visibility = View.GONE
 
         try {
             // Configure map settings
@@ -312,7 +233,7 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
             // Set map click listener
             googleMap.setOnMapClickListener { latLng ->
                 Log.d(TAG, "Map clicked at: $latLng")
-                onMapLocationSelected(latLng)
+                viewModel.onMapLocationSelected(latLng)
             }
 
             // Set initial camera position (Surabaya, Indonesia)
@@ -372,10 +293,7 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun onMapLocationSelected(latLng: LatLng) {
-        selectedLatLng = latLng
-        Log.d(TAG, "Location selected: $latLng")
-
+    private fun updateMapMarker(latLng: LatLng) {
         // Clear previous markers
         googleMap.clear()
 
@@ -386,16 +304,11 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
                 .title("Selected Location")
         )
 
-        // Get address from coordinates asynchronously
-        getAddressFromLatLngAsync(latLng)
-
         // Move camera to selected location
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
     }
 
     private fun moveMapToLocation(latLng: LatLng, address: String) {
-        selectedLatLng = latLng
-        selectedAddress = address
         Log.d(TAG, "Moving map to: $latLng with address: $address")
 
         googleMap.clear()
@@ -406,96 +319,13 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         )
 
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
-
         updateAddressOverlay(address)
-        enableAddButton()
-    }
-
-    private fun getAddressFromLatLngAsync(latLng: LatLng) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-                val address = if (addresses?.isNotEmpty() == true) {
-                    addresses[0].getAddressLine(0) ?: "${latLng.latitude}, ${latLng.longitude}"
-                } else {
-                    "${latLng.latitude}, ${latLng.longitude}"
-                }
-
-                withContext(Dispatchers.Main) {
-                    selectedAddress = address
-                    Log.d(TAG, "Address resolved: $selectedAddress")
-                    updateAddressOverlay(selectedAddress)
-                    enableAddButton()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error getting address from coordinates", e)
-                withContext(Dispatchers.Main) {
-                    selectedAddress = "${latLng.latitude}, ${latLng.longitude}"
-                    Log.d(TAG, "Using coordinates as address: $selectedAddress")
-                    updateAddressOverlay(selectedAddress)
-                    enableAddButton()
-                }
-            }
-        }
     }
 
     private fun updateAddressOverlay(address: String) {
         binding.addressOverlay.visibility = View.VISIBLE
         binding.tvSelectedAddress.text = address
         Log.d(TAG, "Address overlay updated: $address")
-    }
-
-    private fun enableAddButton() {
-        binding.btnAddPlace.isEnabled = true
-        binding.btnAddPlace.alpha = 1.0f
-        Log.d(TAG, "Add button enabled")
-    }
-
-    private fun addLocationToBackend() {
-        lifecycleScope.launch {
-            try {
-                val token = sessionManager.fetchAuthToken().toString()
-                if (token.isNullOrEmpty()) {
-                    Toast.makeText(requireContext(), "Authentication required", Toast.LENGTH_SHORT).show()
-                    return@launch
-                }
-
-                Log.d(TAG, "Adding location to backend")
-                Log.d(TAG, "Address to send: '$selectedAddress'")
-                Log.d(TAG, "Coordinates: $selectedLatLng")
-
-                binding.progressBar.visibility = View.VISIBLE
-                binding.btnAddPlace.isEnabled = false
-
-                val request = AddLokasiRequest(address = selectedAddress)
-                Log.d(TAG, "Request object: $request")
-
-                val response = withContext(Dispatchers.IO) {
-                    RetrofitClient.instance.addLokasiGoogle(
-                        token = " $token",
-                        request = request
-                    )
-                }
-
-                Log.d(TAG, "Response code: ${response.code()}")
-                Log.d(TAG, "Response body: ${response.body()}")
-
-                if (response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Location added successfully!", Toast.LENGTH_SHORT).show()
-                    requireActivity().supportFragmentManager.popBackStack()
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e(TAG, "Error response: $errorBody")
-                    Toast.makeText(requireContext(), "Failed to add location: ${response.message()}", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error adding location to backend", e)
-                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            } finally {
-                binding.progressBar.visibility = View.GONE
-                binding.btnAddPlace.isEnabled = true
-            }
-        }
     }
 
     override fun onRequestPermissionsResult(
