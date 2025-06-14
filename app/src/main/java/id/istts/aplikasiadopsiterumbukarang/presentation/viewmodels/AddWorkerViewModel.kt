@@ -1,5 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,12 +20,12 @@ class AddWorkerViewModel(
     private val _addWorkerResult = MutableLiveData<Result<String>>()
     val addWorkerResult: LiveData<Result<String>> = _addWorkerResult
 
-    fun addWorker(token: String, request: AddWorkerRequest) {
+    fun addWorker(token: String, request: AddWorkerRequest, imageUri: Uri? = null, context: Context? = null) {
         _isLoading.value = true
 
         viewModelScope.launch {
             try {
-                val response = repository.addWorker(token, request)
+                val response = repository.addWorker(token, request, imageUri, context)
 
                 if (response.isSuccessful) {
                     val message = response.body()?.msg ?: "Worker added successfully!"
@@ -38,7 +40,6 @@ class AddWorkerViewModel(
                     }
                     _addWorkerResult.value = Result.failure(Exception(errorMessage))
                 }
-
             } catch (e: Exception) {
                 _addWorkerResult.value = Result.failure(e)
             } finally {

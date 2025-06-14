@@ -83,7 +83,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:contentDescription="Edit Worker" />
 
-        <!-- Worker Initial Avatar with Enhanced Styling -->
+        <!-- Worker Avatar Container with Enhanced Styling -->
         <androidx.cardview.widget.CardView
             android:id="@+id/avatar_container"
             android:layout_width="70dp"
@@ -96,6 +96,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
+            <!-- Profile Image -->
+            <ImageView
+                android:id="@+id/iv_worker_profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:contentDescription="Worker Profile Picture" />
+
+            <!-- Initials TextView (fallback) -->
             <TextView
                 android:id="@+id/tv_worker_initials"
                 android:layout_width="match_parent"
@@ -106,6 +116,7 @@
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium"
                 android:background="@drawable/gradient_light_teal"
+                android:visibility="visible"
                 tools:text="DW" />
 
         </androidx.cardview.widget.CardView>

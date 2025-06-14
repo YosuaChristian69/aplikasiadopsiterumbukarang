@@ -7,6 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.DiffUtil
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
@@ -28,7 +30,8 @@ class WorkerAdapter(
         val workerId: TextView = itemView.findViewById(R.id.tv_worker_id)
         val statusText: TextView = itemView.findViewById(R.id.tv_status)
         val statusDot: View = itemView.findViewById(R.id.status_dot)
-        val tvWorkerInitials: TextView= itemView.findViewById(R.id.tv_worker_initials)
+        val tvWorkerInitials: TextView = itemView.findViewById(R.id.tv_worker_initials)
+        val ivWorkerProfile: ImageView = itemView.findViewById(R.id.iv_worker_profile)
         val btnEditWorker: FloatingActionButton = itemView.findViewById(R.id.btn_edit_worker)
     }
 
@@ -64,7 +67,10 @@ class WorkerAdapter(
 
         // Set status (using user_status for display, status for logic)
         holder.statusText.text = worker.user_status
-        holder.tvWorkerInitials.text = getInitials(worker.full_name)
+
+        // Load profile image or show initials
+        loadWorkerProfileImage(holder, worker)
+
         // Set status indicator color based on user_status
         when (worker.user_status.lowercase()) {
             "active", "aktif" -> {
@@ -105,6 +111,51 @@ class WorkerAdapter(
         }
     }
 
+    private fun loadWorkerProfileImage(holder: WorkerViewHolder, worker: Worker) {
+        val imageUrl = buildCloudinaryUrl(worker.img_path, worker.public_id)
+
+        if (imageUrl.isNotEmpty()) {
+            // Load image with Glide
+            Glide.with(holder.itemView.context)
+                .load(imageUrl)
+                .apply(
+                    RequestOptions()
+                        .circleCrop()
+                        .placeholder(R.drawable.ic_person_placeholder)
+                        .error(R.drawable.ic_person_placeholder)
+                        .timeout(10000) // 10 second timeout
+                )
+                .into(holder.ivWorkerProfile)
+
+            // Show image, hide initials
+            holder.ivWorkerProfile.visibility = View.VISIBLE
+            holder.tvWorkerInitials.visibility = View.GONE
+        } else {
+            // Show initials, hide image
+            holder.ivWorkerProfile.visibility = View.GONE
+            holder.tvWorkerInitials.visibility = View.VISIBLE
+            holder.tvWorkerInitials.text = getInitials(worker.full_name)
+        }
+    }
+
+    private fun buildCloudinaryUrl(imgPath: String?, publicId: String?): String {
+        return when {
+            // If img_path is already a complete URL, use it directly
+            !imgPath.isNullOrEmpty() && (imgPath.startsWith("http://") || imgPath.startsWith("https://")) -> {
+                imgPath
+            }
+            // If we have public_id, build Cloudinary URL
+            !publicId.isNullOrEmpty() -> {
+                "https://res.cloudinary.com/your-cloud-name/image/upload/c_fill,g_face,h_200,w_200,q_auto,f_auto/$publicId"
+            }
+            // If we have img_path but it's not a complete URL, assume it's a Cloudinary path
+            !imgPath.isNullOrEmpty() -> {
+                "https://res.cloudinary.com/your-cloud-name/image/upload/c_fill,g_face,h_200,w_200,q_auto,f_auto/$imgPath"
+            }
+            else -> ""
+        }
+    }
+
     override fun getItemCount(): Int = workers.size
 
     fun updateWorkers(newWorkers: List<Worker>) {
@@ -114,13 +165,13 @@ class WorkerAdapter(
         workers = newWorkers
         diffResult.dispatchUpdatesTo(this)
     }
+
     fun getInitials(fullName: String): String {
         return fullName.split(" ")
             .take(2)
             .map { it.first().uppercase() }
             .joinToString("")
     }
-
 
     private class WorkerDiffCallback(
         private val oldList: List<Worker>,

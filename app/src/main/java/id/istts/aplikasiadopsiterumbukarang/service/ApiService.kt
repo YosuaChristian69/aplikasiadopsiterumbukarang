@@ -82,6 +82,18 @@ interface ApiService {
         @Header("x-auth-token") token: String,
         @Body request: AddWorkerRequest
     ): Response<AddWorkerResponse>
+    // Add this method to your existing ApiService interface
+
+    @Multipart
+    @POST("/users/addUserWorker")
+    suspend fun addUserWorkerWithImage(
+        @Header("x-auth-token") token: String,
+        @Part("name") name: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("password") password: RequestBody,
+        @Part profile_picture: MultipartBody.Part
+    ): Response<AddWorkerResponse>
+
     @PUT("/users/updateUser/{id}")
     suspend fun updateUserById(
         @Path("id") id: String,
