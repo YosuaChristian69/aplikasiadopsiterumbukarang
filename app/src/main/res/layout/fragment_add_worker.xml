@@ -114,6 +114,63 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
+                    <!-- Profile Image Section -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="24dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:fontFamily="@font/roboto_medium"
+                            android:text="Profile Photo"
+                            android:textColor="@color/ocean_text"
+                            android:textSize="16sp" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/profileImageCard"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:layout_marginBottom="12dp"
+                            app:cardBackgroundColor="@color/surface"
+                            app:cardCornerRadius="60dp"
+                            app:cardElevation="4dp"
+                            app:strokeColor="@color/sea_green"
+                            app:strokeWidth="2dp">
+
+                            <ImageView
+                                android:id="@+id/profileImageView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_person_placeholder"
+                                android:contentDescription="Profile Image"
+                                app:tint="@color/sea_green" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/selectImageButton"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Select Photo"
+                            android:textColor="@color/sea_green"
+                            android:textSize="14sp"
+                            app:cornerRadius="20dp"
+                            app:icon="@drawable/ic_camera"
+                            app:iconGravity="textStart"
+                            app:iconTint="@color/sea_green"
+                            app:strokeColor="@color/sea_green"
+                            app:strokeWidth="1dp"
+                            app:rippleColor="@color/sea_green_light" />
+
+                    </LinearLayout>
+
                     <!-- Full Name Input -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/fullNameInputLayout"
@@ -168,7 +225,6 @@
                             android:textSize="16sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-
                     <!-- Password Input -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/passwordInputLayout"
@@ -198,6 +254,7 @@
                             android:textColor="@color/primary_text"
                             android:textSize="16sp" />
                     </com.google.android.material.textfield.TextInputLayout>
+
                     <!-- Action Buttons -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/addWorkerButton"
