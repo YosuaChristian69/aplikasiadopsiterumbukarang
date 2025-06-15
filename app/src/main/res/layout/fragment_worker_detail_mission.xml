@@ -21,7 +21,7 @@
             android:id="@+id/iv_user_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/circle_white_background"
+            android:background=""
             android:src="@drawable/ic_person"
             android:scaleType="centerInside"
             android:padding="8dp" />
@@ -79,8 +79,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/coral_sample"
-                    tools:src="@drawable/coral_sample" />
+                    android:src=""
+                    tools:src="" />
 
             </androidx.cardview.widget.CardView>
 

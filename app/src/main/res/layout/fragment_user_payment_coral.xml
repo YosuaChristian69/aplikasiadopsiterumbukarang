@@ -55,7 +55,7 @@
                     android:text="payment_gopay"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
+                    android:textColor="#FFFFFF"
                     android:gravity="center" />
 
                 <View
@@ -71,7 +71,7 @@
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
-                android:backgroundTint="@color/surface_primary">
+                android:backgroundTint="#FFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -99,14 +99,14 @@
                             android:text="gopay"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
+                            android:textColor="#212121" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="gopay_description"
                             android:textSize="12sp"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="#757575" />
 
                     </LinearLayout>
 
@@ -121,7 +121,7 @@
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
-                android:backgroundTint="@color/surface_primary">
+                android:backgroundTint="#FFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -135,7 +135,7 @@
                         android:text="order_summary"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#212121"
                         android:layout_marginBottom="12dp" />
 
                     <LinearLayout
@@ -150,7 +150,7 @@
                             android:layout_weight="1"
                             android:text="@string/coral_subscription"
                             android:textSize="14sp"
-                            android:textColor="@color/text_primary" />
+                            android:textColor="#212121" />
 
                         <TextView
                             android:id="@+id/tv_subscription_price"
@@ -158,7 +158,7 @@
                             android:layout_height="wrap_content"
                             android:text="Rp 50.000"
                             android:textSize="14sp"
-                            android:textColor="@color/text_primary" />
+                            android:textColor="#212121" />
 
                     </LinearLayout>
 
@@ -174,7 +174,7 @@
                             android:layout_weight="1"
                             android:text="@string/admin_fee"
                             android:textSize="14sp"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="#757575" />
 
                         <TextView
                             android:id="@+id/tv_admin_fee"
@@ -182,14 +182,14 @@
                             android:layout_height="wrap_content"
                             android:text="Rp 2.500"
                             android:textSize="14sp"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="#757575" />
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/divider"
+                        android:background="#E0E0E0"
                         android:layout_marginVertical="8dp" />
 
                     <LinearLayout
@@ -204,7 +204,7 @@
                             android:text="@string/total_payment"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary" />
+                            android:textColor="#212121" />
 
                         <TextView
                             android:id="@+id/tv_total_amount"
@@ -213,7 +213,7 @@
                             android:text="Rp 52.500"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="@color/accent_primary" />
+                            android:textColor="#FF6B35" />
 
                     </LinearLayout>
 
@@ -228,7 +228,7 @@
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
-                android:backgroundTint="@color/surface_primary">
+                android:backgroundTint="#FFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -242,7 +242,7 @@
                         android:text="@string/payment_instructions"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#212121"
                         android:layout_marginBottom="12dp" />
 
                     <TextView
@@ -250,7 +250,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/gopay_instructions"
                         android:textSize="14sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="#757575"
                         android:lineSpacingMultiplier="1.2" />
 
                 </LinearLayout>
@@ -271,14 +271,14 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginBottom="12dp"
-                    android:indeterminateTint="@color/accent_primary" />
+                    android:indeterminateTint="#FF6B35" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/processing_payment"
                     android:textSize="14sp"
-                    android:textColor="@color/text_secondary" />
+                    android:textColor="#757575" />
 
             </LinearLayout>
 
@@ -298,7 +298,7 @@
                     android:text="@string/scan_qr_gopay"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
+                    android:textColor="#FFFFFF"
                     android:layout_marginBottom="16dp" />
 
                 <androidx.cardview.widget.CardView
@@ -322,7 +322,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/qr_code_instructions"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="#B0BEC5"
                     android:gravity="center"
                     android:lineSpacingMultiplier="1.2" />
 
@@ -353,7 +353,7 @@
                     android:layout_height="48dp"
                     android:text="@string/cancel_payment"
                     android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="#757575"
                     android:background="@drawable/button_secondary"
                     style="?android:attr/borderlessButtonStyle" />
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Accessibility and UI Labels -->
+    <string name="background_coral">Coral background image</string>
+    <string name="back">Back</string>
+    <string name="gopay_logo">GoPay logo</string>
+    <string name="qr_code">QR Code</string>
+
+    <!-- Payment Method -->
+    <string name="gopay_description">Digital wallet for easy payment</string>
+
+    <!-- Order Summary -->
+    <string name="coral_subscription">Coral Subscription</string>
+    <string name="admin_fee">Admin Fee</string>
+    <string name="total_payment">Total Payment</string>
+
+    <!-- Payment Instructions -->
+    <string name="payment_instructions">Payment Instructions</string>
+    <string name="gopay_instructions">1. Click "Pay Now" button below\n2. You will be redirected to GoPay app\n3. Confirm payment in GoPay app\n4. Return to this app to complete transaction</string>
+
+    <!-- Payment Process -->
+    <string name="processing_payment">Processing payment...</string>
+    <string name="scan_qr_gopay">Scan QR Code with GoPay</string>
+    <string name="qr_code_instructions">Open GoPay app and scan this QR code to complete your payment</string>
+
+    <!-- Action Buttons -->
+    <string name="pay_now">Pay Now</string>
+    <string name="cancel_payment">Cancel Payment</string>
+</resources>
