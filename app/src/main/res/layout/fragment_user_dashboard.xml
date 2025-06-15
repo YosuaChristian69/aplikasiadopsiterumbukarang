@@ -91,7 +91,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_weight="1"
-                                android:src="@drawable/coral_image_1"
+                                android:src=""
                                 android:scaleType="centerCrop"
                                 app:cardCornerRadius="10dp" />
 
@@ -129,7 +129,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_weight="1"
-                                android:src="@drawable/coral_image_2"
+                                android:src=""
                                 android:scaleType="centerCrop"
                                 app:cardCornerRadius="10dp" />
 
