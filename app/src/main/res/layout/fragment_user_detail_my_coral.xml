@@ -54,7 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="" />
+                    />
 
             </androidx.cardview.widget.CardView>
 
@@ -110,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="" />
+                    />
 
             </androidx.cardview.widget.CardView>
 
@@ -488,7 +488,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                android:src="" />
+                                />
 
                         </androidx.cardview.widget.CardView>
 
@@ -496,8 +496,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_coral_logo"
-                            android:tint="#1a4a52"
-                            android:layout_marginTop="8dp" />
+                            android:layout_marginTop="8dp"
+                            app:tint="#1a4a52" />
 
                     </LinearLayout>
 
@@ -525,7 +525,6 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:background="#F44336"
-                android:border="0dp"
                 android:letterSpacing="0.1" />
 
         </androidx.cardview.widget.CardView>

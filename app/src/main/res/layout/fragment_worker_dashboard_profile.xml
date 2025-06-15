@@ -35,7 +35,6 @@
             android:layout_height="48dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:background=""
             android:src="@drawable/ic_edit"
             android:contentDescription="Edit Profile"
             android:backgroundTint="#4DFFFF" />
@@ -74,7 +73,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src=""
                     android:contentDescription="Profile Photo" />
 
             </androidx.cardview.widget.CardView>

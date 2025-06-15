@@ -63,7 +63,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
-                        android:src="" />
+                         />
 
                     <TextView
                         android:id="@+id/tvCoralSpecies1"
@@ -104,7 +104,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
-                        android:src="" />
+                        />
 
                     <TextView
                         android:id="@+id/tvCoralSpecies2"
@@ -154,7 +154,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
-                        android:src="" />
+                         />
 
                     <TextView
                         android:id="@+id/tvCoralSpecies3"
@@ -195,7 +195,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
-                        android:src="" />
+                        />
 
                     <TextView
                         android:id="@+id/tvCoralSpecies4"

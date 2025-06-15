@@ -2,7 +2,6 @@
 <resources>
     <!-- Accessibility and UI Labels -->
     <string name="background_coral">Coral background image</string>
-    <string name="back">Back</string>
     <string name="gopay_logo">GoPay logo</string>
     <string name="qr_code">QR Code</string>
 

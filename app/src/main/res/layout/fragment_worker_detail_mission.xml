@@ -21,7 +21,6 @@
             android:id="@+id/iv_user_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background=""
             android:src="@drawable/ic_person"
             android:scaleType="centerInside"
             android:padding="8dp" />
@@ -74,13 +73,13 @@
                 app:cardElevation="4dp"
                 android:layout_marginBottom="24dp">
 
-                <ImageView
-                    android:id="@+id/iv_coral_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src=""
-                    tools:src="" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/iv_coral_image"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:scaleType="centerCrop"-->
+<!--                    android:src=""-->
+<!--                    tools:src="" />-->
 
             </androidx.cardview.widget.CardView>
 
