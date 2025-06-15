@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_alignParentTop="true"
-            android:src="@drawable/bg_coral_payment"
+            android:src=""
             android:scaleType="centerCrop"
             android:alpha="0.1"
             android:contentDescription="@string/background_coral" />
@@ -343,7 +343,7 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/button_primary"
+                    android:background=""
                     android:layout_marginBottom="12dp"
                     android:elevation="2dp" />
 
@@ -354,7 +354,7 @@
                     android:text="@string/cancel_payment"
                     android:textSize="14sp"
                     android:textColor="#757575"
-                    android:background="@drawable/button_secondary"
+                    android:background=""
                     style="?android:attr/borderlessButtonStyle" />
 
             </LinearLayout>
