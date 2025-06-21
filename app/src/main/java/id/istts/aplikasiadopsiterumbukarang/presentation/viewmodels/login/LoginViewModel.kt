@@ -6,9 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.LoginRepository
-import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginResponse
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
 import org.json.JSONObject

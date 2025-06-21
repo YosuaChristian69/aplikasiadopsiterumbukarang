@@ -34,7 +34,7 @@ import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import id.istts.aplikasiadopsiterumbukarang.R
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.RegisterViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.register.RegisterViewModel
 
 class RegisterFragment : Fragment() {
 

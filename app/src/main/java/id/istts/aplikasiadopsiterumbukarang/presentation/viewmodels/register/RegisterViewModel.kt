@@ -1,19 +1,29 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.register
 
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationRequest
-import id.istts.aplikasiadopsiterumbukarang.domain.models.RequestVerificationResponse
-import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterRequest
-import id.istts.aplikasiadopsiterumbukarang.domain.models.VerifyAndRegisterResponse
+import id.istts.aplikasiadopsiterumbukarang.data.datasource.RegisterRemoteDataSource
+import id.istts.aplikasiadopsiterumbukarang.data.repository.RegisterRepositoryImpl
+import id.istts.aplikasiadopsiterumbukarang.domain.models.register.RequestVerificationRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.register.RequestVerificationResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.register.VerifyAndRegisterRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.register.VerifyAndRegisterResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.repository.RegisterRepository
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class RegisterViewModel : ViewModel() {
+
+    // Initialize repository
+    private val repository: RegisterRepository by lazy {
+        RegisterRepositoryImpl(
+            RegisterRemoteDataSource(RetrofitClient.instance)
+        )
+    }
 
     private val _registerState = MutableLiveData<RegisterState>()
     val registerState: LiveData<RegisterState> = _registerState
@@ -69,7 +79,8 @@ class RegisterViewModel : ViewModel() {
             password = password
         )
 
-        RetrofitClient.instance.requestVerification(request).enqueue(object :
+        // Using repository instead of direct API call
+        repository.requestVerification(request).enqueue(object :
             Callback<RequestVerificationResponse> {
             override fun onResponse(call: Call<RequestVerificationResponse>, response: Response<RequestVerificationResponse>) {
                 _isGetCodeLoading.value = false
@@ -112,11 +123,10 @@ class RegisterViewModel : ViewModel() {
         val request = VerifyAndRegisterRequest(
             email = email,
             verificationCode = verificationCode
-            // You can add recaptcha token to your request model if needed
-            // recaptchaToken = recaptchaToken
         )
 
-        RetrofitClient.instance.verifyAndRegister(request).enqueue(object :
+        // Using repository instead of direct API call
+        repository.verifyAndRegister(request).enqueue(object :
             Callback<VerifyAndRegisterResponse> {
             override fun onResponse(call: Call<VerifyAndRegisterResponse>, response: Response<VerifyAndRegisterResponse>) {
                 _isRegisterLoading.value = false

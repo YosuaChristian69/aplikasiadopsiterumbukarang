@@ -1,7 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.data.repositories
 
-import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginRequest
-import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.LoginRepository
 import id.istts.aplikasiadopsiterumbukarang.service.ApiService
 import kotlinx.coroutines.Dispatchers

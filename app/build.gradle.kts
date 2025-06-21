@@ -76,4 +76,5 @@ dependencies {
 
     // Safety Net (if needed)
     implementation("com.google.android.gms:play-services-safetynet:18.0.1")
+
 }

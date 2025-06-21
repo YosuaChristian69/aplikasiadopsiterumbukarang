@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.domain.models
+package id.istts.aplikasiadopsiterumbukarang.domain.models.register
 
 data class RequestVerificationRequest(
     val name: String,
