@@ -128,7 +128,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         _errorMessage.value = errorMsg
     }
 
-    private fun decodeTokenPayload(token: String): JSONObject {
+    internal fun decodeTokenPayload(token: String): JSONObject {
         val payload = token.split(".")[1]
         val decodedBytes = Base64.decode(
             normalizeBase64(payload),
