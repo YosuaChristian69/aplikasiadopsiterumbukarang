@@ -103,12 +103,6 @@ class WorkerAdapter(
             // Trigger edit callback
             onEditClick(worker)
         }
-
-        // Optional: Add ripple effect for the entire card
-        holder.itemView.setOnClickListener {
-            // You can add card click functionality here if needed
-            // For now, we'll just focus on the edit button
-        }
     }
 
     private fun loadWorkerProfileImage(holder: WorkerViewHolder, worker: Worker) {

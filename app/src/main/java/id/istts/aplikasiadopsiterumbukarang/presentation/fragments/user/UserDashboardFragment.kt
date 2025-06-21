@@ -1,6 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +14,13 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class UserDashboardFragment : Fragment() {
 
     private lateinit var sessionManager: SessionManager
-    private lateinit var welcomeTextView: TextView
+    private lateinit var userGreetingTextView: TextView
+    private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var logoutButton: Button
 
     override fun onCreateView(
@@ -32,77 +35,143 @@ class UserDashboardFragment : Fragment() {
 
         sessionManager = SessionManager(requireContext())
 
-        // Gunakan lifecycleScope untuk memastikan navigation aman
+        // Initialize views first
+        initializeViews(view)
+
+        // Setup logout button immediately (tidak tergantung validasi)
+        setupLogoutButton()
+
         lifecycleScope.launch {
             if (!validateUserAccess()) {
                 return@launch
             }
+            setupViews()
+        }
+    }
 
-            setupViews(view)
+    private fun initializeViews(view: View) {
+        try {
+            // Find the TextView that shows "Hi, USER" in your layout
+            userGreetingTextView = view.findViewById<TextView>(R.id.userGreetingTextView)
+                ?: throw IllegalStateException("userGreetingTextView not found in layout")
+
+            bottomNavigation = view.findViewById<BottomNavigationView>(R.id.bottom_navigation)
+                ?: throw IllegalStateException("bottom_navigation not found in layout")
+
+            logoutButton = view.findViewById<Button>(R.id.logoutButton)
+                ?: throw IllegalStateException("logoutButton not found in layout")
+
+            Log.d("UserDashboard", "All views initialized successfully")
+        } catch (e: Exception) {
+            Log.e("UserDashboard", "Error initializing views: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    private fun setupLogoutButton() {
+        try {
+            // Setup logout button click listener dengan logging
+            logoutButton.setOnClickListener {
+                Log.d("UserDashboard", "Logout button clicked!")
+                Toast.makeText(requireContext(), "Logout button pressed", Toast.LENGTH_SHORT).show()
+                performLogout()
+            }
+
+            // Pastikan button bisa diklik
+            logoutButton.isClickable = true
+            logoutButton.isEnabled = true
+
+            Log.d("UserDashboard", "Logout button setup complete")
+        } catch (e: Exception) {
+            Log.e("UserDashboard", "Error setting up logout button: ${e.message}")
+            e.printStackTrace()
         }
     }
 
     private fun validateUserAccess(): Boolean {
-        // Cek apakah fragment masih aktif sebelum navigation
         if (!isAdded || isDetached) {
+            Log.w("UserDashboard", "Fragment not properly attached")
             return false
         }
 
         if (!sessionManager.isLoggedIn()) {
+            Log.w("UserDashboard", "User not logged in")
             navigateToLogin()
             return false
         }
 
         val userStatus = sessionManager.fetchUserStatus()
         if (userStatus != "user") {
+            Log.w("UserDashboard", "Invalid user status: $userStatus")
             navigateToLogin()
             return false
         }
 
+        Log.d("UserDashboard", "User access validated successfully")
         return true
     }
 
-    private fun setupViews(view: View) {
-        welcomeTextView = view.findViewById(R.id.welcomeTextView)
-        logoutButton = view.findViewById(R.id.logoutButton)
+    private fun setupViews() {
+        try {
+            val userName = sessionManager.fetchUserName() ?: "User"
+            userGreetingTextView.text = "Hi, $userName"
 
-        val userName = sessionManager.fetchUserName() ?: "User"
-        welcomeTextView.text = "Welcome, $userName!"
+            // Setup bottom navigation if needed
+            bottomNavigation.setOnItemSelectedListener { menuItem ->
+                when (menuItem.itemId) {
+                    // Handle navigation items based on your menu
+                    // R.id.nav_home -> { /* Handle home */ }
+                    // R.id.nav_profile -> { /* Handle profile */ }
+                    else -> false
+                }
+            }
 
-        logoutButton.setOnClickListener {
-            performLogout()
+            Log.d("UserDashboard", "Views setup complete")
+        } catch (e: Exception) {
+            Log.e("UserDashboard", "Error setting up views: ${e.message}")
+            e.printStackTrace()
         }
     }
 
     private fun navigateToLogin() {
-        // Pastikan fragment masih aktif dan navigation controller tersedia
         if (isAdded && !isDetached && !isRemoving) {
             try {
+                Log.d("UserDashboard", "Navigating to login")
                 findNavController().navigate(R.id.action_userDashboardFragment_to_loginFragment)
             } catch (e: Exception) {
-                // Log error jika perlu, tapi jangan crash
+                Log.e("UserDashboard", "Navigation error: ${e.message}")
                 e.printStackTrace()
             }
         }
     }
 
     private fun performLogout() {
-        // Pastikan fragment masih aktif sebelum logout
         if (!isAdded || isDetached) {
+            Log.w("UserDashboard", "Cannot perform logout - fragment not attached")
             return
         }
 
-        // Clear user session
-        sessionManager.clearSession()
+        try {
+            Log.d("UserDashboard", "Performing logout...")
 
-        Toast.makeText(requireContext(), "Anda berhasil Logout", Toast.LENGTH_SHORT).show()
+            // Clear session data
+            sessionManager.clearSession()
 
-        navigateToLogin()
+            // Show logout confirmation message
+            Toast.makeText(requireContext(), "Anda berhasil Logout", Toast.LENGTH_SHORT).show()
+
+            // Navigate to login screen
+            navigateToLogin()
+        } catch (e: Exception) {
+            Log.e("UserDashboard", "Error during logout: ${e.message}")
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "Error during logout", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        // Validasi ulang saat fragment resume (kembali dari background)
+        Log.d("UserDashboard", "Fragment resumed")
         if (!validateUserAccess()) {
             return
         }

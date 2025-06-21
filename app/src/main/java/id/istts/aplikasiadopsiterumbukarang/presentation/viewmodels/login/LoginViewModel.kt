@@ -1,20 +1,19 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.login
 
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.repositories.LoginRepository
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LoginResponse
-import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
+import kotlinx.coroutines.launch
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
     // LiveData untuk UI state
     private val _loginState = MutableLiveData<LoginState>()
@@ -61,20 +60,25 @@ class LoginViewModel : ViewModel() {
         _isLoading.value = true
         _loginState.value = LoginState.Loading
 
-        // API call
-        RetrofitClient.instance.login(LoginRequest(email, password))
-            .enqueue(object : Callback<LoginResponse> {
-                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    _isLoading.value = false
-                    handleLoginResponse(response)
-                }
+        // API call using repository
+        viewModelScope.launch {
+            try {
+                val result = loginRepository.login(LoginRequest(email, password))
 
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    _isLoading.value = false
-                    _loginState.value = LoginState.Error("Network error: ${t.message}")
-                    _errorMessage.value = "Network error: ${t.message}"
-                }
-            })
+                result.fold(
+                    onSuccess = { loginResponse ->
+                        handleLoginSuccess(loginResponse)
+                    },
+                    onFailure = { exception ->
+                        handleLoginError(exception)
+                    }
+                )
+            } catch (e: Exception) {
+                handleLoginError(e)
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
     private fun validateInput(email: String, password: String): Boolean {
@@ -91,39 +95,37 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    private fun handleLoginResponse(response: Response<LoginResponse>) {
-        if (response.isSuccessful && response.body()?.msg?.equals("success login", true) == true) {
-            response.body()?.token?.let { token ->
-                sessionManager?.saveAuthToken(token)
+    private fun handleLoginSuccess(loginResponse: LoginResponse) {
+        if (loginResponse.msg.equals("success login", true) && loginResponse.token != null) {
+            sessionManager?.saveAuthToken(loginResponse.token)
 
-                try {
-                    val userDetails = decodeTokenPayload(token)
-                    sessionManager?.saveUserDetails(
-                        userDetails.getString("full_name"),
-                        userDetails.getString("email"),
-                        userDetails.getString("status")
-                    )
+            try {
+                val userDetails = decodeTokenPayload(loginResponse.token)
+                sessionManager?.saveUserDetails(
+                    userDetails.getString("full_name"),
+                    userDetails.getString("email"),
+                    userDetails.getString("status")
+                )
 
-                    _loginState.value = LoginState.Success
-                    _successMessage.value = "Login successful"
-                    navigateBasedOnRole(userDetails.getString("status"))
+                _loginState.value = LoginState.Success
+                _successMessage.value = "Login successful"
+                navigateBasedOnRole(userDetails.getString("status"))
 
-                } catch (e: Exception) {
-                    Log.e("LoginViewModel", "Token decode error", e)
-                    _loginState.value = LoginState.Error("Authentication error")
-                    _errorMessage.value = "Authentication error"
-                }
+            } catch (e: Exception) {
+                Log.e("LoginViewModel", "Token decode error", e)
+                _loginState.value = LoginState.Error("Authentication error")
+                _errorMessage.value = "Authentication error"
             }
         } else {
-            val errorMsg = try {
-                val errorJson = JSONObject(response.errorBody()?.string() ?: "{}")
-                errorJson.optString("msg", "Login failed")
-            } catch (e: Exception) {
-                "Login failed: ${response.code()}"
-            }
-            _loginState.value = LoginState.Error(errorMsg)
-            _errorMessage.value = errorMsg
+            _loginState.value = LoginState.Error("Login failed")
+            _errorMessage.value = "Login failed"
         }
+    }
+
+    private fun handleLoginError(exception: Throwable) {
+        val errorMsg = exception.message ?: "Unknown error occurred"
+        _loginState.value = LoginState.Error(errorMsg)
+        _errorMessage.value = errorMsg
     }
 
     private fun decodeTokenPayload(token: String): JSONObject {

@@ -17,7 +17,10 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import id.istts.aplikasiadopsiterumbukarang.R
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.LoginViewModel
+import id.istts.aplikasiadopsiterumbukarang.data.repositories.LoginRepositoryImpl
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.login.LoginViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.login.LoginViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 
 class LoginFragment : Fragment() {
@@ -61,7 +64,14 @@ class LoginFragment : Fragment() {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        // Create repository instance
+        val loginRepository = LoginRepositoryImpl(RetrofitClient.instance)
+
+        // Create ViewModel with factory
+        val factory = LoginViewModelFactory(loginRepository)
+        viewModel = ViewModelProvider(this, factory)[LoginViewModel::class.java]
+
+        // Initialize session manager
         viewModel.initSessionManager(sessionManager)
     }
 

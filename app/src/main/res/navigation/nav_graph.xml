@@ -16,11 +16,11 @@
             android:id="@+id/action_loginFragment_to_userDashboardFragment"
             app:destination="@id/userDashboardFragment" />
         <action
-            android:id="@+id/action_loginFragment_to_workerDashboardFragment"
-            app:destination="@id/workerDashboardFragment" />
-        <action
             android:id="@+id/action_loginFragment_to_adminDashboardFragment"
             app:destination="@id/adminDashboardFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_workerDashboardFragment"
+            app:destination="@id/workerDashboardFragment" />
     </fragment>
 
     <fragment
@@ -61,15 +61,6 @@
         <action
             android:id="@+id/action_adminDashboardFragment_to_editCoralFragment"
             app:destination="@id/editCoralFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/workerDashboardFragment"
-        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker.WorkerDashboardFragment"
-        android:label="fragment_worker_dashboard"
-        tools:layout="@layout/fragment_worker_dashboard" >
-        <action
-            android:id="@+id/action_workerDashboardFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/addCoralFragment"
@@ -158,6 +149,14 @@
         <action
             android:id="@+id/action_addPlaceFragment4_to_adminPlaceDashboardFragment"
             app:destination="@id/adminPlaceDashboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/workerDashboardFragment"
+        android:name="WorkerDashboardFragment"
+        android:label="WorkerDashboardFragment" >
+        <action
+            android:id="@+id/action_workerDashboardFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
 </navigation>
