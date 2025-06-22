@@ -198,6 +198,9 @@
         <action
             android:id="@+id/action_userPaymentCoralFragment_to_userSelectSpeciesFragment"
             app:destination="@id/userSelectSpeciesFragment" />
+        <argument
+            android:name="coralId"
+            app:argType="integer" />
     </fragment>
 
 </navigation>
