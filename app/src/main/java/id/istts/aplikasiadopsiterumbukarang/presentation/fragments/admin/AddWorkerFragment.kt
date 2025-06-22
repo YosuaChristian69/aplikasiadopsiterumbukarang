@@ -26,7 +26,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAddWorkerBinding
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AddWorkerViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addWorker.AddWorkerViewModel
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
 

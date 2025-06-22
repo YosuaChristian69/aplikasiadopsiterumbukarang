@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addWorker
 
 import android.content.Context
 import android.net.Uri
@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonParser
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.AddWorkerRepository
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class AddWorkerViewModel(
                 } else {
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = try {
-                        val errorJson = com.google.gson.JsonParser.parseString(errorBody)
+                        val errorJson = JsonParser.parseString(errorBody)
                         errorJson.asJsonObject.get("msg").asString
                     } catch (e: Exception) {
                         "Failed to add worker. Please try again."

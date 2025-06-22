@@ -2,7 +2,6 @@
 
     import android.net.Uri
     import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
-    import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
     import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
     import kotlinx.coroutines.ExperimentalCoroutinesApi
     import kotlinx.coroutines.test.runTest

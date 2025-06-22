@@ -1,7 +1,6 @@
-package id.istts.aplikasiadopsiterumbukarang.ui.fragments
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addPlace
 
 import android.app.Application
-import android.location.Address
 import android.location.Geocoder
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel

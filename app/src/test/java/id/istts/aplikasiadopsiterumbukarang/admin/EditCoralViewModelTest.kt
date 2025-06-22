@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang
+package id.istts.aplikasiadopsiterumbukarang.admin
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral

@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAddPlaceBinding
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addPlace.AddPlaceViewModel
 
 class AddPlaceFragment : Fragment(), OnMapReadyCallback {
 
@@ -54,7 +55,7 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize ViewModel
-        viewModel = ViewModelProvider(this)[AddPlaceViewModel::class.java]
+        viewModel = ViewModelProvider(this)[id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addPlace.AddPlaceViewModel::class.java]
 
         // Initialize services
         initializeServices()
