@@ -91,8 +91,8 @@ class UserSelectSpeciesFragment : Fragment() {
                 Log.d("UserSelectSpecies", "Proceeding with ${selectedCoral.tk_name}")
 
                 // TODO: Navigate to the next fragment, passing the coral's ID
-                // val action = UserSelectSpeciesFragmentDirections.actionToNextFragment(selectedCoral.id_tk)
-                // findNavController().navigate(action)
+                 val action = UserSelectSpeciesFragmentDirections.actionToNextFragment(selectedCoral.id_tk)
+                 findNavController().navigate(action)
 
                 Toast.makeText(requireContext(), "${selectedCoral.tk_name} selected!", Toast.LENGTH_SHORT).show()
             } else {
