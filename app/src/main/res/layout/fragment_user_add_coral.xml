@@ -127,26 +127,26 @@
                 android:id="@+id/btnBack"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="#F60505"
+                android:elevation="4dp"
                 android:text="BACK"
                 android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:background="#F81616"
-                android:elevation="4dp" />
+                android:textStyle="bold" />
 
             <!-- Next Button -->
             <Button
                 android:id="@+id/btnNext"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="#00BCD4"
+                android:elevation="4dp"
                 android:text="NEXT"
                 android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:background="#4EF8BF"
-                android:elevation="4dp" />
+                android:textStyle="bold" />
 
         </LinearLayout>
 
