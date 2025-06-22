@@ -111,7 +111,7 @@ class AdminWorkerDashboardFragment : Fragment() {
         workerAdapter = WorkerAdapter { worker ->
             navigateToEditWorker(worker)
         }
-            recyclerView?.apply {
+        recyclerView?.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = workerAdapter
         }
@@ -276,6 +276,7 @@ class AdminWorkerDashboardFragment : Fragment() {
             }
         }
     }
+
     private fun navigateToEditWorker(worker: Worker) {
         if (isAdded && !isDetached && !isRemoving) {
             try {
@@ -307,6 +308,7 @@ class AdminWorkerDashboardFragment : Fragment() {
             }
         }
     }
+
     private fun navigateToAdminDashboard() {
         if (isAdded && !isDetached && !isRemoving) {
             try {

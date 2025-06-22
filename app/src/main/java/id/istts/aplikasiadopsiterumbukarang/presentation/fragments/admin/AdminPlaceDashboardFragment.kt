@@ -103,10 +103,6 @@ class AdminPlaceDashboardFragment : Fragment() {
                 // TODO: Implement edit functionality
                 Toast.makeText(context, "Edit ${lokasi.lokasiName}", Toast.LENGTH_SHORT).show()
             },
-            onDeleteClick = { lokasi ->
-                // TODO: Implement delete functionality
-                Toast.makeText(context, "Delete ${lokasi.lokasiName}", Toast.LENGTH_SHORT).show()
-            }
         )
 
         recyclerView.apply {

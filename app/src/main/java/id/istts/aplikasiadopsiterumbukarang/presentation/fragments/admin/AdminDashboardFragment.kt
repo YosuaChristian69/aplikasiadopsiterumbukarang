@@ -46,7 +46,6 @@ class AdminDashboardFragment : Fragment() {
     // View references
     private lateinit var welcomeTextView: TextView
     private lateinit var logoutButton: ImageButton
-    private lateinit var profileCard: CardView
     private lateinit var logoutCard: CardView
     private lateinit var collectionTitle: TextView
     private lateinit var recyclerView: RecyclerView
@@ -81,7 +80,6 @@ class AdminDashboardFragment : Fragment() {
         // Initialize views
         welcomeTextView = view.findViewById(R.id.welcomeTextView)
         logoutButton = view.findViewById(R.id.logoutButton)
-        profileCard = view.findViewById(R.id.profileCard)
         logoutCard = view.findViewById(R.id.logoutCard)
         collectionTitle = view.findViewById(R.id.collectionTitle)
         recyclerView = view.findViewById(R.id.recyclerViewCorals)
@@ -139,9 +137,6 @@ class AdminDashboardFragment : Fragment() {
                 }
             }
         }
-
-
-
 
         // Observe navigation to place
         lifecycleScope.launch {
@@ -251,7 +246,7 @@ class AdminDashboardFragment : Fragment() {
 
     private fun setInitialStates() {
         listOf(headerLayout, recyclerView, fabAdd, bottomNavigation,
-            profileCard, logoutCard, welcomeTextView, collectionTitle).forEach {
+            logoutCard, welcomeTextView, collectionTitle).forEach {
             it.alpha = 0f
         }
 
@@ -261,7 +256,7 @@ class AdminDashboardFragment : Fragment() {
         welcomeTextView.translationX = -50f
         collectionTitle.translationX = -30f
 
-        listOf(fabAdd, profileCard, logoutCard).forEach {
+        listOf(fabAdd, logoutCard).forEach {
             it.scaleX = 0f
             it.scaleY = 0f
         }
@@ -314,10 +309,8 @@ class AdminDashboardFragment : Fragment() {
     }
 
     private fun animateCards() {
-        val cards = listOf(profileCard to 0L, logoutCard to 100L)
-        cards.forEach { (card, delayTime) ->
-            animateScale(card, OvershootInterpolator(), 400, delayTime)
-        }
+        // Only animate logout card now since profile card is removed
+        animateScale(logoutCard, OvershootInterpolator(), 400, 0L)
     }
 
     private fun animateScale(view: View, interpolator: Interpolator,
@@ -355,8 +348,6 @@ class AdminDashboardFragment : Fragment() {
             }
             viewModel.onAddCoralClick()
         }
-
-        profileCard.setOnClickListener { animateClick(profileCard) }
 
         bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {

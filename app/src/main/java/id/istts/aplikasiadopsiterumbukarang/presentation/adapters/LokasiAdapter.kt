@@ -40,7 +40,6 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.Lokasi
 
 class LokasiAdapter(
     private val onEditClick: (Lokasi) -> Unit,
-    private val onDeleteClick: (Lokasi) -> Unit
 ) : ListAdapter<Lokasi, LokasiAdapter.LokasiViewHolder>(LokasiDiffCallback()) {
 
     private lateinit var context: Context
@@ -75,7 +74,6 @@ class LokasiAdapter(
         private val longitude: TextView = itemView.findViewById(R.id.tv_longitude)
         private val preciseCoordinates: TextView = itemView.findViewById(R.id.tv_precise_coordinates)
         private val populationStatus: TextView = itemView.findViewById(R.id.tv_population_status)
-        private val deleteButton: CardView = itemView.findViewById(R.id.btn_delete)
         private val viewMapsButton: CardView = itemView.findViewById(R.id.btn_view_maps)
 
         fun bind(lokasi: Lokasi) {
@@ -89,7 +87,6 @@ class LokasiAdapter(
             // Load precise location using reverse geocoding
             loadPreciseLocation(lokasi.latitude, lokasi.longitude)
 
-            deleteButton.setOnClickListener { onDeleteClick(lokasi) }
             viewMapsButton.setOnClickListener {
                 openGoogleEarth(lokasi.latitude, lokasi.longitude, lokasi.lokasiName)
             }

@@ -23,40 +23,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Profile Icon with Coral Theme -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/profileCard"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="#FFFFFF"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_person"
-                app:tint="#2a6e73" />
-        </androidx.cardview.widget.CardView>
-
         <!-- Welcome Text with Better Contrast -->
         <TextView
             android:id="@+id/welcomeTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:text="Hi, ADMIN"
             android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
-            app:layout_constraintStart_toEndOf="@+id/profileCard"
-            app:layout_constraintTop_toTopOf="@+id/profileCard"
-            app:layout_constraintBottom_toBottomOf="@+id/profileCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/logoutCard" />
 
         <!-- Logout Button with Coral Theme -->
@@ -95,7 +73,7 @@
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.08"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profileCard" />
+            app:layout_constraintTop_toBottomOf="@+id/welcomeTextView" />
 
         <!-- Stats Section -->
         <LinearLayout
@@ -140,7 +118,6 @@
                         android:textSize="12sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-
 
             <!-- Low Stock Alert -->
             <androidx.cardview.widget.CardView

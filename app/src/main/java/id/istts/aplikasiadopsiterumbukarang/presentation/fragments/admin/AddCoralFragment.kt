@@ -26,6 +26,10 @@ import com.google.android.material.textfield.TextInputLayout
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AddCoralViewModel
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AddCoralEvent
+import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
+import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
+import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
+import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
 
 class AddCoralFragment : Fragment() {
@@ -99,7 +103,18 @@ class AddCoralFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel = AddCoralViewModel(requireContext())
+        // 1. Buat semua dependencies yang dibutuhkan oleh ViewModel
+        val sessionManager = SessionManager(requireContext())
+        val fileUtils = FileUtils(requireContext())
+        val coralRepository = CoralRepositoryImpl() // UseCase butuh ini
+        val addCoralUseCase = AddCoralUseCase(coralRepository, fileUtils)
+
+        // 2. Berikan semua dependencies tersebut ke constructor ViewModel
+        viewModel = AddCoralViewModel(
+            sessionManager = sessionManager,
+            fileUtils = fileUtils,
+            addCoralUseCase = addCoralUseCase
+        )
     }
 
     private fun initViews(view: View) {
@@ -198,7 +213,6 @@ class AddCoralFragment : Fragment() {
             }
         }
 
-        // Observe Events
         lifecycleScope.launch {
             viewModel.events.collect { event ->
                 when (event) {
@@ -206,17 +220,20 @@ class AddCoralFragment : Fragment() {
                         Toast.makeText(requireContext(), event.message, Toast.LENGTH_LONG).show()
                         viewModel.clearEvent()
                     }
-                    is AddCoralEvent.ShowSuccess -> {
-                        Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
-                        clearForm()
-                        viewModel.clearEvent()
-                    }
-                    is AddCoralEvent.NavigateBack -> {
+                    // --- PERUBAHAN DI SINI ---
+                    // Kita tangani event baru 'SuccessAndNavigate'
+                    is AddCoralEvent.SuccessAndNavigate -> {
+                        // 1. Tampilkan pesan sukses dari properti event yang baru
+                        Toast.makeText(requireContext(), event.successMessage, Toast.LENGTH_SHORT).show()
+
+                        // 2. Langsung navigasi kembali ke halaman sebelumnya
                         findNavController().navigateUp()
+
+                        // 3. Hapus event agar tidak dieksekusi lagi jika layar berotasi
                         viewModel.clearEvent()
                     }
                     null -> {
-                        // No event
+                        // Tidak ada event, tidak perlu melakukan apa-apa
                     }
                 }
             }

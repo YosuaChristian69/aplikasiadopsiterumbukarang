@@ -15,13 +15,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AddCoralViewModel(private val context: Context) : ViewModel() {
+class AddCoralViewModel(
+    private val sessionManager: SessionManager,
+    private val fileUtils: FileUtils,
+    private val addCoralUseCase: AddCoralUseCase
+) : ViewModel() {
 
-    // Dependencies
-    private val sessionManager = SessionManager(context)
-    private val fileUtils = FileUtils(context)
     private val coralRepository = CoralRepositoryImpl()
-    private val addCoralUseCase = AddCoralUseCase(coralRepository, fileUtils)
 
     // UI State
     private val _uiState = MutableStateFlow(AddCoralUiState())
@@ -125,12 +125,11 @@ class AddCoralViewModel(private val context: Context) : ViewModel() {
                 result.fold(
                     onSuccess = { message ->
                         _isLoading.value = false
-                        _events.value = AddCoralEvent.ShowSuccess(message)
-                        _events.value = AddCoralEvent.NavigateBack
+                        // Sekarang kita hanya mengirim SATU event yang jelas
+                        _events.value = AddCoralEvent.SuccessAndNavigate(message)
                     },
                     onFailure = { exception ->
                         _isLoading.value = false
-                        Log.e("AddCoralViewModel", "Error adding coral", exception)
                         _events.value = AddCoralEvent.ShowError(exception.message ?: "Unknown error")
                     }
                 )

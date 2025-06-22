@@ -16,14 +16,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RegisterViewModel : ViewModel() {
-
-    // Initialize repository
-    private val repository: RegisterRepository by lazy {
-        RegisterRepositoryImpl(
-            RegisterRemoteDataSource(RetrofitClient.instance)
-        )
-    }
+class RegisterViewModel(private val repository: RegisterRepository) : ViewModel() {
 
     private val _registerState = MutableLiveData<RegisterState>()
     val registerState: LiveData<RegisterState> = _registerState
