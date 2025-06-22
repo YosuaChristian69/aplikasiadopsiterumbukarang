@@ -1,7 +1,7 @@
     package id.istts.aplikasiadopsiterumbukarang.usecases
 
-    import CoralRepository
     import android.net.Uri
+    import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
     import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
     import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
     import kotlinx.coroutines.ExperimentalCoroutinesApi
