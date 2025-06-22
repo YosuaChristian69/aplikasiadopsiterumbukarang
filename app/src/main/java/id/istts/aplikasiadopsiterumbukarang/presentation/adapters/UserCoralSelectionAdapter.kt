@@ -31,13 +31,13 @@ class UserCoralSelectionAdapter(
 
             // Change appearance based on selection
             cardView.setCardBackgroundColor(
-                if (isSelected) Color.parseColor("#4FFFB3") // Highlight color
+                if (isSelected) Color.parseColor("#C1C7C1") // Highlight color
                 else Color.WHITE
             )
 
-            nameTextView.setTextColor(
-                if (isSelected) Color.BLACK
-                else Color.DKGRAY
+            nameTextView.setBackgroundColor(
+                if (isSelected) Color.parseColor("#C1C7C1")
+                else Color.parseColor("#4FFFB3")
             )
 
             itemView.setOnClickListener {
