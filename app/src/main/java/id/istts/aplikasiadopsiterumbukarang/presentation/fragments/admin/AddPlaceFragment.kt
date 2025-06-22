@@ -55,8 +55,7 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize ViewModel
-        viewModel = ViewModelProvider(this)[id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addPlace.AddPlaceViewModel::class.java]
-
+        viewModel = ViewModelProvider(this)[AddPlaceViewModel::class.java]
         // Initialize services
         initializeServices()
         setupUI()

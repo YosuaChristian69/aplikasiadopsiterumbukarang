@@ -94,4 +94,6 @@ dependencies {
     testImplementation ("net.bytebuddy:byte-buddy:1.14.16")
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation ("io.mockk:mockk:1.13.8")
+    testImplementation ("org.mockito:mockito-inline:5.2.0")
 }
