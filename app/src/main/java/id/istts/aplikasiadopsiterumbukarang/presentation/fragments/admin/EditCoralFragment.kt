@@ -1,8 +1,6 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +9,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -22,10 +20,10 @@ import com.bumptech.glide.request.RequestOptions
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
-import id.istts.aplikasiadopsiterumbukarang.service.ApiService
-import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editCoral.EditCoralViewModel
+import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import kotlinx.coroutines.launch
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editCoral.EditCoralViewModelFactory
 
 class EditCoralFragment : Fragment() {
     private lateinit var backButton: ImageButton
@@ -39,9 +37,8 @@ class EditCoralFragment : Fragment() {
     private lateinit var loadingIndicator: ProgressBar
     private lateinit var currentImageView: ImageView
     private lateinit var sessionManager: SessionManager
-    private lateinit var apiService: ApiService
+    private lateinit var viewModel: EditCoralViewModel
 
-    private var currentCoral: Coral? = null
     private var coralId: Int = -1
 
     override fun onCreateView(
@@ -58,7 +55,9 @@ class EditCoralFragment : Fragment() {
 
     private fun initDependencies() {
         sessionManager = SessionManager(requireContext())
-        apiService = RetrofitClient.instance
+        val repository = CoralRepositoryImpl()
+        val factory = EditCoralViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[EditCoralViewModel::class.java]
     }
 
     private fun initViews(view: View) {
@@ -89,6 +88,7 @@ class EditCoralFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
+        observeViewModel()
     }
 
     private fun setupClickListeners() {
@@ -103,30 +103,32 @@ class EditCoralFragment : Fragment() {
         updateButton.setOnClickListener {
             updateCoral()
         }
+    }
 
+    private fun observeViewModel() {
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            showLoading(isLoading)
+        }
+
+        viewModel.coral.observe(viewLifecycleOwner) { coral ->
+            populateFields(coral)
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.updateSuccess.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                Toast.makeText(requireContext(), "Coral updated successfully", Toast.LENGTH_SHORT).show()
+                findNavController().navigateUp()
+            }
+        }
     }
 
     private fun fetchCoralData() {
-        showLoading(true)
-        lifecycleScope.launch {
-            try {
-                val token = sessionManager.fetchAuthToken().toString()
-                val response = apiService.getSingleTerumbuKarang(coralId, token)
-
-                if (response.isSuccessful) {
-                    response.body()?.let { singleCoralResponse ->
-                        currentCoral = singleCoralResponse.corral
-                        populateFields(singleCoralResponse.corral)
-                    }
-                } else {
-                    Toast.makeText(requireContext(), "Failed to load coral data", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Network error: ${e.message}", Toast.LENGTH_SHORT).show()
-            } finally {
-                showLoading(false)
-            }
-        }
+        val token = sessionManager.fetchAuthToken().toString()
+        viewModel.fetchCoralData(coralId, token)
     }
 
     private fun populateFields(coral: Coral) {
@@ -159,60 +161,40 @@ class EditCoralFragment : Fragment() {
     }
 
     private fun updateCoral() {
-        if (!validateFields()) return
+        val name = coralNameEditText.text.toString()
+        val species = coralSpeciesEditText.text.toString()
+        val price = priceEditText.text.toString()
+        val stock = stockEditText.text.toString()
+        val description = coralDescriptionEditText.text.toString()
 
-        showLoading(true)
-        lifecycleScope.launch {
-            try {
-                val token = sessionManager.fetchAuthToken().toString()
-                val editRequest = EditCoralRequest(
-                    name = coralNameEditText.text.toString().trim(),
-                    jenis = coralSpeciesEditText.text.toString().trim(),
-                    harga = priceEditText.text.toString().toInt(),
-                    stok = stockEditText.text.toString().toInt(),
-                    description = coralDescriptionEditText.text.toString().trim()
-                )
-                Log.d(TAG, "updateCoral: ${editRequest}")
-                val response = apiService.editTerumbuKarang(coralId, token, editRequest)
+        // Validate fields using ViewModel
+        val (isValid, errors) = viewModel.validateFields(name, species, price, stock)
 
-                if (response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Coral updated successfully", Toast.LENGTH_SHORT).show()
-                    findNavController().navigateUp()
-                } else {
-                    Toast.makeText(requireContext(), "Failed to update coral", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Network error: ${e.message}", Toast.LENGTH_SHORT).show()
-            } finally {
-                showLoading(false)
-            }
-        }
-    }
-
-    private fun validateFields(): Boolean {
-        var isValid = true
-
-        if (coralNameEditText.text.toString().trim().isEmpty()) {
-            coralNameEditText.error = "Coral name is required"
-            isValid = false
+        if (!isValid) {
+            // Show validation errors
+            errors["name"]?.let { coralNameEditText.error = it }
+            errors["species"]?.let { coralSpeciesEditText.error = it }
+            errors["price"]?.let { priceEditText.error = it }
+            errors["stock"]?.let { stockEditText.error = it }
+            return
         }
 
-        if (coralSpeciesEditText.text.toString().trim().isEmpty()) {
-            coralSpeciesEditText.error = "Coral species is required"
-            isValid = false
-        }
+        // Clear previous errors
+        coralNameEditText.error = null
+        coralSpeciesEditText.error = null
+        priceEditText.error = null
+        stockEditText.error = null
 
-        if (priceEditText.text.toString().trim().isEmpty()) {
-            priceEditText.error = "Price is required"
-            isValid = false
-        }
+        val editRequest = EditCoralRequest(
+            name = name.trim(),
+            jenis = species.trim(),
+            harga = price.toInt(),
+            stok = stock.toInt(),
+            description = description.trim()
+        )
 
-        if (stockEditText.text.toString().trim().isEmpty()) {
-            stockEditText.error = "Stock is required"
-            isValid = false
-        }
-
-        return isValid
+        val token = sessionManager.fetchAuthToken().toString()
+        viewModel.updateCoral(coralId, token, editRequest)
     }
 
     private fun showLoading(show: Boolean) {

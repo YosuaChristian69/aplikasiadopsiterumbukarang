@@ -1,11 +1,11 @@
 package id.istts.aplikasiadopsiterumbukarang.repositories
 
-import CoralRepository
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.gson.Gson
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.domain.models.DeleteResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -150,6 +150,63 @@ class CoralRepositoryImpl : CoralRepository {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Network error in deleteCoral", e)
+            Result.failure(Exception("Network error: ${e.message}", e))
+        }
+    }
+
+    override suspend fun getSingleCoral(id: Int, token: String): Result<Coral> = withContext(Dispatchers.IO) {
+        try {
+            val cleanToken = token.replace("Bearer ", "", ignoreCase = true)
+            val response = apiService.getSingleTerumbuKarang(id, cleanToken)
+
+            Log.d(TAG, "Get single coral response code: ${response.code()}")
+
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(body.corral)
+                } else {
+                    Result.failure(Exception("Response body is null"))
+                }
+            } else {
+                val errorMessage = when (response.code()) {
+                    400 -> "Invalid request or coral not found"
+                    401 -> "Invalid or expired token. Please login again."
+                    403 -> "Access forbidden"
+                    404 -> "Coral not found"
+                    500 -> "Internal server error"
+                    else -> "Failed to fetch coral data. Error: ${response.code()}"
+                }
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Network error in getSingleCoral", e)
+            Result.failure(Exception("Network error: ${e.message}", e))
+        }
+    }
+
+    override suspend fun editCoral(id: Int, token: String, editRequest: EditCoralRequest): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val cleanToken = token.replace("Bearer ", "", ignoreCase = true)
+            val response = apiService.editTerumbuKarang(id, cleanToken, editRequest)
+
+            Log.d(TAG, "Edit coral response code: ${response.code()}")
+
+            if (response.isSuccessful) {
+                Result.success("Coral updated successfully")
+            } else {
+                val errorMessage = when (response.code()) {
+                    400 -> "Invalid data or coral not found"
+                    401 -> "Invalid or expired token. Please login again."
+                    403 -> "Access forbidden"
+                    404 -> "Coral not found"
+                    500 -> "Internal server error"
+                    else -> "Failed to update coral. Error: ${response.code()}"
+                }
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Network error in editCoral", e)
             Result.failure(Exception("Network error: ${e.message}", e))
         }
     }

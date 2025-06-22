@@ -1,9 +1,9 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
 
-import CoralRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
+import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
