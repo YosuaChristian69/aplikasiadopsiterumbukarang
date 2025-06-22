@@ -51,8 +51,8 @@ class UserAddCoralFragment : Fragment() {
     }
     private fun setupViews() {
         try {
-            val userName = sessionManager.fetchUserName() ?: "User"
-            userGreetingTextView.text = "Hi, $userName"
+//            val userName = sessionManager.fetchUserName() ?: "User"
+//            userGreetingTextView.text = "Hi, $userName"
 
             // Setup bottom navigation if needed\
             btnBack.setOnClickListener{
@@ -149,8 +149,8 @@ class UserAddCoralFragment : Fragment() {
     private fun initializeViews(view: View) {
         try {
             // Find the TextView that shows "Hi, USER" in your layout
-            userGreetingTextView = view.findViewById<TextView>(R.id.userGreetingTextView)
-                ?: throw IllegalStateException("userGreetingTextView not found in layout")
+//            userGreetingTextView = view.findViewById<TextView>(R.id.userGreetingTextView)
+//                ?: throw IllegalStateException("userGreetingTextView not found in layout")
 
 //            bottomNavigation = view.findViewById<BottomNavigationView>(R.id.bottom_navigation)
 //                ?: throw IllegalStateException("bottom_navigation not found in layout")
