@@ -36,17 +36,5 @@
             android:background="#4FFFB3"
             android:letterSpacing="0.05" />
 
-        <TextView
-            android:id="@+id/tvHarga"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/tvPlace"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
     </LinearLayout>
 </androidx.cardview.widget.CardView>

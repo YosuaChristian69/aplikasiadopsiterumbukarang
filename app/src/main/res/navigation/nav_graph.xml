@@ -41,9 +41,6 @@
             android:id="@+id/action_userDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
-            android:id="@+id/action_userDashboardFragment_to_userAddCoralFragment"
-            app:destination="@id/userAddCoralFragment" />
-        <action
             android:id="@+id/action_userDashboardFragment_to_userSelectSpeciesFragment"
             app:destination="@id/userSelectSpeciesFragment" />
     </fragment>
@@ -53,8 +50,14 @@
         android:label="Add Coral"
         tools:layout="@layout/fragment_user_add_coral" >
         <action
-            android:id="@+id/action_userAddCoralFragment_to_userDashboardFragment"
-            app:destination="@id/userDashboardFragment" />
+            android:id="@+id/action_userAddCoralFragment_to_userSelectSpeciesFragment"
+            app:destination="@id/userSelectSpeciesFragment" />
+        <action
+            android:id="@+id/action_userAddCoralFragment_to_userPaymentCoralFragment"
+            app:destination="@id/userPaymentCoralFragment" />
+        <argument
+            android:name="coralId"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/userDetailMyCoralFragment"
@@ -70,8 +73,8 @@
             android:id="@+id/action_userSelectSpeciesFragment_to_userDashboardFragment"
             app:destination="@id/userDashboardFragment" />
         <action
-            android:id="@+id/action_userSelectSpeciesFragment_to_userPaymentCoralFragment"
-            app:destination="@id/userPaymentCoralFragment" />
+            android:id="@+id/action_userSelectSpeciesFragment_to_userAddCoralFragment"
+            app:destination="@id/userAddCoralFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminDashboardFragment"
@@ -195,12 +198,20 @@
         android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.UserPaymentCoralFragment"
         android:label="fragment_user_payment_coral"
         tools:layout="@layout/fragment_user_payment_coral" >
-        <action
-            android:id="@+id/action_userPaymentCoralFragment_to_userSelectSpeciesFragment"
-            app:destination="@id/userSelectSpeciesFragment" />
         <argument
             android:name="coralId"
             app:argType="integer" />
+        <argument
+            android:name="coralNickname"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+        android:name="message"
+        app:argType="string"
+        app:nullable="true" />
+        <action
+            android:id="@+id/action_userPaymentCoralFragment_to_userAddCoralFragment"
+            app:destination="@id/userAddCoralFragment" />
     </fragment>
 
 </navigation>

@@ -1,172 +1,136 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import id.istts.aplikasiadopsiterumbukarang.R
+import androidx.navigation.fragment.navArgs
+import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentUserAddCoralBinding // <- 1. Import the generated View Binding class
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.UserAddCoralViewModel
+//import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.user.UserAddCoralViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.user.UserAddCoralViewModelFactory // <- 2. Import the Factory
+import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
 
-
 class UserAddCoralFragment : Fragment() {
-    private lateinit var sessionManager: SessionManager
-    private lateinit var userGreetingTextView: TextView
-    private lateinit var bottomNavigation: BottomNavigationView
-    private lateinit var btnBack: Button
 
+    // 3. Setup View Binding
+    private var _binding: FragmentUserAddCoralBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var viewModel: UserAddCoralViewModel
+
+    // 4. Declare ViewModel and navArgs as class properties
+    private val args: UserAddCoralFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_add_coral, container, false)
+    ): View {
+        // Use View Binding to inflate the layout
+        _binding = FragmentUserAddCoralBinding.inflate(inflater, container, false)
+        return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sessionManager = SessionManager(requireContext())
+        // This is the main setup flow
+        setupViewModel()
+        setupClickListeners()
+        observeViewModel()
 
-        // Initialize views first
-        initializeViews(view)
+        viewModel.loadCoralDetails(args.coralId)
+    }
 
-        // Setup logout button immediately (tidak tergantung validasi)
-//        setupLogoutButton()
+    private fun setupViewModel() {
+        // 1. You create instances of the dependencies your ViewModel needs.
+        val coralRepository = CoralRepositoryImpl(/* ... */)
+        val sessionManager = SessionManager(requireContext())
 
-        lifecycleScope.launch {
-            if (!validateUserAccess()) {
-                return@launch
+        // 2. You pass those dependencies into your custom factory.
+        val viewModelFactory = UserAddCoralViewModelFactory(coralRepository, sessionManager)
+
+        // 3. You give that factory to the ViewModelProvider.
+        // The ViewModelProvider then uses your factory to correctly build the ViewModel.
+        viewModel = ViewModelProvider(this, viewModelFactory).get(UserAddCoralViewModel::class.java)
+    }
+
+
+    private fun setupClickListeners() {
+        // Use the 'binding' object to access views safely
+        binding.btnBack.setOnClickListener {
+            // A simple and reliable way to go back
+            findNavController().navigateUp()
+        }
+
+        binding.btnNext.setOnClickListener {
+            val coral = viewModel.uiState.value.coral
+            if (coral == null) {
+                Toast.makeText(context, "Please wait, coral details are loading.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-            setupViews()
-        }
-    }
-    private fun setupViews() {
-        try {
-//            val userName = sessionManager.fetchUserName() ?: "User"
-//            userGreetingTextView.text = "Hi, $userName"
 
-            // Setup bottom navigation if needed\
-            btnBack.setOnClickListener{
-                Log.d("UserAddCoral", "btn back pressed")
-                findNavController().navigate(R.id.action_userAddCoralFragment_to_userDashboardFragment)
-//                true
-            }
-//            bottomNavigation.setOnItemSelectedListener { menuItem ->
-//                when (menuItem.itemId) {
-                    // Handle navigation items based on your menu
-//                     R.id.nav_my_coral -> {
-//                         findNavController().navigate(R.id.action_userAddCoralFragment_to_userDashboardFragment)
-//                         true
-//                     }
-//                    R.id.nav_adopt_coral ->{
-//                        findNavController().navigate(R.id.action_userDashboardFragment_to_userAddCoralFragment)
-//                        true
-//                    }
-//                    else -> false
-//                }
-//            }
+            val nickname = binding.etCoralNickname.text.toString().trim()
+            val message = binding.etMessage.text.toString().trim()
 
-            Log.d("UserDashboard", "Views setup complete")
-        } catch (e: Exception) {
-            Log.e("UserDashboard", "Error setting up views: ${e.message}")
-            e.printStackTrace()
+            // Navigate to the payment screen, passing all necessary data
+            val action = UserAddCoralFragmentDirections
+                .actionUserAddCoralFragmentToUserPaymentCoralFragment(
+                    coralId = coral.id_tk,
+                    coralNickname = nickname,
+                    message = message
+                )
+            findNavController().navigate(action)
         }
     }
 
-    private fun navigateToLogin() {
-        if (isAdded && !isDetached && !isRemoving) {
-            try {
-                Log.d("UserDashboard", "Navigating to login")
-                findNavController().navigate(R.id.action_userDashboardFragment_to_loginFragment)
-            } catch (e: Exception) {
-                Log.e("UserDashboard", "Navigation error: ${e.message}")
-                e.printStackTrace()
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                // You can add a ProgressBar and control its visibility here
+                // binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+
+                state.coral?.let { coral ->
+                    binding.tvSelectedCoralSpecies.text = coral.tk_name
+                    binding.tvSelectedCoralLocation.text = coral.tk_name// Assuming your Coral model has this
+                }
+
+                state.error?.let { error ->
+                    Toast.makeText(context, "Error: $error", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
 
-    private fun performLogout() {
-        if (!isAdded || isDetached) {
-            Log.w("UserDashboard", "Cannot perform logout - fragment not attached")
-            return
-        }
-
-        try {
-            Log.d("UserDashboard", "Performing logout...")
-
-            // Clear session data
-            sessionManager.clearSession()
-
-            // Show logout confirmation message
-            Toast.makeText(requireContext(), "Anda berhasil Logout", Toast.LENGTH_SHORT).show()
-
-            // Navigate to login screen
-            navigateToLogin()
-        } catch (e: Exception) {
-            Log.e("UserDashboard", "Error during logout: ${e.message}")
-            e.printStackTrace()
-            Toast.makeText(requireContext(), "Error during logout", Toast.LENGTH_SHORT).show()
-        }
+    // This is important to prevent memory leaks
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
-    private fun validateUserAccess(): Boolean {
-        if (!isAdded || isDetached) {
-            Log.w("UserDashboard", "Fragment not properly attached")
-            return false
-        }
 
-        if (!sessionManager.isLoggedIn()) {
-            Log.w("UserDashboard", "User not logged in")
-            navigateToLogin()
-            return false
-        }
-
-        val userStatus = sessionManager.fetchUserStatus()
-        if (userStatus != "user") {
-            Log.w("UserDashboard", "Invalid user status: $userStatus")
-            navigateToLogin()
-            return false
-        }
-
-        Log.d("UserDashboard", "User access validated successfully")
-        return true
-    }
-    override fun onResume() {
-        super.onResume()
-        Log.d("UserDashboard", "Fragment resumed")
-        if (!validateUserAccess()) {
-            return
-        }
-    }
-    private fun initializeViews(view: View) {
-        try {
-            // Find the TextView that shows "Hi, USER" in your layout
-//            userGreetingTextView = view.findViewById<TextView>(R.id.userGreetingTextView)
-//                ?: throw IllegalStateException("userGreetingTextView not found in layout")
-
-//            bottomNavigation = view.findViewById<BottomNavigationView>(R.id.bottom_navigation)
-//                ?: throw IllegalStateException("bottom_navigation not found in layout")
-
-            btnBack = view.findViewById<Button>(R.id.btnBack)
-                ?: throw IllegalStateException("btnBack not found in layout")
-
-            Log.d("UserDashboard", "All views initialized successfully")
-        } catch (e: Exception) {
-            Log.e("UserDashboard", "Error initializing views: ${e.message}")
-            e.printStackTrace()
-        }
-    }
+    // The companion object should create an instance of THIS fragment
     companion object {
         @JvmStatic
-        fun newInstance() = UserDashboardFragment()
+        fun newInstance() = UserAddCoralFragment()
     }
+}
 
+// It's good practice to put the factory in its own file,
+// but for simplicity, you can also have it here or inside the fragment.
+class UserAddCoralViewModelFactory(
+    private val coralRepository: CoralRepositoryImpl,
+    private val sessionManager: SessionManager
+) : ViewModelProvider.Factory {
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(UserAddCoralViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return UserAddCoralViewModel(coralRepository, sessionManager) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

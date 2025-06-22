@@ -92,7 +92,7 @@ class UserSelectSpeciesFragment : Fragment() {
 
                 // TODO: Navigate to the next fragment, passing the coral's ID
                   val action = UserSelectSpeciesFragmentDirections
-                    .actionUserSelectSpeciesFragmentToUserPaymentCoralFragment(selectedCoral.id_tk)
+                    .actionUserSelectSpeciesFragmentToUserAddCoralFragment(selectedCoral.id_tk)
 
                 // Perform the navigation with the action.
                 findNavController().navigate(action)

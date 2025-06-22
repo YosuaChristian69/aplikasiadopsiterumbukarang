@@ -7,33 +7,34 @@
     android:background="@drawable/underwater_background"
     tools:context=".presentation.fragments.user.UserAddCoralFragment">
 
-    <!-- Background overlay for better readability -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#80000000" />
+        android:background="#A6001E2C" />
 
-    <!-- Main content container -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Spacer to center the form -->
-        <View
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="32dp"
+            android:paddingBottom="16dp"
+            android:text="ADOPT A CORAL"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-        <!-- Form card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
+            android:layout_marginHorizontal="16dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="8dp"
-            android:layout_gravity="center">
+            app:cardElevation="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,66 +42,75 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <!-- Coral Name Input -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Coral Name"
-                    app:boxStrokeWidth="0dp"
-                    app:boxStrokeWidthFocused="0dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etCoralName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#FFFFFF"
-                        android:padding="16dp"
-                        android:textSize="16sp"
-                        android:textColor="#333333" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Place Spinner -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Place"
-                    android:textSize="16sp"
-                    android:textColor="#666666"
-                    android:layout_marginBottom="8dp" />
+                    android:text="Selected Species"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorSecondary"/>
 
-                <Spinner
-                    android:id="@+id/spinnerPlace"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="#FFFFFF"
-                    android:padding="16dp"
-                    android:spinnerMode="dropdown" />
-
-                <!-- Message Input -->
-                <com.google.android.material.textfield.TextInputLayout
+                <TextView
+                    android:id="@+id/tvSelectedCoralSpecies"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:hint="Message"
-                    app:boxStrokeWidth="0dp"
-                    app:boxStrokeWidthFocused="0dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
+                    android:layout_marginBottom="16dp"
+                    android:paddingTop="8dp"
+                    tools:text="Acropora hyacinthus"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Location"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorSecondary"/>
+
+                <TextView
+                    android:id="@+id/tvSelectedCoralLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:paddingTop="8dp"
+                    tools:text="Reef #B4 at Gili Trawangan"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"/>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Give your coral a nickname (Optional)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etCoralNickname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:maxLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Message (Optional)">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etMessage"
                         android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:background="#FFFFFF"
-                        android:padding="16dp"
+                        android:layout_height="wrap_content"
                         android:gravity="top"
                         android:inputType="textMultiLine"
-                        android:maxLines="5"
-                        android:textSize="16sp"
-                        android:textColor="#333333" />
+                        android:minLines="3"
+                        android:maxLines="5" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -108,45 +118,35 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Spacer -->
         <View
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!-- Button container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="32dp">
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="24dp">
 
-            <!-- Back Button -->
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBack"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="#F60505"
-                android:elevation="4dp"
                 android:text="BACK"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
+                app:backgroundTint="#F00202" />
 
-            <!-- Next Button -->
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnNext"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="#00BCD4"
-                android:elevation="4dp"
-                android:text="NEXT"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
+                android:backgroundTint="@color/coral_accent"
+                android:text="NEXT" />
 
         </LinearLayout>
 
