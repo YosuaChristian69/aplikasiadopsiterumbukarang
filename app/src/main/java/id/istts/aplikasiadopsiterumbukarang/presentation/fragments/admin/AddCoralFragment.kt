@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -24,8 +23,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import id.istts.aplikasiadopsiterumbukarang.R
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AddCoralViewModel
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AddCoralEvent
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addCoral.AddCoralViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addCoral.AddCoralEvent
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils

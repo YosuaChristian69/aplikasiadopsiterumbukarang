@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addCoral
 
 data class AddCoralUiState(
     val nameError: String? = null,
