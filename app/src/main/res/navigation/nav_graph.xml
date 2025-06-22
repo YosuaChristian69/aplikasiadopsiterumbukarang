@@ -40,7 +40,29 @@
         <action
             android:id="@+id/action_userDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_userDashboardFragment_to_userAddCoralFragment"
+            app:destination="@id/userAddCoralFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/userAddCoralFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.UserAddCoralFragment"
+        android:label="Add Coral"
+        tools:layout="@layout/fragment_user_add_coral" >
+        <action
+            android:id="@+id/action_userAddCoralFragment_to_userDashboardFragment"
+            app:destination="@id/userDashboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userDetailMyCoralFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.UserDetailMyCoralFragment"
+        android:label="Detail Coral"
+        tools:layout="@layout/fragment_user_detail_my_coral" />
+    <fragment
+        android:id="@+id/userSelectSpeciesFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.UserSelectSpeciesFragment"
+        android:label="Select Coral"
+        tools:layout="@layout/fragment_user_select_species" />
     <fragment
         android:id="@+id/adminDashboardFragment"
         android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin.AdminDashboardFragment"
