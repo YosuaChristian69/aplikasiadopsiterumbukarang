@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_userDashboardFragment_to_userAddCoralFragment"
             app:destination="@id/userAddCoralFragment" />
+        <action
+            android:id="@+id/action_userDashboardFragment_to_userSelectSpeciesFragment"
+            app:destination="@id/userSelectSpeciesFragment" />
     </fragment>
     <fragment
         android:id="@+id/userAddCoralFragment"
@@ -62,7 +65,11 @@
         android:id="@+id/userSelectSpeciesFragment"
         android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.UserSelectSpeciesFragment"
         android:label="Select Coral"
-        tools:layout="@layout/fragment_user_select_species" />
+        tools:layout="@layout/fragment_user_select_species" >
+        <action
+            android:id="@+id/action_userSelectSpeciesFragment_to_userDashboardFragment"
+            app:destination="@id/userDashboardFragment" />
+    </fragment>
     <fragment
         android:id="@+id/adminDashboardFragment"
         android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin.AdminDashboardFragment"

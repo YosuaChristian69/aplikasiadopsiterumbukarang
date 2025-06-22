@@ -125,7 +125,7 @@ class UserDashboardFragment : Fragment() {
 //                         true
 //                     }
                      R.id.nav_adopt_coral ->{
-                         findNavController().navigate(R.id.action_userDashboardFragment_to_userAddCoralFragment)
+                         findNavController().navigate(R.id.action_userDashboardFragment_to_userSelectSpeciesFragment)
                         true
                      }
                     else -> false
