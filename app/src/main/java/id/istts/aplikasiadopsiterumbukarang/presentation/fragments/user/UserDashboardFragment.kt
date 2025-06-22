@@ -120,8 +120,14 @@ class UserDashboardFragment : Fragment() {
             bottomNavigation.setOnItemSelectedListener { menuItem ->
                 when (menuItem.itemId) {
                     // Handle navigation items based on your menu
-                    // R.id.nav_home -> { /* Handle home */ }
-                    // R.id.nav_profile -> { /* Handle profile */ }
+//                     R.id.nav_my_coral -> {
+//                         findNavController().navigate(R.id.action_userAddCoralFragment_to_userDashboardFragment)
+//                         true
+//                     }
+                     R.id.nav_adopt_coral ->{
+                         findNavController().navigate(R.id.action_userDashboardFragment_to_userAddCoralFragment)
+                        true
+                     }
                     else -> false
                 }
             }
