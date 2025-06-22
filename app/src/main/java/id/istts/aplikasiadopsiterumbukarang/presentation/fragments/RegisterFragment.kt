@@ -274,7 +274,7 @@ class RegisterFragment : Fragment() {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    min-height: 200px;
+                    min-height: 430px;
                     margin: 0;
                     padding: 20px;
                     background-color: #f5f5f5;
