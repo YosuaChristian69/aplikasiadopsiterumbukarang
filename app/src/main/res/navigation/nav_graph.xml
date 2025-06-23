@@ -201,14 +201,112 @@
             android:id="@+id/action_addPlaceFragment4_to_userSelectSpeciesFragment"
             app:destination="@id/userSelectSpeciesFragment" />
     </fragment>
+
+    <!-- Worker Dashboard Fragment - Complete implementation from worker_nav_graph -->
     <fragment
         android:id="@+id/workerDashboardFragment"
-        android:name="WorkerDashboardFragment"
-        android:label="WorkerDashboardFragment" >
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker.WorkerDashboardFragment"
+        android:label="Worker Dashboard"
+        tools:layout="@layout/fragment_worker_dashboard">
+
+        <action
+            android:id="@+id/action_workerDashboard_to_workerDashboardProfile"
+            app:destination="@id/workerDashboardProfileFragment" />
+
+        <action
+            android:id="@+id/action_workerDashboard_to_workerDetailMission"
+            app:destination="@id/workerDetailMissionFragment" />
+
         <action
             android:id="@+id/action_workerDashboardFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
+
+    <!-- Worker Dashboard Profile Fragment -->
+    <fragment
+        android:id="@+id/workerDashboardProfileFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker.WorkerDashboardProfileFragment"
+        android:label="Worker Profile"
+        tools:layout="@layout/fragment_worker_dashboard_profile">
+
+        <action
+            android:id="@+id/action_workerProfile_to_workerDashboard"
+            app:destination="@id/workerDashboardFragment"
+            app:popUpTo="@id/workerDashboardFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_workerProfile_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_workerProfile_to_workerUpdateProfile"
+            app:destination="@id/workerUpdateProfileFragment" />
+    </fragment>
+
+    <!-- Worker Update Profile Fragment -->
+    <fragment
+        android:id="@+id/workerUpdateProfileFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker.WorkerUpdateProfileFragment"
+        android:label="Update Profile"
+        tools:layout="@layout/fragment_worker_update_profile">
+
+        <action
+            android:id="@+id/action_workerUpdateProfile_to_workerProfile"
+            app:destination="@id/workerDashboardProfileFragment"
+            app:popUpTo="@id/workerDashboardProfileFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Worker Detail Mission Fragment -->
+    <fragment
+        android:id="@+id/workerDetailMissionFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker.WorkerDetailMissionFragment"
+        android:label="Mission Details"
+        tools:layout="@layout/fragment_worker_detail_mission">
+
+        <argument
+            android:name="mission_id"
+            app:argType="integer"
+            android:defaultValue="0" />
+
+        <action
+            android:id="@+id/action_workerDetailMission_to_workerDashboard"
+            app:destination="@id/workerDashboardFragment"
+            app:popUpTo="@id/workerDashboardFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_workerDetailMission_to_workerDoMission"
+            app:destination="@id/workerDoMissionFragment" />
+    </fragment>
+
+    <!-- Worker Do Mission Fragment -->
+    <fragment
+        android:id="@+id/workerDoMissionFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker.WorkerDoMissionFragment"
+        android:label="Do Mission"
+        tools:layout="@layout/fragment_worker_do_mission">
+
+        <argument
+            android:name="planting_id"
+            app:argType="integer"
+            android:defaultValue="0" />
+
+        <action
+            android:id="@+id/action_workerDoMission_to_workerDetailMission"
+            app:destination="@id/workerDetailMissionFragment"
+            app:popUpTo="@id/workerDetailMissionFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_workerDoMission_to_workerDashboard"
+            app:destination="@id/workerDashboardFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/userPaymentCoralFragment"
         android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.UserPaymentCoralFragment"
@@ -225,9 +323,9 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-        android:name="message"
-        app:argType="string"
-        app:nullable="true" />
+            android:name="message"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_userPaymentCoralFragment_to_userAddCoralFragment"
             app:destination="@id/userAddCoralFragment" />
