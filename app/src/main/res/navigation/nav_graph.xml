@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_loginFragment_to_workerDashboardFragment"
             app:destination="@id/workerDashboardFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_repositoryTest"
+            app:destination="@id/repositoryTest" />
     </fragment>
 
     <fragment
@@ -213,5 +216,10 @@
             android:id="@+id/action_userPaymentCoralFragment_to_userAddCoralFragment"
             app:destination="@id/userAddCoralFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/repositoryTest"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.RepositoryTest"
+        android:label="fragment_repository_test"
+        tools:layout="@layout/fragment_repository_test" />
 
 </navigation>

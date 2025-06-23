@@ -34,6 +34,7 @@ class LoginFragment : Fragment() {
     private lateinit var emailLayout: TextInputLayout
     private lateinit var passwordLayout: TextInputLayout
     private lateinit var loginButton: MaterialButton
+    private lateinit var repositoryButton: MaterialButton
     private var videoView: VideoView? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -60,6 +61,7 @@ class LoginFragment : Fragment() {
         emailLayout = view.findViewById(R.id.emailInputLayout)
         passwordLayout = view.findViewById(R.id.passwordInputLayout)
         loginButton = view.findViewById(R.id.loginButton)
+        repositoryButton=view.findViewById(R.id.repositoryTestButton)
         videoView = view.findViewById(R.id.videoBackground)
     }
 
@@ -100,6 +102,9 @@ class LoginFragment : Fragment() {
         // Register link
         view.findViewById<View>(R.id.registerLink).setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
+        repositoryButton.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_repositoryTest)
         }
 
         // Input field focus animations

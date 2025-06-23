@@ -186,15 +186,17 @@
 
                     <!-- Forgot Password -->
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/forgotPasswordLink"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:id="@+id/repositoryTestButton"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
                         android:layout_marginBottom="16dp"
-                        android:text="Forgot Password?"
-                        android:textColor="@color/ocean_blue"
-                        android:textSize="14sp"
+                        android:backgroundTint="@color/login_button"
+                        android:text="REPOSITORY TEST"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="12dp"
                         app:rippleColor="@color/ocean_light" />
 
                     <!-- Divider -->
