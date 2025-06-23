@@ -16,6 +16,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.SetLokasiTkRequest
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +64,10 @@ class AddPlaceViewModel(application: Application) : AndroidViewModel(application
 
     private val _shouldFinish = MutableLiveData<Boolean>()
     val shouldFinish: LiveData<Boolean> = _shouldFinish
+
+    // NEW: State to hold the selected coral IDs
+    private val _selectedCoralIds = MutableLiveData<List<Int>>(emptyList())
+    val selectedCoralIds: LiveData<List<Int>> = _selectedCoralIds
 
     // Places API States
     private val _placesApiError = MutableLiveData<String>()
@@ -232,18 +237,30 @@ class AddPlaceViewModel(application: Application) : AndroidViewModel(application
         checkAddButtonEnabled()
     }
 
+    fun onCoralsSelected(coralIds: List<Int>) {
+        _selectedCoralIds.value = coralIds
+        Log.d(TAG, "ViewModel updated with ${coralIds.size} selected corals.")
+        // Re-run the validation check whenever the coral selection changes
+        checkAddButtonEnabled()
+    }
+
     private fun checkAddButtonEnabled() {
         val hasLocation = _selectedLocation.value != null
         val hasAddress = !_selectedAddress.value.isNullOrEmpty()
         val hasDescription = !_description.value.isNullOrEmpty()
-        _isAddButtonEnabled.value = hasLocation && hasAddress && hasDescription
-        Log.d(TAG, "Add button enabled: ${_isAddButtonEnabled.value} (location: $hasLocation, address: $hasAddress, description: $hasDescription)")
+        // Add the new condition here
+        val hasCorals = !_selectedCoralIds.value.isNullOrEmpty()
+
+        _isAddButtonEnabled.value = hasLocation && hasAddress && hasDescription && hasCorals
+        Log.d(TAG, "Add button enabled: ${_isAddButtonEnabled.value} (location: $hasLocation, address: $hasAddress, description: $hasDescription, corals: $hasCorals)")
     }
+
 
     fun addLocationToBackend() {
         val currentLocation = _selectedLocation.value
         val currentAddress = _selectedAddress.value
         val currentDescription = _description.value
+        val currentCoralIds = _selectedCoralIds.value
 
         if (currentLocation == null || currentAddress.isNullOrEmpty()) {
             _errorMessage.value = "Please select a location first"
@@ -254,6 +271,11 @@ class AddPlaceViewModel(application: Application) : AndroidViewModel(application
             _errorMessage.value = "Please enter a description"
             return
         }
+        if (currentCoralIds.isNullOrEmpty()) {
+            _errorMessage.value = "Please select at least one available coral"
+            return
+        }
+
 
         viewModelScope.launch {
             try {
@@ -274,9 +296,17 @@ class AddPlaceViewModel(application: Application) : AndroidViewModel(application
                 // Perlu memodifikasi AddLokasiRequest untuk include description
                 // Assuming AddLokasiRequest needs to be updated to include description field
                 val request = AddLokasiRequest(
+                    // You might need to add other fields like name, latitude, longitude here
                     address = currentAddress,
-                    description = currentDescription
+                    description = currentDescription,
+                    coralIds = currentCoralIds // Pass the list here
                 )
+//                val requestTK = SetLokasiTkRequest(
+//                    // You might need to add other fields like name, latitude, longitude here
+////                    address = currentAddress,
+////                    description = currentDescription,
+//                    idTk = currentCoralIds // Pass the list here
+//                )
                 Log.d(TAG, "Request object: $request")
 
                 val response = withContext(Dispatchers.IO) {

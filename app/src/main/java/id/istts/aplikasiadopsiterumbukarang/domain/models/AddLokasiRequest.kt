@@ -6,6 +6,7 @@ data class AddLokasiRequest(
     @SerializedName("address")
     val address: String,
     @SerializedName("description")
-    val description: String
-
+    val description: String,
+    @SerializedName("coralIds")
+    val coralIds: List<Int>
 )

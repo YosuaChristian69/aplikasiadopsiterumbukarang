@@ -7,7 +7,6 @@
         android:layout_height="match_parent"
         android:background="@color/light_blue">
 
-        <!-- Header -->
         <LinearLayout
             android:id="@+id/toolbar_container"
             android:layout_width="match_parent"
@@ -39,7 +38,6 @@
                 android:layout_gravity="center_vertical" />
         </LinearLayout>
 
-        <!-- Search Box -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/search_card"
             android:layout_width="match_parent"
@@ -76,7 +74,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ScrollView to accommodate all content -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -88,7 +85,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp">
-                <!-- Google Maps Container -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/map_card"
                     android:layout_width="match_parent"
@@ -101,13 +97,11 @@
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
-                        <!-- Map Fragment Container -->
                         <FrameLayout
                             android:id="@+id/map_container"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="#E0E0E0">
-                            <!-- Placeholder text for when map is not loaded -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -116,7 +110,6 @@
                                 android:textColor="#757575"
                                 tools:ignore="HardcodedText" />
                         </FrameLayout>
-                        <!-- Address Overlay -->
                         <LinearLayout
                             android:id="@+id/address_overlay"
                             android:layout_width="match_parent"
@@ -146,7 +139,6 @@
                         </LinearLayout>
                     </FrameLayout>
                 </com.google.android.material.card.MaterialCardView>
-                <!-- Description Input Section -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/description_card"
                     android:layout_width="match_parent"
@@ -161,7 +153,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:padding="16dp">
-                        <!-- Description Header -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -189,7 +180,6 @@
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
-                        <!-- Description Input Container -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/til_description"
                             android:layout_width="match_parent"
@@ -224,7 +214,6 @@
                                 android:overScrollMode="always"
                                 android:scrollbarStyle="insideInset" />
                         </com.google.android.material.textfield.TextInputLayout>
-                        <!-- Description Guidelines -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -249,10 +238,115 @@
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/corals_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#E0E0E0">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="12dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_coral_seed"
+                                android:layout_marginEnd="8dp"
+                                app:tint="@color/primary_teal" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Available Corals for this Location"
+                                android:textColor="@color/primary_teal"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=" *"
+                                android:textColor="#F44336"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/chip_group_selected_corals"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:chipSpacingHorizontal="8dp"
+                                android:visibility="gone"
+                                tools:visibility="visible">
+                                <com.google.android.material.chip.Chip
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    style="@style/Widget.MaterialComponents.Chip.Entry"
+                                    app:chipIcon="@drawable/ic_coral_logo"
+                                    app:chipIconVisible="true"
+                                    tools:text="Staghorn Coral" />
+                                <com.google.android.material.chip.Chip
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    style="@style/Widget.MaterialComponents.Chip.Entry"
+                                    app:chipIcon="@drawable/ic_coral_logo"
+                                    app:chipIconVisible="true"
+                                    tools:text="Brain Coral" />
+                            </com.google.android.material.chip.ChipGroup>
+
+                        </HorizontalScrollView>
+
+                        <TextView
+                            android:id="@+id/tv_no_corals_selected"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="No corals selected yet."
+                            android:gravity="center"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:padding="16dp"
+                            android:visibility="visible"
+                            tools:visibility="gone"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_choose_corals"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Choose Available Corals"
+                            android:textColor="@color/primary_teal"
+                            app:icon="@drawable/ic_edit_coral"
+                            app:iconTint="@color/primary_teal"
+                            app:strokeColor="@color/primary_teal"
+                            app:rippleColor="@color/primary_teal_light" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
         </ScrollView>
 
-        <!-- Bottom Container for Cancel and Add Buttons -->
         <LinearLayout
             android:id="@+id/bottom_container"
             android:layout_width="match_parent"
@@ -264,7 +358,6 @@
             android:elevation="8dp"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Cancel Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_cancel_add"
                 android:layout_width="0dp"
@@ -284,7 +377,6 @@
                 app:rippleColor="?attr/colorOnSurfaceVariant"
                 android:letterSpacing="0.02" />
 
-            <!-- Add Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_place"
                 android:layout_width="0dp"
@@ -306,7 +398,6 @@
                 android:letterSpacing="0.02" />
         </LinearLayout>
 
-        <!-- Loading Indicator -->
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"

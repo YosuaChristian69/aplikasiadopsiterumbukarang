@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -23,9 +24,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.chip.Chip
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAddPlaceBinding
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addPlace.AddPlaceViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.SelectionMode
 
 class AddPlaceFragment : Fragment(), OnMapReadyCallback {
 
@@ -61,6 +64,7 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         setupUI()
         setupObservers()
         setupGoogleMaps()
+        setupCoralSelectionResultListener()
     }
 
     private fun initializeServices() {
@@ -86,6 +90,12 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         binding.btnCancelAdd.setOnClickListener {
             findNavController().navigate(R.id.action_addPlaceFragment4_to_adminPlaceDashboardFragment)
         }
+        binding.btnChooseCorals.setOnClickListener {
+            // Define the navigation action, passing the ADMIN mode as an argument.
+            val action = AddPlaceFragmentDirections
+                .actionAddPlaceFragment4ToUserSelectSpeciesFragment(SelectionMode.ADMIN_MULTI_SELECTION)
+            findNavController().navigate(action)
+        }
 
         setupSearchFunctionality()
         setupDescriptionFunctionality()
@@ -95,6 +105,13 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         // Loading state
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+        viewModel.selectedCoralIds.observe(viewLifecycleOwner) { coralIds ->
+            // We could update the UI here as well, but the primary update
+            // happens via the fragment result listener for immediate feedback.
+            Log.d(TAG, "ViewModel now holds ${coralIds.size} selected coral IDs.")
+            // You could call a function here to fetch coral names and update the ChipGroup
+            // updateCoralsChipGroup(coralIds)
         }
 
         // Add button state
@@ -347,6 +364,46 @@ class AddPlaceFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    // NEW: This function sets up the listener that waits for data to be sent back.
+    private fun setupCoralSelectionResultListener() {
+        setFragmentResultListener("coralSelectionRequest") { requestKey, bundle ->
+            val selectedIds = bundle.getIntegerArrayList("selectedCoralIds")
+            if (selectedIds != null) {
+                Log.d(TAG, "Received result: $selectedIds")
+                // Update the ViewModel with the new list of IDs
+                viewModel.onCoralsSelected(selectedIds)
+                // Update the UI to show the number of selected corals.
+                // For a better UX, you would fetch the coral names and display them as chips.
+                updateCoralsChipGroupWithCount(selectedIds.size)
+            }
+        }
+    }
+
+    // NEW: A simple function to update the UI based on the result.
+    // A more advanced version would fetch coral names to create named chips.
+    private fun updateCoralsChipGroupWithCount(count: Int) {
+        val chipGroup = binding.chipGroupSelectedCorals
+        chipGroup.removeAllViews() // Clear previous chips
+
+        if (count > 0) {
+            binding.tvNoCoralsSelected.visibility = View.GONE
+            chipGroup.visibility = View.VISIBLE
+
+            // For now, we just show a summary chip.
+            val summaryChip = Chip(requireContext()).apply {
+                text = "$count corals selected"
+                isCloseIconVisible = true // Allow user to clear the selection
+            }
+            summaryChip.setOnCloseIconClickListener {
+                viewModel.onCoralsSelected(emptyList()) // Clear selection in ViewModel
+                updateCoralsChipGroupWithCount(0) // Update UI
+            }
+            chipGroup.addView(summaryChip)
+        } else {
+            binding.tvNoCoralsSelected.visibility = View.VISIBLE
+            chipGroup.visibility = View.GONE
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

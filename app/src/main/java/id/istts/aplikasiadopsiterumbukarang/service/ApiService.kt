@@ -9,6 +9,8 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.GetCoralResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LokasiResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.SetLokasiTkRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.SetLokasiTkResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.register.RequestVerificationRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.register.RequestVerificationResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.SingleCoralResponse
@@ -119,7 +121,7 @@ interface ApiService {
     //LOKASI
     // Add this method to your existing ApiService interface
 
-    @POST("/lokasi/LokasiGoogle")
+    @POST("/lokasi/LokasiGoogleSpesiesTersedia")
     suspend fun addLokasiGoogle(
         @Header("x-auth-token") token: String,
         @Body request: AddLokasiRequest
@@ -128,4 +130,9 @@ interface ApiService {
     suspend fun getLokasi(
         @Header("x-auth-token") token: String
     ): Response<LokasiResponse>
+//    @POST("/lokasi/lokasi-spesies-tersedia")
+//    suspend fun addLokasiWithCorals(
+//        @Header("x-auth-token") token: String,
+//        @Body request: SetLokasiTkRequest
+//    ): Response<SetLokasiTkResponse>
 }

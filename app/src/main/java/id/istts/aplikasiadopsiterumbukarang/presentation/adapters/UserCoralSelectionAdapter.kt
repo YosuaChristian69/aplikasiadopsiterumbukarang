@@ -6,9 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
+// Import the correct MaterialCardView
+import com.google.android.material.card.MaterialCardView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide // Using Glide for image loading is highly recommended
+import com.bumptech.glide.Glide
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 
@@ -17,28 +18,21 @@ class UserCoralSelectionAdapter(
     private val onItemClick: (Coral) -> Unit
 ) : RecyclerView.Adapter<UserCoralSelectionAdapter.ViewHolder>() {
 
-    private var selectedPosition = RecyclerView.NO_POSITION
+    private var selectedItems = setOf<Coral>()
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val cardView: CardView = itemView.findViewById(R.id.cardViewItem) // Assuming the root is a CardView with this ID
+        // THE FIX: Change the type here from CardView to MaterialCardView
+        private val cardView: MaterialCardView = itemView.findViewById(R.id.cardViewItem)
         private val imageView: ImageView = itemView.findViewById(R.id.ivCoral)
         private val nameTextView: TextView = itemView.findViewById(R.id.tvCoralSpecies)
 
         fun bind(coral: Coral, isSelected: Boolean) {
             nameTextView.text = coral.tk_name
-            // Use Glide to load images from a URL
-            // Glide.with(itemView.context).load(coral.imageUrl).into(imageView)
+            // Glide.with(itemView.context).load(coral.img_path).into(imageView)
 
-            // Change appearance based on selection
-            cardView.setCardBackgroundColor(
-                if (isSelected) Color.parseColor("#C1C7C1") // Highlight color
-                else Color.WHITE
-            )
-
-            nameTextView.setBackgroundColor(
-                if (isSelected) Color.parseColor("#C1C7C1")
-                else Color.parseColor("#4FFFB3")
-            )
+            // Now these properties are resolved and will work correctly
+            cardView.strokeWidth = if (isSelected) 8 else 0 // 8dp stroke width when selected
+            cardView.strokeColor = if (isSelected) Color.parseColor("#4EF8BF") else Color.TRANSPARENT
 
             itemView.setOnClickListener {
                 onItemClick(coral)
@@ -47,39 +41,25 @@ class UserCoralSelectionAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // Use your single item layout file here
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item_coral, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(corals[position], position == selectedPosition)
+        val coral = corals[position]
+        holder.bind(coral, selectedItems.contains(coral))
     }
 
     override fun getItemCount(): Int = corals.size
 
-    // Method to update the adapter's data
     fun updateData(newCorals: List<Coral>) {
         this.corals = newCorals
         notifyDataSetChanged()
     }
 
-    // Method to update the selection and refresh the item views
-    fun setSelectedCoral(coral: Coral?) {
-        val oldSelectedPosition = selectedPosition
-        selectedPosition = if (coral == null) {
-            RecyclerView.NO_POSITION
-        } else {
-            corals.indexOfFirst { it.id_tk == coral.id_tk }
-        }
-
-        // Refresh the old and new selected items to update their appearance
-        if (oldSelectedPosition != RecyclerView.NO_POSITION) {
-            notifyItemChanged(oldSelectedPosition)
-        }
-        if (selectedPosition != RecyclerView.NO_POSITION) {
-            notifyItemChanged(selectedPosition)
-        }
+    fun updateSelection(newSelectedCorals: List<Coral>) {
+        this.selectedItems = newSelectedCorals.toSet()
+        notifyDataSetChanged()
     }
 }
