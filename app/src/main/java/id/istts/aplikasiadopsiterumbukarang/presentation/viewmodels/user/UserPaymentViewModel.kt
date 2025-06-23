@@ -38,26 +38,42 @@ class UserPaymentViewModel(
     val midtransResponse: LiveData<MidtransTransactionResponse?> = _midtransResponse
 
     // Function to load the initial coral details (name, price)
+
     fun loadCoralDetails(coralId: Int) {
+        // Checkpoint 1: The function is called.
+        Log.d("PAYMENT_DEBUG", "Step 1: loadCoralDetails called. Setting isLoading=true.")
         _uiState.update { it.copy(isLoading = true) }
+
         viewModelScope.launch {
             try {
+                // Checkpoint 2: The coroutine starts.
+                Log.d("PAYMENT_DEBUG", "Step 2: Coroutine launched. Fetching token.")
+
                 val token = sessionManager.fetchAuthToken()
-                    ?: throw Exception("User not authenticated. Please login again.")
+                    ?: throw Exception("User token is null or empty.")
 
-                // 1. The repository returns a Result object
-                val result = coralRepository.getSingleCoral(token=token, id=coralId)
+                // Checkpoint 3: The token is found.
+                Log.d("PAYMENT_DEBUG", "Step 3: Token found. Calling repository's getSingleCoral function.")
 
-                // 2. THE FIX: "Unwrap" the result here.
-                // This will either give you the Coral object or throw an exception.
+                // This is the network call.
+                val result = coralRepository.getSingleCoral(token = token, id =coralId)
+
+                // Checkpoint 4: The network call has completed.
+                Log.d("PAYMENT_DEBUG", "Step 4: Repository call finished. The result was a success: ${result.isSuccess}")
+
+                // This will fail if the result was a failure, and jump to the catch block.
                 val coral = result.getOrThrow()
 
-                // 3. Now this line will work because 'coral' is a real Coral object
-                Log.d("PAYMENT_VM_DEBUG", "Repository returned successfully with coral: ${coral.tk_name}")
+                // Checkpoint 5: The data was successfully unwrapped.
+                Log.d("PAYMENT_DEBUG", "Step 5: Result unwrapped successfully. Coral is ${coral.tk_name}")
 
+                // Update the UI with the final data.
                 _uiState.update { it.copy(isLoading = false, coralDetails = coral) }
+                Log.d("PAYMENT_DEBUG", "Step 6: Final state updated. UI should now appear.")
 
             } catch (e: Exception) {
+                // Checkpoint X: If any step in the 'try' block fails, we end up here.
+                Log.e("PAYMENT_DEBUG", "Step X: CATCH BLOCK EXECUTED! The error is:", e)
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }

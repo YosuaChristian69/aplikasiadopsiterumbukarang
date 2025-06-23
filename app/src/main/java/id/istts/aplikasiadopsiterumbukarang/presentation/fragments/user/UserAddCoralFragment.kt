@@ -1,6 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,23 +80,35 @@ class UserAddCoralFragment : Fragment() {
             // This simply takes the user to the previous screen on the back stack.
             findNavController().popBackStack()
         }
+// In setupClickListeners()
         binding.btnNext.setOnClickListener {
-            val coral = viewModel.uiState.value.coral ?: return@setOnClickListener
-            // Get the selected location ID from the ViewModel's LiveData
-            val locationId = viewModel.selectedLocationId.value ?: return@setOnClickListener
+            Log.d("NEXT_BUTTON_DEBUG", "Next button was clicked.")
 
-            val nickname = binding.etCoralNickname.text.toString().trim()
-            val message = binding.etMessage.text.toString().trim()
+            val coral = viewModel.uiState.value.coral
+            val locationId = viewModel.selectedLocationId.value
 
-            // Pass the correct values from the ViewModel
-            val action = UserAddCoralFragmentDirections
-                .actionUserAddCoralFragmentToUserPaymentCoralFragment(
-                    coralId = coral.id_tk,
-                    locationId = locationId,
-                    coralNickname = nickname,
-                    message = message
-                )
-            findNavController().navigate(action)
+            if (coral != null && locationId != null) {
+                // This is the success path
+                Log.d("NEXT_BUTTON_DEBUG", "SUCCESS: Both coral and location are available. Navigating...")
+
+                val nickname = binding.etCoralNickname.text.toString().trim()
+                val message = binding.etMessage.text.toString().trim()
+
+                val action = UserAddCoralFragmentDirections
+                    .actionUserAddCoralFragmentToUserPaymentCoralFragment(
+                        coralId = coral.id_tk,
+                        locationId = locationId,
+                        coralNickname = nickname,
+                        message = message
+                    )
+                findNavController().navigate(action)
+            } else {
+                // This is the failure path
+                Log.e("NEXT_BUTTON_DEBUG", "FAILURE: Cannot navigate.")
+                Log.e("NEXT_BUTTON_DEBUG", "Is coral null? -> ${coral == null}")
+                Log.e("NEXT_BUTTON_DEBUG", "Is locationId null? -> ${locationId == null}")
+                Toast.makeText(requireContext(), "Please select a location first.", Toast.LENGTH_SHORT).show()
+            }
         }
         binding.etSelectedLocation.setOnClickListener {
             val coral = viewModel.uiState.value.coral

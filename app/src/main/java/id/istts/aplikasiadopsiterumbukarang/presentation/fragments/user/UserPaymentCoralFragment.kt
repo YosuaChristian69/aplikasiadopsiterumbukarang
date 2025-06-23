@@ -36,31 +36,70 @@ class UserPaymentCoralFragment : Fragment() {
     private val args: UserPaymentCoralFragmentArgs by navArgs()
     private lateinit var viewModel: UserPaymentViewModel
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        Log.d("PAYMENT_LIFECYCLE", "onCreateView called.")
+        _binding = FragmentUserPaymentCoralBinding.inflate(inflater, container, false)
+        return binding.root
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViewModel()
-        setupClickListeners()
-        observeViewModel()
+        // We will wrap the entire setup in a try-catch block to find any hidden crash.
+        try {
+            Log.d("PAYMENT_LIFECYCLE", "onViewCreated: Starting setup...")
 
-        // Tell the ViewModel to fetch details for the coralId we received
-        viewModel.loadCoralDetails(args.coralId)
+            setupViewModel()
+            Log.d("PAYMENT_LIFECYCLE", "onViewCreated: setupViewModel() finished.")
+
+            setupClickListeners()
+            Log.d("PAYMENT_LIFECYCLE", "onViewCreated: setupClickListeners() finished.")
+
+            observeViewModel()
+            Log.d("PAYMENT_LIFECYCLE", "onViewCreated: observeViewModel() finished.")
+
+            // This line is our final goal.
+            Log.d("PAYMENT_LIFECYCLE", "onViewCreated: About to call viewModel.loadCoralDetails().")
+            viewModel.loadCoralDetails(args.coralId)
+            Log.d("PAYMENT_LIFECYCLE", "onViewCreated: viewModel.loadCoralDetails() was successfully called.")
+
+        } catch (e: Exception) {
+            // If any part of the setup crashes, this will catch it.
+            Log.e("PAYMENT_LIFECYCLE", "A CRASH occurred during fragment setup!", e)
+            Toast.makeText(requireContext(), "Critical setup error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setupViewModel() {
-        // 1. Get the single ApiService instance and create a SessionManager
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: START")
+
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: Creating ApiService...")
         val apiService = RetrofitClient.instance
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: ApiService created.")
+
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: Creating SessionManager...")
         val sessionManager = SessionManager(requireContext())
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: SessionManager created.")
 
-        // 2. Create BOTH repositories, passing the same dependencies to them
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: Creating CoralRepositoryImpl...")
         val coralRepo = CoralRepositoryImpl()
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: CoralRepositoryImpl created.")
+
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: Creating TransactionRepositoryImpl...")
         val transactionRepo = TransactionRepositoryImpl(apiService, sessionManager)
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: TransactionRepositoryImpl created.")
 
-        // 3. Create the factory. It now receives the SessionManager as well.
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: Creating ViewModelFactory...")
         val viewModelFactory = UserPaymentViewModelFactory(coralRepo, transactionRepo, sessionManager)
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: ViewModelFactory created.")
 
-        // 4. Create the ViewModel
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: Creating ViewModel instance...")
         viewModel = ViewModelProvider(this, viewModelFactory)[UserPaymentViewModel::class.java]
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: ViewModel instance created.")
+
+        Log.d("PAYMENT_LIFECYCLE", "setupViewModel: FINISHED")
     }
 
     private fun setupClickListeners() {
