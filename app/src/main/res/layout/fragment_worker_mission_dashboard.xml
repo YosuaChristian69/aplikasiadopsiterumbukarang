@@ -14,7 +14,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
-        android:src="@drawable/ic_account_circle"
+        android:src="@drawable/circle_active"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@android:color/white" />
@@ -58,7 +58,6 @@
                 android:textAllCaps="false"
                 app:backgroundTint="#2196F3"
                 app:cornerRadius="12dp"
-                app:icon="@drawable/ic_upload"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -68,7 +67,7 @@
                 android:layout_width="0dp"
                 android:layout_height="180dp"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/bg_image_placeholder"
+                android:background="@drawable/ic_image_placeholder"
                 android:scaleType="centerCrop"
                 android:visibility="gone"
                 tools:visibility="visible"
@@ -91,7 +90,7 @@
                     android:id="@+id/et_longitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimalSigned" />
+                    android:inputType="numberDecimal" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -110,7 +109,7 @@
                     android:id="@+id/et_latitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimalSigned" />
+                    android:inputType="numberDecimal" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
