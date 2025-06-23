@@ -30,7 +30,9 @@ import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.WorkerAdapter
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AdminWorkerDashboardViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.workerdashboard.AdminWorkerDashboardViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.workerdashboard.AdminWorkerDashboardViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 
 class AdminWorkerDashboardFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
@@ -56,7 +58,9 @@ class AdminWorkerDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sessionManager = SessionManager(requireContext())
-        viewModel = ViewModelProvider(this)[AdminWorkerDashboardViewModel::class.java]
+        val apiService = RetrofitClient.instance
+        val viewModelFactory = AdminWorkerDashboardViewModelFactory(apiService)
+        viewModel = ViewModelProvider(this, viewModelFactory)[AdminWorkerDashboardViewModel::class.java]
 
         if (validateAccess()) {
             setupViews(view)
@@ -125,7 +129,8 @@ class AdminWorkerDashboardFragment : Fragment() {
             lifecycleScope.launch {
                 delay(300) // Wait 300ms after user stops typing
                 if (query == searchEditText.text.toString()) {
-                    viewModel.searchWorkers(query, sessionManager)
+                    // Hapus argumen sessionManager dari sini
+                    viewModel.searchWorkers(query)
                 }
             }
         }
