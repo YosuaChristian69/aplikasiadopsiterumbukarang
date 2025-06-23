@@ -105,4 +105,5 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.kotlinx.coroutines.core)
+//    kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0")
 }

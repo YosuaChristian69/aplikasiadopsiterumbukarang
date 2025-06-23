@@ -16,7 +16,8 @@ coreAnimation = "1.0.0"
 nav = "2.7.7"
 playServicesCastFramework = "22.1.0"
 
-roomRuntime = "2.6.1"
+#roomRuntime = "2.6.1"
+roomRuntime = "2.7.2"
 kotlinxCoroutinesCore = "1.7.1"
 
 [libraries]
