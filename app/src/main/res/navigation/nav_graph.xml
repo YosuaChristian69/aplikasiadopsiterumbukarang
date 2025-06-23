@@ -61,6 +61,9 @@
         <argument
             android:name="coralId"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_userAddCoralFragment_to_locationSelectionFragment"
+            app:destination="@id/locationSelectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/userDetailMyCoralFragment"
@@ -215,6 +218,9 @@
             android:name="coralId"
             app:argType="integer" />
         <argument
+            android:name="locationId"
+            app:argType="integer" />
+        <argument
             android:name="coralNickname"
             app:argType="string"
             app:nullable="true" />
@@ -231,5 +237,12 @@
         android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.RepositoryTest"
         android:label="fragment_repository_test"
         tools:layout="@layout/fragment_repository_test" />
+    <fragment
+        android:id="@+id/locationSelectionFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.LocationSelectionFragment">
+        <argument
+            android:name="coralId"
+            app:argType="integer" />
+    </fragment>
 
 </navigation>

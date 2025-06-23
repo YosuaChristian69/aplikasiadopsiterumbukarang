@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -43,7 +44,7 @@ class UserAddCoralFragment : Fragment() {
         setupViewModel()
         setupClickListeners()
         observeViewModel()
-
+        setupLocationResultListener()
         viewModel.loadCoralDetails(args.coralId)
     }
 
@@ -59,51 +60,98 @@ class UserAddCoralFragment : Fragment() {
         // The ViewModelProvider then uses your factory to correctly build the ViewModel.
         viewModel = ViewModelProvider(this, viewModelFactory).get(UserAddCoralViewModel::class.java)
     }
+    private fun setupLocationResultListener() {
+        setFragmentResultListener("locationSelectionRequest") { _, bundle ->
+            val locationId = bundle.getInt("selectedLocationId")
+            val locationName = bundle.getString("selectedLocationName")
 
+            if (locationName != null) {
+                // Update the ViewModel with the selected location
+                viewModel.onLocationSelected(locationId, locationName)
+            }
+        }
+    }
 
     private fun setupClickListeners() {
         // Use the 'binding' object to access views safely
-        binding.btnBack.setOnClickListener {
-            // A simple and reliable way to go back
-            findNavController().navigateUp()
-        }
-
+        // In setupClickListeners()
         binding.btnNext.setOnClickListener {
-            val coral = viewModel.uiState.value.coral
-            if (coral == null) {
-                Toast.makeText(context, "Please wait, coral details are loading.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val coral = viewModel.uiState.value.coral ?: return@setOnClickListener
+            // Get the selected location ID from the ViewModel's LiveData
+            val locationId = viewModel.selectedLocationId.value ?: return@setOnClickListener
 
             val nickname = binding.etCoralNickname.text.toString().trim()
             val message = binding.etMessage.text.toString().trim()
 
-            // Navigate to the payment screen, passing all necessary data
+            // Pass the correct values from the ViewModel
             val action = UserAddCoralFragmentDirections
                 .actionUserAddCoralFragmentToUserPaymentCoralFragment(
                     coralId = coral.id_tk,
+                    locationId = locationId,
                     coralNickname = nickname,
                     message = message
                 )
             findNavController().navigate(action)
         }
+        binding.etSelectedLocation.setOnClickListener {
+            val coral = viewModel.uiState.value.coral
+            if (coral != null) {
+                // Navigate to the location selection screen, passing the current coral's ID
+                val action = UserAddCoralFragmentDirections
+                    .actionUserAddCoralFragmentToLocationSelectionFragment(coral.id_tk)
+                findNavController().navigate(action)
+            } else {
+                Toast.makeText(context, "Waiting for coral details...", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+//        binding.btnNext.setOnClickListener {
+//            val coral = viewModel.uiState.value.coral
+//            if (coral == null) {
+//                Toast.makeText(context, "Please wait, coral details are loading.", Toast.LENGTH_SHORT).show()
+//                return@setOnClickListener
+//            }
+//
+//            val nickname = binding.etCoralNickname.text.toString().trim()
+//            val message = binding.etMessage.text.toString().trim()
+//
+//            // Navigate to the payment screen, passing all necessary data
+//            val action = UserAddCoralFragmentDirections
+//                .actionUserAddCoralFragmentToUserPaymentCoralFragment(
+//                    coralId = coralId,
+//                    locationId = locationId, // Pass the selected location ID
+//                    coralNickname = nickname,
+//                    message = message
+//                )
+//            findNavController().navigate(action)
+//        }
     }
 
+    // In your UserAddCoralFragment class
     private fun observeViewModel() {
+        // OBSERVER 1: For the StateFlow
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { state ->
-                // You can add a ProgressBar and control its visibility here
                 // binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
 
                 state.coral?.let { coral ->
                     binding.tvSelectedCoralSpecies.text = coral.tk_name
-                    binding.tvSelectedCoralLocation.text = coral.tk_name// Assuming your Coral model has this
                 }
 
                 state.error?.let { error ->
                     Toast.makeText(context, "Error: $error", Toast.LENGTH_LONG).show()
                 }
             }
+        }
+
+        // OBSERVER 2: For the selectedLocationName LiveData
+        viewModel.selectedLocationName.observe(viewLifecycleOwner) { locationName ->
+            binding.etSelectedLocation.setText(locationName)
+        }
+
+        // OBSERVER 3: For the button's enabled state LiveData
+        viewModel.isNextButtonEnabled.observe(viewLifecycleOwner) { isEnabled ->
+            binding.btnNext.isEnabled = isEnabled
         }
     }
 
