@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import id.istts.aplikasiadopsiterumbukarang.presentation.SelectionMode
 
 class UserDashboardFragment : Fragment() {
 
@@ -125,7 +126,9 @@ class UserDashboardFragment : Fragment() {
 //                         true
 //                     }
                      R.id.nav_adopt_coral ->{
-                         findNavController().navigate(R.id.action_userDashboardFragment_to_userSelectSpeciesFragment)
+                         val action = UserDashboardFragmentDirections
+                             .actionUserDashboardFragmentToUserSelectSpeciesFragment(SelectionMode.USER_SINGLE_SELECTION)
+                         findNavController().navigate(action)
                         true
                      }
                     else -> false
