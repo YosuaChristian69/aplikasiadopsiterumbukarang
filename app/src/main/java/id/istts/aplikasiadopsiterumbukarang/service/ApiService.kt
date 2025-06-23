@@ -6,6 +6,7 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.GetCoralResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.LSTResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LokasiResponse
@@ -33,6 +34,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("/users/login")
@@ -130,6 +132,11 @@ interface ApiService {
     suspend fun getLokasi(
         @Header("x-auth-token") token: String
     ): Response<LokasiResponse>
+    @GET("/lokasi/lokasi-spesies-tersedia") // Use your actual route path
+    suspend fun getLocationsForSpecies(
+        @Header("Authorization") token: String,
+        @Query("id_tk") coralId: Int // This adds "?id_tk=..." to the URL
+    ): Response<LSTResponse>
 //    @POST("/lokasi/lokasi-spesies-tersedia")
 //    suspend fun addLokasiWithCorals(
 //        @Header("x-auth-token") token: String,

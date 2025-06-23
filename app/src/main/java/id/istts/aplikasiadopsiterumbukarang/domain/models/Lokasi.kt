@@ -19,5 +19,8 @@ data class Lokasi(
     val description: String,
 
     @SerializedName("initial_tk_population")
-    val initialTkPopulation: Int
+    val initialTkPopulation: Int,
+
+    @SerializedName("terumbu_karangs")
+    val corals: List<Coral>? = null
 )
