@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 class SessionManager(context: Context) {
     private var prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     private var editor: SharedPreferences.Editor = prefs.edit()
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
 
     companion object {
         const val PREF_NAME = "coral_reef_app_prefs"
@@ -13,6 +14,7 @@ class SessionManager(context: Context) {
         const val USER_NAME = "user_name"
         const val USER_EMAIL = "user_email"
         const val USER_STATUS = "user_status"
+        const val USER_ID = "id_user"
         const val IS_LOGGED_IN = "is_logged_in"
     }
 
@@ -20,7 +22,9 @@ class SessionManager(context: Context) {
         editor.putString(USER_TOKEN, token)
         editor.apply()
     }
-
+    fun getSharedPreferences(): SharedPreferences {
+        return sharedPreferences
+    }
     fun fetchAuthToken(): String? {
         return prefs.getString(USER_TOKEN, null)
     }
@@ -28,6 +32,9 @@ class SessionManager(context: Context) {
         return prefs.getString(USER_NAME, null)
     }
 
+    fun fetchUserId(): Int {
+        return prefs.getInt(USER_ID, -1)
+    }
     // Get user email
     fun fetchUserEmail(): String? {
         return prefs.getString(USER_EMAIL, null)
@@ -54,4 +61,5 @@ class SessionManager(context: Context) {
         editor.clear()
         editor.apply()
     }
+
 }

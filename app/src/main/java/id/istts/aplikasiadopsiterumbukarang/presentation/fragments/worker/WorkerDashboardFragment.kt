@@ -23,7 +23,6 @@ import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.Worke
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModelFactory
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.WorkerPlantingRepository
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
-import id.istts.aplikasiadopsiterumbukarang.utils.SharedPreferenceManager
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
 import java.io.File
@@ -37,15 +36,17 @@ class WorkerDashboardFragment : Fragment() {
     private var _binding: FragmentWorkerDashboardBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
+    private lateinit var sessionManager: SessionManager
 
-    // ViewModel initialization using RetrofitClient and SharedPreferences
+    // ViewModel initialization using SharedPreferences from SessionManager
     private val plantingViewModel: WorkerPlantingViewModel by viewModels {
-        val sharedPrefs = requireContext().getSharedPreferences("worker_prefs", android.content.Context.MODE_PRIVATE)
-        val sessionManager = SessionManager(requireContext()) // Use SessionManager, not SharedPreferenceManager
+        val sessionManager = SessionManager(requireContext())
         WorkerPlantingViewModelFactory(
-            WorkerPlantingRepository<Any?>(RetrofitClient.instance, sharedPrefs), // Only 2 parameters
-            sessionManager // Pass SessionManager to factory
+            WorkerPlantingRepository(
+                RetrofitClient.instance,
+                sessionManager.getSharedPreferences() // Pass SharedPreferences from SessionManager
+            ),
+            sessionManager
         )
     }
 
@@ -76,23 +77,30 @@ class WorkerDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupSharedPreferences()
+        setupSessionManager()
         setupUI()
         setupObservers()
         setupClickListeners()
         setupCardClickListener()
 
+        // Check if user is logged in and has proper access
+        if (!sessionManager.isLoggedIn() || sessionManager.fetchUserStatus() != "worker") {
+            // Redirect to login if not authenticated or not a worker
+            findNavController().navigate(R.id.action_workerDashboardFragment_to_loginFragment)
+            return
+        }
+
         // Fetch pending plantings when view is created
         plantingViewModel.loadPendingPlantings()
     }
 
-    private fun setupSharedPreferences() {
-        sharedPreferenceManager = SharedPreferenceManager(requireContext())
+    private fun setupSessionManager() {
+        sessionManager = SessionManager(requireContext())
     }
 
     private fun setupUI() {
         // Set greeting with worker name
-        val workerName = sharedPreferenceManager.getWorkerName() ?: "DIVER"
+        val workerName = sessionManager.fetchUserName() ?: "DIVER"
         binding.tvGreeting.text = "HI, $workerName"
 
         // Initial mission card state
@@ -100,6 +108,14 @@ class WorkerDashboardFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        // Observe navigation to login
+        plantingViewModel.shouldNavigateToLogin.observe(viewLifecycleOwner) { shouldNavigate ->
+            if (shouldNavigate) {
+                findNavController().navigate(R.id.action_workerDashboardFragment_to_loginFragment)
+                plantingViewModel.onNavigatedToLogin()
+            }
+        }
+
         // Observe pending plantings
         plantingViewModel.pendingPlantings.observe(viewLifecycleOwner) { plantings ->
             if (plantings != null && plantings.isNotEmpty()) {
@@ -124,6 +140,7 @@ class WorkerDashboardFragment : Fragment() {
         plantingViewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
                 showError(it)
+                plantingViewModel.clearError()
             }
         }
     }
@@ -312,7 +329,7 @@ class WorkerDashboardFragment : Fragment() {
                 .setTitle("Confirm Completion")
                 .setMessage("Are you sure this coral planting has been completed successfully?")
                 .setPositiveButton("Yes, Complete") { _, _ ->
-                    val workerId = sharedPreferenceManager.getWorkerId() ?: 0
+                    val workerId = sessionManager.fetchUserId() ?: 0
                     plantingViewModel.finishPlanting(currentPlantingId, workerId)
                     currentPlantingId = 0
                     showSuccess("Coral planting completed successfully! 🐠")
@@ -336,8 +353,8 @@ class WorkerDashboardFragment : Fragment() {
 
     private fun performLogout() {
         lifecycleScope.launch {
-            sharedPreferenceManager.clearUserSession()
-            findNavController().navigate(R.id.action_workerDashboard_to_login)
+            sessionManager.clearSession() // Use SessionManager's clear method
+            findNavController().navigate(R.id.action_workerDashboardFragment_to_loginFragment)
         }
     }
 

@@ -6,7 +6,6 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlanting
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetail
 import id.istts.aplikasiadopsiterumbukarang.service.ApiService
 
-// Alternative: Use different name for generic parameter
 class WorkerPlantingRepository<T>(
     private val apiService: ApiService,
     private val sharedPreferences: SharedPreferences

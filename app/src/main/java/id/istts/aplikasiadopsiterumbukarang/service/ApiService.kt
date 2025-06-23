@@ -164,25 +164,25 @@ interface ApiService {
         @Part profilePicture: MultipartBody.Part
     ): Response<CompleteTaskResponse>
 
-    @GET("worker/pendingPlantings")
+    @GET("/users/worker/pendingPlantings")
     suspend fun getPendingPlantings(
         @Header("Authorization") token: String
     ): Response<PendingPlantingResponse>
 
-    @GET("worker/plantingDetails/{id}")
+    @GET("/users/worker/plantingDetails/{id}")
     suspend fun getPlantingDetails(
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Response<PlantingDetailResponse>
 
-    @PUT("worker/finishPlanting/{id}")
+    @PUT("/users/worker/finishPlanting/{id}")
     suspend fun finishPlanting(
         @Header("Authorization") token: String,
         @Path("id") id: Int,
         @Body request: FinishPlantingRequest
     ): Response<FinishPlantingResponse>
 
-    @POST("editProfile")
+    @POST("/users/editProfile")
     suspend fun editProfile(
         @Header("Authorization") token: String,
         @Body request: EditProfileRequest
