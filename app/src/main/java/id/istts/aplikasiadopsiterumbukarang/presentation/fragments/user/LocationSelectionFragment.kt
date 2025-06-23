@@ -1,6 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -92,6 +93,11 @@ class LocationSelectionFragment : Fragment(), OnMapReadyCallback {
             location?.let { viewModel.onLocationSelected(it) }
             false // Return false to allow default behavior (camera center, info window)
         }
+        val currentLocations = viewModel.uiState.value.availableLocations
+        if (currentLocations.isNotEmpty()) {
+            Log.d("MAPDEBUG", "Map is ready and locations were already loaded. Drawing markers now.")
+            addMarkersToMap(currentLocations)
+        }
     }
 
     private fun setupClickListeners() {
@@ -113,7 +119,9 @@ class LocationSelectionFragment : Fragment(), OnMapReadyCallback {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collectLatest { state ->
                 binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-
+                if (::googleMap.isInitialized && state.availableLocations.isNotEmpty()) {
+                    addMarkersToMap(state.availableLocations)
+                }
                 if (isMapReady && state.availableLocations.isNotEmpty()) {
                     addMarkersToMap(state.availableLocations)
                 }
@@ -139,11 +147,18 @@ class LocationSelectionFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addMarkersToMap(locations: List<Lokasi>) {
+        Log.d("MAPDEBUG", "addMarkersToMap called with ${locations.size} locations.")
+        if (!::googleMap.isInitialized || locations.isEmpty()) {
+            Log.d("MAPDEBUG", "Map not ready or locations list is empty. Aborting.")
+            return
+        }
         googleMap.clear()
         if (locations.isEmpty()) return
 
         val boundsBuilder = LatLngBounds.Builder()
         locations.forEach { location ->
+            Log.d("MAPDEBUG", "Processing location: ${location.lokasiName} at (${location.latitude}, ${location.longitude})")
+
             val latLng = LatLng(location.latitude, location.longitude)
             val marker = googleMap.addMarker(
                 MarkerOptions().position(latLng).title(location.lokasiName)

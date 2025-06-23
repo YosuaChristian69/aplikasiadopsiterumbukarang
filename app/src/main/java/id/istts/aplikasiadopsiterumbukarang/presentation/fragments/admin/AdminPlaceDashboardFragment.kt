@@ -176,7 +176,7 @@ class AdminPlaceDashboardFragment : Fragment() {
         } else {
             allLokasi.filter {
                 it.lokasiName.contains(query, ignoreCase = true) ||
-                        it.description.contains(query, ignoreCase = true)
+                        it.description!!.contains(query, ignoreCase = true)
             }
         }
         lokasiAdapter.submitList(filteredLokasi)
