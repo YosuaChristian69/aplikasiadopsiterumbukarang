@@ -1,5 +1,6 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.user
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -41,13 +42,21 @@ class UserPaymentViewModel(
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             try {
-                // THE FIX: Get the token from SessionManager first.
                 val token = sessionManager.fetchAuthToken()
                     ?: throw Exception("User not authenticated. Please login again.")
 
-                // Pass the real token to the repository function.
-                val coral = coralRepository.getSingleCoral( coralId,token)
-                _uiState.update { it.copy(isLoading = false, coralDetails = coral.getOrNull()) }
+                // 1. The repository returns a Result object
+                val result = coralRepository.getSingleCoral(token=token, id=coralId)
+
+                // 2. THE FIX: "Unwrap" the result here.
+                // This will either give you the Coral object or throw an exception.
+                val coral = result.getOrThrow()
+
+                // 3. Now this line will work because 'coral' is a real Coral object
+                Log.d("PAYMENT_VM_DEBUG", "Repository returned successfully with coral: ${coral.tk_name}")
+
+                _uiState.update { it.copy(isLoading = false, coralDetails = coral) }
+
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }

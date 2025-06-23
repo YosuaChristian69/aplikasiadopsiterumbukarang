@@ -27,7 +27,7 @@ import java.util.Locale
 private val FAKE_PAYMENT_FOR_DEV = true // SET TO true TO SKIP MIDTRANS, false FOR REAL TESTING
 
 class UserPaymentCoralFragment : Fragment() {
-    private val apiService = RetrofitClient.instance
+//    private val apiService = RetrofitClient.instance
 
     private var _binding: FragmentUserPaymentCoralBinding? = null
     private val binding get() = _binding!!
@@ -48,12 +48,18 @@ class UserPaymentCoralFragment : Fragment() {
     }
 
     private fun setupViewModel() {
+        // 1. Get the single ApiService instance and create a SessionManager
+        val apiService = RetrofitClient.instance
+        val sessionManager = SessionManager(requireContext())
 
-        // Create your repository instances here
+        // 2. Create BOTH repositories, passing the same dependencies to them
         val coralRepo = CoralRepositoryImpl()
-        val transactionRepo = TransactionRepositoryImpl(apiService = apiService , sessionManager = SessionManager(requireContext()))
+        val transactionRepo = TransactionRepositoryImpl(apiService, sessionManager)
 
-        val viewModelFactory = UserPaymentViewModelFactory(coralRepo, transactionRepo , sessionManager= SessionManager(requireContext()) )
+        // 3. Create the factory. It now receives the SessionManager as well.
+        val viewModelFactory = UserPaymentViewModelFactory(coralRepo, transactionRepo, sessionManager)
+
+        // 4. Create the ViewModel
         viewModel = ViewModelProvider(this, viewModelFactory)[UserPaymentViewModel::class.java]
     }
 

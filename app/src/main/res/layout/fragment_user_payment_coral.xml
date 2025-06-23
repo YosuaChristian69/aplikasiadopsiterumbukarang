@@ -110,7 +110,6 @@
                                 android:text="gopay_description"
                                 android:textSize="12sp"
                                 android:textColor="#757575" />
-
                         </LinearLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -301,7 +300,6 @@
                     android:text="@string/processing_payment"
                     android:textSize="14sp"
                     android:textColor="#757575" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -348,5 +346,6 @@
                     android:lineSpacingMultiplier="1.2" />
             </LinearLayout>
         </LinearLayout>
+
     </RelativeLayout>
 </ScrollView>
