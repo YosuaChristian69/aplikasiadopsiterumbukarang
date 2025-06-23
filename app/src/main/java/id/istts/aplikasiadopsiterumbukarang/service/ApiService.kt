@@ -134,7 +134,7 @@ interface ApiService {
     ): Response<LokasiResponse>
     @GET("/lokasi/lokasi-spesies-tersedia") // Use your actual route path
     suspend fun getLocationsForSpecies(
-        @Header("Authorization") token: String,
+        @Header("x-auth-token") token: String,
         @Query("id_tk") coralId: Int // This adds "?id_tk=..." to the URL
     ): Response<LSTResponse>
 //    @POST("/lokasi/lokasi-spesies-tersedia")
