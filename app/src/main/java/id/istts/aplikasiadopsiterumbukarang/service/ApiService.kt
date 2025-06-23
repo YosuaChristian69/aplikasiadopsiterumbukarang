@@ -20,6 +20,14 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.UpdateUserResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.register.VerifyAndRegisterRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.register.VerifyAndRegisterResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.WorkerResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.CompleteTaskResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.EditProfileRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.EditProfileResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlantingResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetailResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.UnfinishedTasksResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -142,4 +150,41 @@ interface ApiService {
 //        @Header("x-auth-token") token: String,
 //        @Body request: SetLokasiTkRequest
 //    ): Response<SetLokasiTkResponse>
+
+
+
+    //WORKER
+    @POST("fetchAllUnfinishedTask")
+    suspend fun fetchAllUnfinishedTasks(): Response<UnfinishedTasksResponse>
+
+    @Multipart
+    @POST("completeTask/{htid}")
+    suspend fun completeTask(
+        @Path("htid") htid: Int,
+        @Part profilePicture: MultipartBody.Part
+    ): Response<CompleteTaskResponse>
+
+    @GET("worker/pendingPlantings")
+    suspend fun getPendingPlantings(
+        @Header("Authorization") token: String
+    ): Response<PendingPlantingResponse>
+
+    @GET("worker/plantingDetails/{id}")
+    suspend fun getPlantingDetails(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<PlantingDetailResponse>
+
+    @PUT("worker/finishPlanting/{id}")
+    suspend fun finishPlanting(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: FinishPlantingRequest
+    ): Response<FinishPlantingResponse>
+
+    @POST("editProfile")
+    suspend fun editProfile(
+        @Header("Authorization") token: String,
+        @Body request: EditProfileRequest
+    ): Response<EditProfileResponse>
 }
