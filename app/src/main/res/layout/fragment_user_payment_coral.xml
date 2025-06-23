@@ -144,18 +144,19 @@
                         android:layout_marginBottom="8dp">
 
                         <TextView
+                            android:id="@+id/tv_coral_name"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="@string/coral_subscription"
+                            tools:text="Staghorn Coral Adoption"
                             android:textSize="14sp"
                             android:textColor="#212121" />
 
                         <TextView
-                            android:id="@+id/tv_subscription_price"
+                            android:id="@+id/tv_coral_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Rp 50.000"
+                            tools:text="Rp 25.000"
                             android:textSize="14sp"
                             android:textColor="#212121" />
 
@@ -209,7 +210,7 @@
                             android:id="@+id/tv_total_amount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Rp 52.500"
+                            tools:text="Rp 27.500"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="#FF6B35" />

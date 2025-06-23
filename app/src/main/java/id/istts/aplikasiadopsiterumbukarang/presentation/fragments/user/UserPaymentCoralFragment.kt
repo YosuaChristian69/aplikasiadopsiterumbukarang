@@ -1,60 +1,90 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentUserPaymentCoralBinding
+import java.text.NumberFormat
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [UserPaymentCoralFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class UserPaymentCoralFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentUserPaymentCoralBinding? = null
+    private val binding get() = _binding!!
+
+    // Use Safe Args to get the arguments passed from the previous screen
+    private val args: UserPaymentCoralFragmentArgs by navArgs()
+
+    // You will need a ViewModel for this screen to fetch coral details
+    // private lateinit var viewModel: UserPaymentViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_payment_coral, container, false)
+    ): View {
+        _binding = FragmentUserPaymentCoralBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment UserPaymentCoralFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            UserPaymentCoralFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // setupViewModel()
+        setupClickListeners()
+        observeViewModel()
+
+        // Tell the ViewModel to fetch details for the coralId we received
+        // viewModel.loadCoralDetails(args.coralId)
+    }
+
+    private fun setupClickListeners() {
+        // Handle the cancel button click
+        binding.btnCancelPayment.setOnClickListener {
+            // This navigates the user back to a main screen, clearing the adoption flow
+            // from the back stack. Replace with your actual main screen destination.
+            findNavController().navigate(R.id.action_global_userDashboardFragment)
+        }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.btnPayNow.setOnClickListener {
+            // Handle the payment logic here
+        }
+    }
+
+    private fun observeViewModel() {
+        // Create an observer for your ViewModel's data
+        // viewModel.coralDetails.observe(viewLifecycleOwner) { coral ->
+        //    if (coral != null) {
+        //        val adminFee = 2500
+        //        val total = coral.harga_tk + adminFee
+        //
+        //        binding.tvCoralName.text = "${coral.tk_name} Adoption"
+        //        binding.tvCoralPrice.text = formatToRupiah(coral.harga_tk)
+        //        binding.tvAdminFee.text = formatToRupiah(adminFee)
+        //        binding.tvTotalAmount.text = formatToRupiah(total)
+        //    }
+        // }
+    }
+
+    // Helper function to format numbers into Indonesian Rupiah currency
+    private fun formatToRupiah(amount: Int): String {
+        val localeID = Locale("in", "ID")
+        val numberFormat = NumberFormat.getCurrencyInstance(localeID)
+        numberFormat.minimumFractionDigits = 0 // Don't show decimal points
+        return numberFormat.format(amount)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

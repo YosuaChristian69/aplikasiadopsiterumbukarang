@@ -75,6 +75,10 @@ class UserAddCoralFragment : Fragment() {
     private fun setupClickListeners() {
         // Use the 'binding' object to access views safely
         // In setupClickListeners()
+        binding.btnBack.setOnClickListener {
+            // This simply takes the user to the previous screen on the back stack.
+            findNavController().popBackStack()
+        }
         binding.btnNext.setOnClickListener {
             val coral = viewModel.uiState.value.coral ?: return@setOnClickListener
             // Get the selected location ID from the ViewModel's LiveData
@@ -105,26 +109,6 @@ class UserAddCoralFragment : Fragment() {
             }
         }
 
-//        binding.btnNext.setOnClickListener {
-//            val coral = viewModel.uiState.value.coral
-//            if (coral == null) {
-//                Toast.makeText(context, "Please wait, coral details are loading.", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//
-//            val nickname = binding.etCoralNickname.text.toString().trim()
-//            val message = binding.etMessage.text.toString().trim()
-//
-//            // Navigate to the payment screen, passing all necessary data
-//            val action = UserAddCoralFragmentDirections
-//                .actionUserAddCoralFragmentToUserPaymentCoralFragment(
-//                    coralId = coralId,
-//                    locationId = locationId, // Pass the selected location ID
-//                    coralNickname = nickname,
-//                    message = message
-//                )
-//            findNavController().navigate(action)
-//        }
     }
 
     // In your UserAddCoralFragment class
