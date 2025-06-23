@@ -16,10 +16,10 @@ data class Lokasi(
     val longitude: Double,
 
     @SerializedName("description")
-    val description: String,
+    val description: String? = null,
 
     @SerializedName("initial_tk_population")
-    val initialTkPopulation: Int,
+    val initialTkPopulation: Int? = null,
 
     @SerializedName("terumbu_karangs")
     val corals: List<Coral>? = null
