@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

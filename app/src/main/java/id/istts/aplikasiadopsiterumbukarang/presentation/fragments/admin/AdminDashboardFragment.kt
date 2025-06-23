@@ -33,8 +33,8 @@ import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralAdapter
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AdminDashboardUiState
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.AdminDashboardViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardUiState
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardViewModel
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 
 class AdminDashboardFragment : Fragment() {
