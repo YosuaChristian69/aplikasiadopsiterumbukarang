@@ -1,14 +1,15 @@
-package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editUser
 
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
+import kotlinx.coroutines.launch
 
 class EditUserViewModel : ViewModel() {
 
@@ -87,7 +88,7 @@ class EditUserViewModel : ViewModel() {
 
                 // Validate email if present in updateData
                 updateData["email"]?.let { email ->
-                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                         _error.value = "Invalid email format"
                         return@launch
                     }

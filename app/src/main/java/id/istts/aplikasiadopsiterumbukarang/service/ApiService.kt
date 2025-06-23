@@ -145,14 +145,12 @@ interface ApiService {
         @Header("x-auth-token") token: String,
         @Query("id_tk") coralId: Int // This adds "?id_tk=..." to the URL
     ): Response<LSTResponse>
+
 //    @POST("/lokasi/lokasi-spesies-tersedia")
 //    suspend fun addLokasiWithCorals(
 //        @Header("x-auth-token") token: String,
 //        @Body request: SetLokasiTkRequest
 //    ): Response<SetLokasiTkResponse>
-
-
-
     //WORKER
     @POST("fetchAllUnfinishedTask")
     suspend fun fetchAllUnfinishedTasks(): Response<UnfinishedTasksResponse>

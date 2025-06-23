@@ -19,7 +19,7 @@ import com.google.android.material.textfield.TextInputEditText
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.EditUserViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editUser.EditUserViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
