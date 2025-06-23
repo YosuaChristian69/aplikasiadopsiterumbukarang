@@ -1,19 +1,24 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editUser
 
 import android.util.Log
-import android.util.Patterns
+// import android.util.Patterns // Dihapus karena sudah tidak digunakan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
-import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import id.istts.aplikasiadopsiterumbukarang.service.ApiService
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
 
-class EditUserViewModel : ViewModel() {
+class EditUserViewModel(
+    private val apiService: ApiService
+) : ViewModel() {
 
-    private val apiService = RetrofitClient.instance
+    // Regex untuk validasi email, tidak bergantung pada Android Framework
+    private companion object {
+        private const val EMAIL_REGEX = "[a-zA-Z0-9+._%\\-]{1,256}@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}(\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25})+"
+    }
 
     private val _user = MutableLiveData<Worker?>()
     val user: LiveData<Worker?> = _user
@@ -36,6 +41,7 @@ class EditUserViewModel : ViewModel() {
                 val token = sessionManager.fetchAuthToken()
                 if (token.isNullOrEmpty()) {
                     _error.value = "Authentication token not found"
+                    _isLoading.value = false
                     return@launch
                 }
 
@@ -69,7 +75,6 @@ class EditUserViewModel : ViewModel() {
         }
     }
 
-    // Updated: Now handles email instead of balance
     fun updateUser(userId: String, updateData: Map<String, String>, sessionManager: SessionManager) {
         viewModelScope.launch {
             try {
@@ -80,16 +85,18 @@ class EditUserViewModel : ViewModel() {
                 val token = sessionManager.fetchAuthToken()
                 if (token.isNullOrEmpty()) {
                     _error.value = "Authentication token not found"
+                    _isLoading.value = false
                     return@launch
                 }
 
                 Log.d("EditUserViewModel", "Updating user with ID: $userId")
                 Log.d("EditUserViewModel", "Update data: $updateData")
 
-                // Validate email if present in updateData
+                // Validasi email menggunakan Regex standar, bukan Patterns
                 updateData["email"]?.let { email ->
-                    if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    if (email.isNotBlank() && !email.matches(EMAIL_REGEX.toRegex())) {
                         _error.value = "Invalid email format"
+                        _isLoading.value = false
                         return@launch
                     }
                 }
@@ -101,8 +108,6 @@ class EditUserViewModel : ViewModel() {
                     if (updateResponse != null) {
                         _updateSuccess.value = true
                         Log.d("EditUserViewModel", "User updated successfully: ${updateResponse.msg}")
-
-                        // Optionally update the local user data
                         _user.value = updateResponse.user
                     } else {
                         _error.value = "No response from server"
@@ -112,7 +117,7 @@ class EditUserViewModel : ViewModel() {
                         400 -> "Invalid data provided"
                         401 -> "Authentication failed"
                         404 -> "User not found"
-                        409 -> "Email already exists" // Common error for duplicate email
+                        409 -> "Email already exists"
                         422 -> "Invalid email format or data validation failed"
                         else -> "Failed to update user: ${response.message()}"
                     }

@@ -20,6 +20,8 @@ import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editUser.EditUserViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editUser.EditUserViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -54,7 +56,11 @@ class EditUserFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         sessionManager = SessionManager(requireContext())
-        viewModel = ViewModelProvider(this)[EditUserViewModel::class.java]
+        val apiService = RetrofitClient.instance
+        // 2. Buat instance Factory kita, berikan ApiService
+        val viewModelFactory = EditUserViewModelFactory(apiService)
+        // 3. Buat ViewModel menggunakan Factory tersebut
+        viewModel = ViewModelProvider(this, viewModelFactory)[EditUserViewModel::class.java]
 
         if (validateAccess()) {
             setupViews(view)
