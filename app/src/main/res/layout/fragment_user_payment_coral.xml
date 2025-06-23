@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Background Image -->
         <ImageView
             android:id="@+id/iv_background"
             android:layout_width="match_parent"
@@ -28,8 +27,8 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Header Section -->
             <LinearLayout
+                android:id="@+id/header_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -63,201 +62,223 @@
 
             </LinearLayout>
 
-            <!-- Payment Method Card -->
-            <androidx.cardview.widget.CardView
+            <LinearLayout
+                android:id="@+id/main_content_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                android:backgroundTint="#FFFFFF">
+                android:orientation="vertical">
 
-                <LinearLayout
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_gopay_logo"
-                        android:contentDescription="@string/gopay_logo" />
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    android:backgroundTint="#FFFFFF">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_gopay_logo"
+                            android:contentDescription="@string/gopay_logo" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="gopay"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#212121" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="gopay_description"
+                                android:textSize="12sp"
+                                android:textColor="#757575" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    android:backgroundTint="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginStart="12dp">
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="gopay"
+                            android:text="order_summary"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="#212121" />
+                            android:textColor="#212121"
+                            android:layout_marginBottom="12dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:id="@+id/tv_coral_name"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                tools:text="Staghorn Coral Adoption"
+                                android:textSize="14sp"
+                                android:textColor="#212121" />
+
+                            <TextView
+                                android:id="@+id/tv_coral_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="Rp 25.000"
+                                android:textSize="14sp"
+                                android:textColor="#212121" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/admin_fee"
+                                android:textSize="14sp"
+                                android:textColor="#757575" />
+
+                            <TextView
+                                android:id="@+id/tv_admin_fee"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Rp 2.500"
+                                android:textSize="14sp"
+                                android:textColor="#757575" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginVertical="8dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/total_payment"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#212121" />
+
+                            <TextView
+                                android:id="@+id/tv_total_amount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="Rp 27.500"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#FF6B35" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    android:backgroundTint="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="gopay_description"
-                            android:textSize="12sp"
-                            android:textColor="#757575" />
+                            android:text="@string/payment_instructions"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#212121"
+                            android:layout_marginBottom="12dp" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/gopay_instructions"
+                            android:textSize="14sp"
+                            android:textColor="#757575"
+                            android:lineSpacingMultiplier="1.2" />
                     </LinearLayout>
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Order Summary Card -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                android:backgroundTint="#FFFFFF">
+                </androidx.cardview.widget.CardView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_marginTop="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="order_summary"
+                    <Button
+                        android:id="@+id/btn_pay_now"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="@string/pay_now"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="#212121"
-                        android:layout_marginBottom="12dp" />
+                        android:textColor="@android:color/white"
+                        android:layout_marginBottom="12dp"
+                        android:elevation="2dp" />
 
-                    <LinearLayout
+                    <Button
+                        android:id="@+id/btn_cancel_payment"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="8dp">
-
-                        <TextView
-                            android:id="@+id/tv_coral_name"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            tools:text="Staghorn Coral Adoption"
-                            android:textSize="14sp"
-                            android:textColor="#212121" />
-
-                        <TextView
-                            android:id="@+id/tv_coral_price"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            tools:text="Rp 25.000"
-                            android:textSize="14sp"
-                            android:textColor="#212121" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="8dp">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/admin_fee"
-                            android:textSize="14sp"
-                            android:textColor="#757575" />
-
-                        <TextView
-                            android:id="@+id/tv_admin_fee"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Rp 2.500"
-                            android:textSize="14sp"
-                            android:textColor="#757575" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#E0E0E0"
-                        android:layout_marginVertical="8dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/total_payment"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#212121" />
-
-                        <TextView
-                            android:id="@+id/tv_total_amount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            tools:text="Rp 27.500"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#FF6B35" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Payment Instructions Card -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                android:backgroundTint="#FFFFFF">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/payment_instructions"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#212121"
-                        android:layout_marginBottom="12dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/gopay_instructions"
+                        android:layout_height="48dp"
+                        android:text="@string/cancel_payment"
                         android:textSize="14sp"
                         android:textColor="#757575"
-                        android:lineSpacingMultiplier="1.2" />
+                        style="?android:attr/borderlessButtonStyle" />
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
-
-            <!-- Loading Indicator -->
+            </LinearLayout>
             <LinearLayout
                 android:id="@+id/layout_loading"
                 android:layout_width="match_parent"
@@ -268,6 +289,7 @@
                 android:visibility="gone">
 
                 <ProgressBar
+                    android:id="@+id/progress_bar"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginBottom="12dp"
@@ -282,7 +304,6 @@
 
             </LinearLayout>
 
-            <!-- QR Code Container -->
             <LinearLayout
                 android:id="@+id/layout_qr_code"
                 android:layout_width="match_parent"
@@ -325,42 +346,7 @@
                     android:textColor="#B0BEC5"
                     android:gravity="center"
                     android:lineSpacingMultiplier="1.2" />
-
             </LinearLayout>
-
-            <!-- Action Buttons -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="16dp">
-
-                <Button
-                    android:id="@+id/btn_pay_now"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="@string/pay_now"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
-
-                    android:layout_marginBottom="12dp"
-                    android:elevation="2dp" />
-
-                <Button
-                    android:id="@+id/btn_cancel_payment"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="@string/cancel_payment"
-                    android:textSize="14sp"
-                    android:textColor="#757575"
-
-                    style="?android:attr/borderlessButtonStyle" />
-
-            </LinearLayout>
-
         </LinearLayout>
-
     </RelativeLayout>
-
 </ScrollView>

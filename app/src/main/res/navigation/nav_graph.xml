@@ -329,6 +329,9 @@
         <action
             android:id="@+id/action_userPaymentCoralFragment_to_userAddCoralFragment"
             app:destination="@id/userAddCoralFragment" />
+        <action
+            android:id="@+id/action_userPaymentCoralFragment_to_adoptionSuccessFragment"
+            app:destination="@id/adoptionSuccessFragment" />
     </fragment>
     <fragment
         android:id="@+id/repositoryTest"
@@ -341,6 +344,12 @@
         <argument
             android:name="coralId"
             app:argType="integer" />
-    </fragment><action android:id="@+id/action_global_userDashboardFragment" app:destination="@id/userDashboardFragment"/>
+    </fragment>
+    <action android:id="@+id/action_global_userDashboardFragment" app:destination="@id/userDashboardFragment" />
+    <fragment
+        android:id="@+id/adoptionSuccessFragment"
+        android:name="id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user.AdoptionSuccessFragment"
+        android:label="fragment_adoption_success"
+        tools:layout="@layout/fragment_adoption_success" />
 
 </navigation>

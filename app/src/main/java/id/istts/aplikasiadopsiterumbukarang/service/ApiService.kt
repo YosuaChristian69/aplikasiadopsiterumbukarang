@@ -4,12 +4,15 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.CreateTransactionRequest
+import id.istts.aplikasiadopsiterumbukarang.domain.models.DebugFulfillmentRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.GetCoralResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LSTResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.login.LoginResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.LokasiResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.MidtransApiResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.SetLokasiTkRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.SetLokasiTkResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.register.RequestVerificationRequest
@@ -145,12 +148,17 @@ interface ApiService {
         @Header("x-auth-token") token: String,
         @Query("id_tk") coralId: Int // This adds "?id_tk=..." to the URL
     ): Response<LSTResponse>
+    @POST("transaksi/purchase") // Use your actual route
+    suspend fun createGopayTransaction(
+        @Header("x-auth-token") token: String,
+        @Body request: CreateTransactionRequest
+    ): Response<MidtransApiResponse>
 
-//    @POST("/lokasi/lokasi-spesies-tersedia")
-//    suspend fun addLokasiWithCorals(
-//        @Header("x-auth-token") token: String,
-//        @Body request: SetLokasiTkRequest
-//    ): Response<SetLokasiTkResponse>
+    @POST("transaksi/fulfill-debug") // The debug route
+    suspend fun fulfillOrderForDebug(
+        @Header("x-auth-token") token: String,
+        @Body request: DebugFulfillmentRequest
+    ): Response<Unit>
     //WORKER
     @POST("fetchAllUnfinishedTask")
     suspend fun fetchAllUnfinishedTasks(): Response<UnfinishedTasksResponse>
