@@ -49,7 +49,7 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         sessionManager = SessionManager(requireContext())
 
-        mapView = view.findViewById(R.id.mapView)
+        mapView = view.findViewById(R.id.map_view)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
 
