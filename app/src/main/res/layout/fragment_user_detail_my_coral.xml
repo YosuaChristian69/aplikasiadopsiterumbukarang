@@ -169,7 +169,7 @@
                 app:cardElevation="8dp"
                 android:layout_marginBottom="16dp">
 
-                <fragment
+                <com.google.android.gms.maps.MapView
                     android:id="@+id/map_fragment"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
