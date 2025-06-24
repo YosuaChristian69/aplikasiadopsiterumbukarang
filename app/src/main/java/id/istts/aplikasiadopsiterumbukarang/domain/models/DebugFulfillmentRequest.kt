@@ -10,5 +10,13 @@ data class DebugFulfillmentRequest(
     val locationId: Int,
 
     @SerializedName("amount")
-    val amount: Int
+    val amount: Int,
+
+    // ADDED: Optional nickname for the coral.
+    @SerializedName("nickname")
+    val nickname: String? = null,
+
+    // ADDED: Optional message/description for the coral.
+    @SerializedName("message")
+    val message: String? = null
 )

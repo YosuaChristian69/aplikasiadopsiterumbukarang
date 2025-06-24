@@ -16,5 +16,5 @@ interface TransactionRepository {
      * Calls the debug endpoint to manually fulfill an order.
      * @throws Exception if the API call fails.
      */
-    suspend fun fulfillOrderForDebug(coralId: Int, locationId: Int, amount: Int)
+    suspend fun fulfillOrderForDebug(coralId: Int, locationId: Int, amount: Int ,nickname:String? =null , message: String? =null )
 }

@@ -161,6 +161,8 @@ class UserPaymentCoralFragment : Fragment() {
                         args.coralId,
                         args.locationId,
                         1 // amount
+                        , nickname = args.coralNickname.toString(),
+                        message = args.message.toString()
                     )
 
                     val action = UserPaymentCoralFragmentDirections

@@ -20,7 +20,7 @@ class AdoptionSuccessFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("PAYMENT_LIFECYCLE", "onCreateView called.")
+//        Log.d("PAYMENT_LIFECYCLE", "onCreateView called.")
         _binding = FragmentAdoptionSuccessBinding.inflate(inflater, container, false)
         return binding.root
     }

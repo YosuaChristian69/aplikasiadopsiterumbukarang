@@ -93,7 +93,8 @@ class UserAddCoralFragment : Fragment() {
 
                 val nickname = binding.etCoralNickname.text.toString().trim()
                 val message = binding.etMessage.text.toString().trim()
-
+                Log.d("value passed", nickname)
+                Log.d("value passed", message)
                 val action = UserAddCoralFragmentDirections
                     .actionUserAddCoralFragmentToUserPaymentCoralFragment(
                         coralId = coral.id_tk,

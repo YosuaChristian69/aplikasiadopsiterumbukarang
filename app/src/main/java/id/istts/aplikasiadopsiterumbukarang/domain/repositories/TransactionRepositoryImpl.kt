@@ -39,7 +39,17 @@ class TransactionRepositoryImpl(
         }
     }
 
-    override suspend fun fulfillOrderForDebug(coralId: Int, locationId: Int, amount: Int) {
+//    override suspend fun fulfillOrderForDebug(
+//        coralId: Int,
+//        locationId: Int,
+//        amount: Int,
+//        nickname: String?,
+//        message: String?
+//    ) {
+//        TODO("Not yet implemented")
+//    }
+
+    override suspend fun fulfillOrderForDebug(coralId: Int, locationId: Int, amount: Int , nickname: String?, message: String?) {
         withContext(Dispatchers.IO) {
             val token = sessionManager.fetchAuthToken()
                 ?: throw Exception("User not authenticated.")

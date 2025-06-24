@@ -102,11 +102,11 @@ class UserPaymentViewModel(
     }
 
     // Function for the "developer shortcut"
-    fun manuallyFulfillOrderForDebug(coralId: Int, locationId: Int, amount: Int) {
+    fun manuallyFulfillOrderForDebug(coralId: Int, locationId: Int, amount: Int, nickname: String ,message: String) {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             try {
-                transactionRepository.fulfillOrderForDebug(coralId, locationId, amount)
+                transactionRepository.fulfillOrderForDebug(coralId, locationId, amount,nickname,message)
                 _uiState.update { it.copy(isLoading = false) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
