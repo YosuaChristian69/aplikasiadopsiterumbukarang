@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -54,6 +56,9 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
         } else {
             // Handle user not logged in case
         }
+        view.findViewById<Button>(R.id.btn_back).setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun observeViewModel() {
@@ -67,7 +72,6 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun populateUi(view: View, detail: CoralDetailResponse) {
-        // Find views
         val tvCoralName: TextView = view.findViewById(R.id.tv_coral_name)
         val ivCoralImage: ImageView = view.findViewById(R.id.iv_coral_image)
         val tvSpeciesName: TextView = view.findViewById(R.id.tv_species_name)
@@ -86,7 +90,7 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
         val tvOwnerPhone: TextView = view.findViewById(R.id.tv_owner_phone)
         val ivIdCoralImage: ImageView = view.findViewById(R.id.iv_id_coral_image)
 
-        // Populate views
+        // Populate views with data
         tvCoralName.text = detail.coralNickname
         tvSpeciesName.text = detail.species.scientificName
         tvAddress.text = detail.location.address
@@ -99,7 +103,9 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
         tvOwnerEmail.text = detail.owner.email
         tvOwnerPhone.text = detail.owner.phone ?: "Not available"
 
+        // Load images using Glide
         Glide.with(this).load(detail.species.imagePath).into(ivCoralImage)
+        Glide.with(this).load(detail.species.imagePath).into(ivIdCoralImage) // Also load image into the ID card
 
         if (detail.planter != null) {
             tvPlanterName.text = detail.planter.name
@@ -116,7 +122,6 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
         locationLatLng = LatLng(detail.location.latitude, detail.location.longitude)
         googleMap?.let { moveMap(it) }
     }
-
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         // Move map only if location data is already available

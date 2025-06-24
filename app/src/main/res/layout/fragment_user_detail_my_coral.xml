@@ -474,7 +474,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_coral_logo"
-                            android:tint="#1a4a52"
+                            app:tint="#1A4A52"
                             android:layout_marginBottom="8dp" />
 
                         <androidx.cardview.widget.CardView
