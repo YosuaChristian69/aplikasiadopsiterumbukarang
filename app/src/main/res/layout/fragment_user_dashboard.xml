@@ -8,9 +8,6 @@
     tools:context=".presentation.fragments.user.UserDashboardFragment">
 
     <!-- Logout Button -->
-
-    <!-- Main Content ScrollView -->
-
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
@@ -18,12 +15,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="33dp"
-        android:layout_marginBottom="16dp"
         android:background="@drawable/logout_button_background"
         android:elevation="4dp"
         android:paddingStart="16dp"
@@ -31,158 +22,66 @@
         android:text="Logout"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true" />
 
-    <ScrollView
+    <!-- Main Content Area -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_below="@+id/logoutButton"
         android:layout_above="@+id/bottom_navigation"
-        android:layout_marginTop="8dp"
-        android:fillViewport="true">
+        android:padding="20dp">
 
+        <!-- User Greeting -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
 
-            <!-- User Greeting -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="30dp">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_person_placeholder"
+                android:layout_marginEnd="12dp" />
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_person_placeholder"
-                    android:padding="8dp"
-                    android:layout_marginEnd="12dp" />
-
-                <TextView
-                    android:id="@+id/userGreetingTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hi, USER"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <!-- My Corals Title -->
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/userGreetingTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MY CORALS"
+                android:text="Hi, USER"
                 android:textColor="@android:color/white"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="30dp" />
-
-            <!-- Corals Grid -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <!-- First Row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:layout_marginBottom="20dp">
-
-                    <!-- Coral Card 1 -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="200dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="10dp"
-                        app:cardCornerRadius="15dp"
-                        app:cardElevation="4dp"
-                        android:backgroundTint="#4DFFFF">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:padding="15dp">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
-                                android:scaleType="centerCrop"
-                                app:cardCornerRadius="10dp" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="CORAL NAME"
-                                android:textColor="@android:color/black"
-                                android:textSize="12sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:layout_marginTop="10dp" />
-
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Coral Card 2 -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="200dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="10dp"
-                        app:cardCornerRadius="15dp"
-                        app:cardElevation="4dp"
-                        android:backgroundTint="#4DFFFF">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:padding="15dp">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
-                                android:scaleType="centerCrop"
-                                app:cardCornerRadius="10dp" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="CORAL NAME"
-                                android:textColor="@android:color/black"
-                                android:textSize="12sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:layout_marginTop="10dp" />
-
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                </LinearLayout>
-
-                <!-- Add more coral cards as needed -->
-                <!-- You can duplicate the above row structure for more corals -->
-
-            </LinearLayout>
-
+                android:textSize="18sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-    </ScrollView>
+        <!-- My Corals Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MY CORALS"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="20dp" />
+
+        <!-- REFACTORED: Corals RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/myCoralsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/list_item_user_coral" />
+        <!-- Note: The tools:listitem requires the new layout file below -->
+
+    </LinearLayout>
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

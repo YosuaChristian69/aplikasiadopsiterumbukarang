@@ -1,6 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker
 
 import android.content.SharedPreferences
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlantingResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetailResponse
@@ -39,9 +40,14 @@ class WorkerPlantingRepository(
 
     suspend fun finishPlanting(id: Int, workerId: Int, token: String): Result<FinishPlantingResponse> = withContext(Dispatchers.IO) {
         runCatching {
-            val requestBody = mapOf("workerId" to workerId)
+//            val requestBody = mapOf("workerId" to workerId)
+            val requestBody = FinishPlantingRequest(workerId)
             ///finishPlanting(token, id, requestBody)
-            val response = apiService.finishPlanting(token, id, requestBody)
+            val response = apiService.finishPlanting(
+                request = requestBody,
+                token = token,
+                id = id
+            )
             if (response.isSuccessful && response.body() != null) {
                 response.body()!!
             } else {
