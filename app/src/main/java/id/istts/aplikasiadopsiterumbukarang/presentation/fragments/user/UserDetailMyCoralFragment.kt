@@ -1,5 +1,5 @@
 
-// Update your UserDetailMyCoralFragment.kt file with this corrected version
+// In UserDetailMyCoralFragment.kt (Final Corrected Version)
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.user
 
 import android.os.Bundle
@@ -67,10 +67,11 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
 
     private fun observeViewModel() {
         viewModel.coralDetail.observe(viewLifecycleOwner) { detail ->
-            if (detail?.ownershipDetails != null) {
+            if (detail != null) {
+                Log.d("UserDetailFragment", "Received valid coral details: ${detail.coralNickname}")
                 view?.let { populateUi(it, detail) }
             } else {
-                Log.e("UserDetailFragment", "Received null or incomplete detail object.")
+                Log.e("UserDetailFragment", "Received null detail object from ViewModel.")
             }
         }
         viewModel.error.observe(viewLifecycleOwner) { error ->
@@ -80,9 +81,6 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
 
     private fun populateUi(view: View, detail: CoralDetailResponse) {
         try {
-            // Get a reference to the nested ownership details for cleaner access
-            val ownership = detail.ownershipDetails!!
-
             // Find views
             val tvCoralName: TextView = view.findViewById(R.id.tv_coral_name)
             val ivCoralImage: ImageView = view.findViewById(R.id.iv_coral_image)
@@ -102,21 +100,21 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
             val tvOwnerPhone: TextView = view.findViewById(R.id.tv_owner_phone)
             val ivIdCoralImage: ImageView = view.findViewById(R.id.iv_id_coral_image)
 
-            // Populate views with safe calls and defaults
-            tvCoralName.text = ownership.coralNickname ?: "Unnamed Coral"
-            tvSpeciesName.text = ownership.species?.scientificName ?: "Unknown Species"
+            // CORRECTED: Populate views directly from the flat detail object
+            tvCoralName.text = detail.coralNickname ?: "Unnamed Coral"
+            tvSpeciesName.text = detail.species?.scientificName ?: "Unknown Species"
             tvAddress.text = detail.location?.address ?: "Address not available"
-            tvCoralId.text = ownership.ownershipId.toString()
-            tvDop.text = formatDate(ownership.adoptedAt)
-            tvIdSpecies.text = ownership.species?.name ?: "N/A"
+            tvCoralId.text = detail.ownershipId.toString()
+            tvDop.text = formatDate(detail.adoptedAt)
+            tvIdSpecies.text = detail.species?.name ?: "N/A"
             tvIdPlace.text = detail.location?.name ?: "N/A"
             tvCoordinates.text = "lat: ${detail.location?.latitude ?: 0.0}, lng: ${detail.location?.longitude ?: 0.0}"
-            tvOwnerName.text = ownership.owner?.name ?: "Unknown Owner"
-            tvOwnerEmail.text = ownership.owner?.email ?: "N/A" // CORRECTED: Use owner's email
-            tvOwnerPhone.text = ownership.owner?.phone ?: "Not available"
+            tvOwnerName.text = detail.owner?.name ?: "Unknown Owner"
+            tvOwnerEmail.text = detail.owner?.email ?: "N/A"
+            tvOwnerPhone.text = detail.owner?.phone ?: "Not available"
 
-            Glide.with(this).load(ownership.species?.imagePath).placeholder(R.drawable.ic_image_placeholder).into(ivCoralImage)
-            Glide.with(this).load(ownership.species?.imagePath).placeholder(R.drawable.ic_image_placeholder).into(ivIdCoralImage)
+            Glide.with(this).load(detail.species?.imagePath).placeholder(R.drawable.ic_image_placeholder).into(ivCoralImage)
+            Glide.with(this).load(detail.species?.imagePath).placeholder(R.drawable.ic_image_placeholder).into(ivIdCoralImage)
 
             if (detail.planter != null) {
                 tvPlanterName.text = detail.planter.name
@@ -132,43 +130,19 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
 
             detail.location?.let {
                 locationLatLng = LatLng(it.latitude, it.longitude)
-                // NOW, try to move the map. This will only work if onMapReady has already finished.
                 tryMoveMap()
             }
         } catch (e: Exception) {
-            Log.e("UserDetailFragment", "Error populating UI", e)
+            Log.e("UserDetailFragment", "A crash occurred while populating UI", e)
         }
     }
+
     private fun tryMoveMap() {
         if (googleMap != null && locationLatLng != null) {
-            Log.d("UserDetailFragment", "Both map and location are ready. Moving camera.")
             val map = googleMap!!
             val location = locationLatLng!!
-
             map.addMarker(MarkerOptions().position(location).title("Planting Location"))
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
-        } else {
-            Log.d("UserDetailFragment", "Cannot move map yet. Map ready: ${googleMap != null}, Location ready: ${locationLatLng != null}")
-        }
-    }
-
-    override fun onResume() { super.onResume(); mapView.onResume() }
-    override fun onStart() { super.onStart(); mapView.onStart() }
-    override fun onStop() { super.onStop(); mapView.onStop() }
-    override fun onPause() { super.onPause(); mapView.onPause() }
-    override fun onLowMemory() { super.onLowMemory(); mapView.onLowMemory() }
-    override fun onDestroy() { super.onDestroy(); mapView.onDestroy() }
-    override fun onSaveInstanceState(outState: Bundle) { super.onSaveInstanceState(outState); mapView.onSaveInstanceState(outState) }
-
-    override fun onMapReady(map: GoogleMap) {
-        googleMap = map
-        locationLatLng?.let { moveMap(map) }
-    }
-
-    private fun moveMap(map: GoogleMap) {
-        locationLatLng?.let {
-            map.addMarker(MarkerOptions().position(it).title("Planting Location"))
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 15f))
         }
     }
 
@@ -181,5 +155,19 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
         } catch (e: Exception) {
             dateString
         }
+    }
+
+    // --- You MUST add all these lifecycle methods for MapView ---
+    override fun onResume() { super.onResume(); mapView.onResume() }
+    override fun onStart() { super.onStart(); mapView.onStart() }
+    override fun onStop() { super.onStop(); mapView.onStop() }
+    override fun onPause() { super.onPause(); mapView.onPause() }
+    override fun onLowMemory() { super.onLowMemory(); mapView.onLowMemory() }
+    override fun onDestroy() { super.onDestroy(); mapView.onDestroy() }
+    override fun onSaveInstanceState(outState: Bundle) { super.onSaveInstanceState(outState); mapView.onSaveInstanceState(outState) }
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+        tryMoveMap()
     }
 }

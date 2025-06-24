@@ -1,76 +1,72 @@
 package id.istts.aplikasiadopsiterumbukarang.domain.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-
+import kotlinx.parcelize.Parcelize
 // This is the main response object from the GET /collection/:id endpoint
+
+@Parcelize
 data class CoralDetailResponse(
-    @SerializedName("ownershipDetails")
-    val ownershipDetails: OwnershipDetails?, // The main nested object
-
-    // Corrected the key to match the JSON ("planterDetails")
-    @SerializedName("planterDetails")
-    val planter: PlanterDetails?,
-
-    // Corrected the key to match the JSON ("locationDetails")
-    @SerializedName("locationDetails")
-    val location: LocationDetails?
-)
-
-/**
- * This class now represents the object inside "ownershipDetails".
- */
-data class OwnershipDetails(
-    @SerializedName("id_ownership")
+    @SerializedName("ownershipId")
     val ownershipId: Int,
-    @SerializedName("coral_nickname")
+    @SerializedName("coralNickname")
     val coralNickname: String?,
-    @SerializedName("adopted_at")
+    @SerializedName("adoptedAt")
     val adoptedAt: String?,
 
-    // The nested objects for species and owner are inside here
-    @SerializedName("terumbu_karang")
+    // Nested objects for details
+    @SerializedName("species")
     val species: SpeciesDetails?,
-    @SerializedName("user")
+    @SerializedName("location")
+    val location: LocationDetails?,
+    @SerializedName("planter")
+    val planter: PlanterDetails?,
+    @SerializedName("owner")
     val owner: OwnerDetails?
-)
+) : Parcelable
 
-// These nested classes can remain mostly the same
+// The rest of these nested classes are also Parcelable
+
+@Parcelize
 data class SpeciesDetails(
     @SerializedName("tk_name")
-    val name: String,
+    val name: String?,
     @SerializedName("tk_jenis")
-    val scientificName: String,
+    val scientificName: String?,
     @SerializedName("img_path")
     val imagePath: String?
-)
+) : Parcelable
 
+@Parcelize
 data class LocationDetails(
     @SerializedName("lokasi_name")
-    val name: String,
+    val name: String?,
     @SerializedName("latitude")
     val latitude: Double,
     @SerializedName("longitude")
     val longitude: Double,
     @SerializedName("description")
-    val address: String
-)
+    val address: String?
+) : Parcelable
 
+@Parcelize
 data class PlanterDetails(
     @SerializedName("full_name")
-    val name: String,
+    val name: String?,
     @SerializedName("email")
-    val email: String,
+    val email: String?,
     @SerializedName("phone_number")
     val phone: String?,
     @SerializedName("img_path")
     val imagePath: String?
-)
+) : Parcelable
 
+@Parcelize
 data class OwnerDetails(
     @SerializedName("full_name")
-    val name: String,
+    val name: String?,
     @SerializedName("email")
-    val email: String,
+    val email: String?,
     @SerializedName("phone_number")
     val phone: String?
-)
+) : Parcelable

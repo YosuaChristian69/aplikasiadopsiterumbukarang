@@ -1,5 +1,4 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.user
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,8 +12,9 @@ class UserCoralDetailViewModel : ViewModel() {
     val apiService = RetrofitClient.instance
     private val userRepository = UserRepository(apiService)
 
-    private val _coralDetail = MutableLiveData<CoralDetailResponse>()
-    val coralDetail: LiveData<CoralDetailResponse> = _coralDetail
+    // CORRECTED: The LiveData now holds the flat CoralDetailResponse
+    private val _coralDetail = MutableLiveData<CoralDetailResponse?>()
+    val coralDetail: LiveData<CoralDetailResponse?> = _coralDetail
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -27,10 +27,10 @@ class UserCoralDetailViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 val response = userRepository.getSingleCoralDetail(token, ownershipId)
-                if (response.isSuccessful && response.body() != null) {
+                if (response.isSuccessful) {
                     _coralDetail.value = response.body()
                 } else {
-                    _error.value = "Failed to load details: ${response.message()}"
+                    _error.value = "Failed to load details: ${response.code()} ${response.message()}"
                 }
             } catch (e: Exception) {
                 _error.value = "An error occurred: ${e.message}"
