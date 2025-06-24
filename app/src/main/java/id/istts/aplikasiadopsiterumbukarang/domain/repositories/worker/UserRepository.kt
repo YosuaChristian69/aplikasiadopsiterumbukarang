@@ -61,7 +61,7 @@ class UserRepository(private val apiService: ApiService) {
             }
 
             val request = EditProfileRequest(email = email, name = name)
-            val response = apiService.editProfile("Bearer $token", request)
+            val response = apiService.editProfile(token, request)
 
             if (response.isSuccessful) {
                 response.body()?.let { body ->

@@ -26,7 +26,7 @@ class UserCoralDetailViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val response = userRepository.getSingleCoralDetail("Bearer $token", ownershipId)
+                val response = userRepository.getSingleCoralDetail(token, ownershipId)
                 if (response.isSuccessful && response.body() != null) {
                     _coralDetail.value = response.body()
                 } else {
