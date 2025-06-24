@@ -4,24 +4,37 @@ import com.google.gson.annotations.SerializedName
 
 // This is the main response object from the GET /collection/:id endpoint
 data class CoralDetailResponse(
-    @SerializedName("ownershipId")
-    val ownershipId: Int,
-    @SerializedName("coralNickname")
-    val coralNickname: String,
-    @SerializedName("adoptedAt")
-    val adoptedAt: String,
-    @SerializedName("species")
-    val species: SpeciesDetails,
-    @SerializedName("location")
-    val location: LocationDetails,
-    @SerializedName("planter")
-    val planter: PlanterDetails?, // Planter can be null if not yet assigned
-    @SerializedName("owner")
-    val owner: OwnerDetails
+    @SerializedName("ownershipDetails")
+    val ownershipDetails: OwnershipDetails?, // The main nested object
+
+    // Corrected the key to match the JSON ("planterDetails")
+    @SerializedName("planterDetails")
+    val planter: PlanterDetails?,
+
+    // Corrected the key to match the JSON ("locationDetails")
+    @SerializedName("locationDetails")
+    val location: LocationDetails?
 )
 
-// Nested data classes for the different parts of the response
+/**
+ * This class now represents the object inside "ownershipDetails".
+ */
+data class OwnershipDetails(
+    @SerializedName("id_ownership")
+    val ownershipId: Int,
+    @SerializedName("coral_nickname")
+    val coralNickname: String?,
+    @SerializedName("adopted_at")
+    val adoptedAt: String?,
 
+    // The nested objects for species and owner are inside here
+    @SerializedName("terumbu_karang")
+    val species: SpeciesDetails?,
+    @SerializedName("user")
+    val owner: OwnerDetails?
+)
+
+// These nested classes can remain mostly the same
 data class SpeciesDetails(
     @SerializedName("tk_name")
     val name: String,
@@ -39,7 +52,7 @@ data class LocationDetails(
     @SerializedName("longitude")
     val longitude: Double,
     @SerializedName("description")
-    val address: String // Assuming the location description is the address
+    val address: String
 )
 
 data class PlanterDetails(
@@ -48,7 +61,7 @@ data class PlanterDetails(
     @SerializedName("email")
     val email: String,
     @SerializedName("phone_number")
-    val phone: String?, // Phone number can be null
+    val phone: String?,
     @SerializedName("img_path")
     val imagePath: String?
 )

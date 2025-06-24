@@ -91,21 +91,21 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
         val ivIdCoralImage: ImageView = view.findViewById(R.id.iv_id_coral_image)
 
         // Populate views with data
-        tvCoralName.text = detail.coralNickname
-        tvSpeciesName.text = detail.species.scientificName
-        tvAddress.text = detail.location.address
-        tvCoralId.text = detail.ownershipId.toString()
-        tvDop.text = formatDate(detail.adoptedAt)
-        tvIdSpecies.text = detail.species.name
+        tvCoralName.text = detail.ownershipDetails!!.coralNickname
+        tvSpeciesName.text = detail.ownershipDetails!!.species.toString()
+        tvAddress.text = detail.location!!.address
+        tvCoralId.text = detail.ownershipDetails!!.ownershipId.toString()
+        tvDop.text = formatDate(detail.ownershipDetails!!.adoptedAt.toString())
+        tvIdSpecies.text = detail.ownershipDetails!!.species!!.scientificName
         tvIdPlace.text = detail.location.name
         tvCoordinates.text = "lat: ${detail.location.latitude}, lng: ${detail.location.longitude}"
-        tvOwnerName.text = detail.owner.name
-        tvOwnerEmail.text = detail.owner.email
-        tvOwnerPhone.text = detail.owner.phone ?: "Not available"
+        tvOwnerName.text = detail.ownershipDetails!!.owner!!.name
+        tvOwnerEmail.text =  detail.ownershipDetails!!.owner!!.name
+        tvOwnerPhone.text =  detail.ownershipDetails!!.owner!!.phone ?: "Not available"
 
         // Load images using Glide
-        Glide.with(this).load(detail.species.imagePath).into(ivCoralImage)
-        Glide.with(this).load(detail.species.imagePath).into(ivIdCoralImage) // Also load image into the ID card
+        Glide.with(this).load(detail.ownershipDetails!!.species!!.imagePath).into(ivCoralImage)
+        Glide.with(this).load(detail.ownershipDetails!!.species!!.imagePath).into(ivIdCoralImage) // Also load image into the ID card
 
         if (detail.planter != null) {
             tvPlanterName.text = detail.planter.name
