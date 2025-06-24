@@ -132,10 +132,23 @@ class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
 
             detail.location?.let {
                 locationLatLng = LatLng(it.latitude, it.longitude)
-                googleMap?.let { map -> moveMap(map) }
+                // NOW, try to move the map. This will only work if onMapReady has already finished.
+                tryMoveMap()
             }
         } catch (e: Exception) {
             Log.e("UserDetailFragment", "Error populating UI", e)
+        }
+    }
+    private fun tryMoveMap() {
+        if (googleMap != null && locationLatLng != null) {
+            Log.d("UserDetailFragment", "Both map and location are ready. Moving camera.")
+            val map = googleMap!!
+            val location = locationLatLng!!
+
+            map.addMarker(MarkerOptions().position(location).title("Planting Location"))
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
+        } else {
+            Log.d("UserDetailFragment", "Cannot move map yet. Map ready: ${googleMap != null}, Location ready: ${locationLatLng != null}")
         }
     }
 
