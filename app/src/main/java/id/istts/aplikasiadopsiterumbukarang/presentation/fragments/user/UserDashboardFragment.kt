@@ -93,8 +93,15 @@ class UserDashboardFragment : Fragment() {
     // --- NEW: Function to set up the RecyclerView ---
     private fun setupRecyclerView() {
         // Initialize the adapter with an empty list
-        userCoralAdapter = UserCoralAdapter(emptyList())
+//        userCoralAdapter = UserCoralAdapter(emptyList())
+        userCoralAdapter = UserCoralAdapter(emptyList()) { ownershipId ->
+            Log.d("UserDashboard", "Clicked on coral with ownershipId: $ownershipId")
 
+            // Navigate using the new action and pass the ID
+            val action = UserDashboardFragmentDirections
+                .actionUserDashboardFragmentToUserDetailMyCoralFragment(ownershipId)
+            findNavController().navigate(action)
+        }
         myCoralsRecyclerView.apply {
             // Set the layout manager to a 2-column grid
             layoutManager = GridLayoutManager(context, 2)

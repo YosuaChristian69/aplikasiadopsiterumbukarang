@@ -6,12 +6,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import android.util.Patterns
 import id.istts.aplikasiadopsiterumbukarang.domain.CollectionResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.CoralDetailResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.EditProfileRequest
 import id.istts.aplikasiadopsiterumbukarang.service.ApiService
 import retrofit2.Response
 
 class UserRepository(private val apiService: ApiService) {
 
+    suspend fun getSingleCoralDetail(token: String, ownershipId: Int): Response<CoralDetailResponse> {
+        Log.d("UserRepository", "Fetching detail for ownership ID: $ownershipId")
+        return try {
+            apiService.getSingleCoralDetail(token, ownershipId)
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Exception while fetching single coral detail", e)
+            throw e
+        }
+    }
     suspend fun getUserCoralCollection(token: String): Response<CollectionResponse> {
         Log.d("UserRepository", "Attempting to fetch user coral collection with token.")
         return try {

@@ -5,6 +5,7 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.CoralDetailResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.CreateTransactionRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.DebugFulfillmentRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
@@ -164,6 +165,11 @@ interface ApiService {
     suspend fun getUserCoralCollection(
         @Header("x-auth-token") token: String // The authorization header
     ): Response<CollectionResponse>
+    @GET("transaksi/collection/{id}")
+    suspend fun getSingleCoralDetail(
+        @Header("x-auth-token") token: String,
+        @Path("id") ownershipId: Int // The ID from the URL
+    ): Response<CoralDetailResponse>
 
     //WORKER
     @POST("fetchAllUnfinishedTask")

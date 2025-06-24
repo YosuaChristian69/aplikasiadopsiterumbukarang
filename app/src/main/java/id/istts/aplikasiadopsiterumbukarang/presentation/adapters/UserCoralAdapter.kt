@@ -16,7 +16,10 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.UserCoral // Make sure
  *
  * @property corals The list of UserCoral objects to be displayed.
  */
-class UserCoralAdapter(private var corals: List<UserCoral>) : RecyclerView.Adapter<UserCoralAdapter.UserCoralViewHolder>() {
+class UserCoralAdapter(
+    private var corals: List<UserCoral>,
+    private val onItemClicked: (Int) -> Unit
+) : RecyclerView.Adapter<UserCoralAdapter.UserCoralViewHolder>() {
 
     /**
      * The ViewHolder holds the views for each individual item in the list.
@@ -46,7 +49,10 @@ class UserCoralAdapter(private var corals: List<UserCoral>) : RecyclerView.Adapt
         // Set the text for the nickname and species name
         holder.coralNicknameTextView.text = coral.coralNickname
         holder.coralSpeciesTextView.text = coral.coralDetails.tk_name
-
+        holder.itemView.setOnClickListener {
+            // 2. Pass the ownershipId when an item is clicked
+            onItemClicked(coral.ownershipId) // <-- CHANGE: Pass the ID
+        }
         // Load the coral image using Glide
         // It's good practice to have a placeholder and an error image.
         Glide.with(holder.itemView.context)
