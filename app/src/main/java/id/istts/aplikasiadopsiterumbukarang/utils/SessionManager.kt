@@ -4,9 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class SessionManager(context: Context) {
+    // Keep only the primary SharedPreferences instance
     private var prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     private var editor: SharedPreferences.Editor = prefs.edit()
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
+    // REMOVE: private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_session", Context.MODE_PRIVATE)
 
     companion object {
         const val PREF_NAME = "coral_reef_app_prefs"
@@ -22,12 +23,16 @@ class SessionManager(context: Context) {
         editor.putString(USER_TOKEN, token)
         editor.apply()
     }
+
+    // FIX: This function should return the main 'prefs' instance
     fun getSharedPreferences(): SharedPreferences {
-        return sharedPreferences
+        return prefs
     }
+
     fun fetchAuthToken(): String? {
         return prefs.getString(USER_TOKEN, null)
     }
+
     fun fetchUserName(): String? {
         return prefs.getString(USER_NAME, null)
     }
@@ -35,12 +40,11 @@ class SessionManager(context: Context) {
     fun fetchUserId(): Int {
         return prefs.getInt(USER_ID, -1)
     }
-    // Get user email
+
     fun fetchUserEmail(): String? {
         return prefs.getString(USER_EMAIL, null)
     }
 
-    // Get user status
     fun fetchUserStatus(): String? {
         return prefs.getString(USER_STATUS, null)
     }
@@ -61,5 +65,4 @@ class SessionManager(context: Context) {
         editor.clear()
         editor.apply()
     }
-
 }

@@ -4,8 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlanting
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlantingResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetail
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetailResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.WorkerPlantingUiState
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.WorkerPlantingRepository
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
@@ -15,7 +18,7 @@ import kotlinx.coroutines.launch
  * ViewModel for managing worker planting operations
  */
 class WorkerPlantingViewModel(
-    private val repository: WorkerPlantingRepository<Any?>,
+    private val repository: WorkerPlantingRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
@@ -52,115 +55,91 @@ class WorkerPlantingViewModel(
             _shouldNavigateToLogin.value = true
         } else {
             loadUserInfo()
-            loadCoralData()
         }
     }
 
     private fun loadUserInfo() {
         val userName = sessionManager.fetchUserName() ?: "Worker"
-        _uiState.value?.let { currentState ->
-            _uiState.value = currentState.copy(
-                userName = userName,
-                welcomeMessage = "Hi, $userName"
-            )
-        }
-    }
-
-    private fun loadCoralData() {
-        loadPendingPlantings()
+        _uiState.value = _uiState.value?.copy(
+            userName = userName,
+            welcomeMessage = "Hi, $userName"
+        )
     }
 
     fun loadPendingPlantings() {
         _loading.value = true
-        _uiState.value?.let { currentState ->
-            _uiState.value = currentState.copy(isLoading = true)
-        }
+        _uiState.value = _uiState.value?.copy(isLoading = true)
 
         viewModelScope.launch {
-            repository.getPendingPlantings()
-                .onSuccess { result ->
-                    val plantings = result as? List<PendingPlanting>
-                    _pendingPlantings.value = plantings
-                    _loading.value = false
-                    _uiState.value?.let { currentState ->
-                        _uiState.value = currentState.copy(isLoading = false)
-                    }
+            try {
+                val token = sessionManager.fetchAuthToken() ?: ""
+                val result = repository.getPendingPlantings(token)
+
+                result.onSuccess { response ->
+                    _pendingPlantings.value = response.data
+                }.onFailure { exception ->
+                    _error.value = exception.message ?: "Failed to load plantings"
                 }
-                .onFailure { exception ->
-                    _error.value = exception.message
-                    _loading.value = false
-                    _uiState.value?.let { currentState ->
-                        _uiState.value = currentState.copy(
-                            isLoading = false,
-                            errorMessage = exception.message
-                        )
-                    }
-                }
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to load plantings"
+            } finally {
+                _loading.value = false
+                _uiState.value = _uiState.value?.copy(isLoading = false)
+            }
         }
     }
 
     fun loadPlantingDetails(id: Int) {
         _loading.value = true
-        _uiState.value?.let { currentState ->
-            _uiState.value = currentState.copy(isLoading = true)
-        }
+        _uiState.value = _uiState.value?.copy(isLoading = true)
 
         viewModelScope.launch {
-            repository.getPlantingDetails(id)
-                .onSuccess { result ->
-                    val detail = result as? PlantingDetail
-                    _plantingDetail.value = detail
-                    _loading.value = false
-                    _uiState.value?.let { currentState ->
-                        _uiState.value = currentState.copy(isLoading = false)
-                    }
+            try {
+                val token = sessionManager.fetchAuthToken() ?: ""
+                val result = repository.getPlantingDetails(token, id)
+
+                result.onSuccess { response ->
+                    _plantingDetail.value = response.data
+                }.onFailure { exception ->
+                    _error.value = exception.message ?: "Failed to load planting details"
                 }
-                .onFailure { exception ->
-                    _error.value = exception.message
-                    _loading.value = false
-                    _uiState.value?.let { currentState ->
-                        _uiState.value = currentState.copy(
-                            isLoading = false,
-                            errorMessage = exception.message
-                        )
-                    }
-                }
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to load planting details"
+            } finally {
+                _loading.value = false
+                _uiState.value = _uiState.value?.copy(isLoading = false)
+            }
         }
     }
 
-    fun finishPlanting(id: Int, workerId: Int? = null) {
+    fun finishPlanting(id: Int, workerId: Int) {
         _loading.value = true
-        _uiState.value?.let { currentState ->
-            _uiState.value = currentState.copy(isLoading = true)
-        }
+        _uiState.value = _uiState.value?.copy(isLoading = true)
 
         viewModelScope.launch {
-            repository.finishPlanting(id, workerId)
-                .onSuccess {
-                    _loading.value = false
-                    _uiState.value?.let { currentState ->
-                        _uiState.value = currentState.copy(isLoading = false)
-                    }
+            try {
+                val token = sessionManager.fetchAuthToken()?: ""
+                val result = repository.finishPlanting(id,workerId,token)
+
+                result.onSuccess { response ->
+                    // On success, refresh the list of pending plantings
                     loadPendingPlantings()
-                }
-                .onFailure { exception ->
-                    _error.value = exception.message
+                }.onFailure { exception ->
+                    _error.value = exception.message ?: "Failed to finish planting"
                     _loading.value = false
-                    _uiState.value?.let { currentState ->
-                        _uiState.value = currentState.copy(
-                            isLoading = false,
-                            errorMessage = exception.message
-                        )
-                    }
+                    _uiState.value = _uiState.value?.copy(isLoading = false)
                 }
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to finish planting"
+                _loading.value = false
+                _uiState.value = _uiState.value?.copy(isLoading = false)
+            }
         }
     }
 
     fun clearError() {
         _error.value = null
-        _uiState.value?.let { currentState ->
-            _uiState.value = currentState.copy(errorMessage = null)
-        }
+        _uiState.value = _uiState.value?.copy(errorMessage = null)
     }
 
     fun onNavigatedToLogin() {

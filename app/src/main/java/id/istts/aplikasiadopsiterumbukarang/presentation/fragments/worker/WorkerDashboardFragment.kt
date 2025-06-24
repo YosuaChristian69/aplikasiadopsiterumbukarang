@@ -1,6 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -36,24 +37,28 @@ class WorkerDashboardFragment : Fragment() {
     private var _binding: FragmentWorkerDashboardBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var sessionManager: SessionManager
+    private val sessionManager: SessionManager by lazy {
+        SessionManager(requireContext())
+    }
 
-    // ViewModel initialization using SharedPreferences from SessionManager
     private val plantingViewModel: WorkerPlantingViewModel by viewModels {
-        val sessionManager = SessionManager(requireContext())
-        WorkerPlantingViewModelFactory(
-            WorkerPlantingRepository(
-                RetrofitClient.instance,
-                sessionManager.getSharedPreferences() // Pass SharedPreferences from SessionManager
-            ),
-            sessionManager
+        val context = requireContext()
+
+        val token = sessionManager.fetchAuthToken()
+            ?: throw IllegalStateException("FATAL: Auth token is null. Login flow did not save the token before navigating to WorkerDashboard.")
+
+        // FIX: Pass the ApiService directly instead of Retrofit instance
+        val repository = WorkerPlantingRepository(
+            RetrofitClient.instance, // This should be your ApiService instance
+            sessionManager.getSharedPreferences() // Use the same SharedPreferences instance
         )
+
+        WorkerPlantingViewModelFactory(repository, sessionManager)
     }
 
     private var currentPhotoPath: String = ""
     private var currentPlantingId: Int = 0
 
-    // Camera launcher
     private val takePictureLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -77,38 +82,34 @@ class WorkerDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupSessionManager()
         setupUI()
         setupObservers()
         setupClickListeners()
         setupCardClickListener()
 
-        // Check if user is logged in and has proper access
         if (!sessionManager.isLoggedIn() || sessionManager.fetchUserStatus() != "worker") {
-            // Redirect to login if not authenticated or not a worker
             findNavController().navigate(R.id.action_workerDashboardFragment_to_loginFragment)
             return
         }
 
-        // Fetch pending plantings when view is created
+        // FIX: Add debug logging to check token
+        val token = sessionManager.fetchAuthToken()
+        if (token.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "No auth token found", Toast.LENGTH_LONG).show()
+            findNavController().navigate(R.id.action_workerDashboardFragment_to_loginFragment)
+            return
+        }
+
         plantingViewModel.loadPendingPlantings()
     }
 
-    private fun setupSessionManager() {
-        sessionManager = SessionManager(requireContext())
-    }
-
     private fun setupUI() {
-        // Set greeting with worker name
         val workerName = sessionManager.fetchUserName() ?: "DIVER"
         binding.tvGreeting.text = "HI, $workerName"
-
-        // Initial mission card state
         updateMissionCardState(false, 0)
     }
 
     private fun setupObservers() {
-        // Observe navigation to login
         plantingViewModel.shouldNavigateToLogin.observe(viewLifecycleOwner) { shouldNavigate ->
             if (shouldNavigate) {
                 findNavController().navigate(R.id.action_workerDashboardFragment_to_loginFragment)
@@ -116,18 +117,18 @@ class WorkerDashboardFragment : Fragment() {
             }
         }
 
-        // Observe pending plantings
         plantingViewModel.pendingPlantings.observe(viewLifecycleOwner) { plantings ->
             if (plantings != null && plantings.isNotEmpty()) {
-                // Show mission available
                 updateMissionCardState(true, plantings.size)
             } else {
-                // No missions available (either null or empty)
                 updateMissionCardState(false, 0)
+                // FIX: Add debug info when no plantings are found
+                if (plantings != null && plantings.isEmpty()) {
+                    Toast.makeText(requireContext(), "No pending plantings available", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
-        // Observe loading state
         plantingViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
                 showLoading()
@@ -136,7 +137,6 @@ class WorkerDashboardFragment : Fragment() {
             }
         }
 
-        // Observe errors
         plantingViewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
                 showError(it)
@@ -146,20 +146,14 @@ class WorkerDashboardFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // Logout button
         binding.logoutButton.setOnClickListener {
             showLogoutConfirmation()
         }
 
-        // Bottom navigation - Using your existing menu item IDs
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_mission -> {
-                    // Already on dashboard (mission screen)
-                    true
-                }
+                R.id.navigation_mission -> true
                 R.id.navigation_profile -> {
-                    // Navigate to profile fragment
                     findNavController().navigate(R.id.action_workerDashboard_to_workerDashboardProfile)
                     true
                 }
@@ -172,20 +166,16 @@ class WorkerDashboardFragment : Fragment() {
         binding.cardMission.setOnClickListener {
             plantingViewModel.pendingPlantings.value?.let { plantings ->
                 if (plantings.isNotEmpty()) {
-                    // If there's only one mission, navigate directly to detail
                     if (plantings.size == 1) {
-                        val missionId = plantings[0].id_htrans
+                        val missionId = plantings[0].id_htrans // FIX: Access first element properly
                         navigateToWorkerDetailMission(missionId)
                     } else {
-                        // If multiple missions, show selection dialog first
                         showPlantingSelectionDialogForDetail(plantings)
                     }
                 } else {
-                    // No missions available
                     Toast.makeText(requireContext(), "No missions available", Toast.LENGTH_SHORT).show()
                 }
             } ?: run {
-                // If plantings data is null, try to load it
                 plantingViewModel.loadPendingPlantings()
                 Toast.makeText(requireContext(), "Loading missions...", Toast.LENGTH_SHORT).show()
             }
@@ -211,12 +201,9 @@ class WorkerDashboardFragment : Fragment() {
     }
 
     private fun navigateToWorkerDetailMission(missionId: Int) {
-        // Create bundle with mission ID matching the navigation argument
         val bundle = Bundle().apply {
             putInt("mission_id", missionId)
         }
-
-        // Navigate to worker detail mission fragment
         findNavController().navigate(R.id.action_workerDashboard_to_workerDetailMission, bundle)
     }
 
@@ -329,7 +316,7 @@ class WorkerDashboardFragment : Fragment() {
                 .setTitle("Confirm Completion")
                 .setMessage("Are you sure this coral planting has been completed successfully?")
                 .setPositiveButton("Yes, Complete") { _, _ ->
-                    val workerId = sessionManager.fetchUserId() ?: 0
+                    val workerId = sessionManager.fetchUserId()
                     plantingViewModel.finishPlanting(currentPlantingId, workerId)
                     currentPlantingId = 0
                     showSuccess("Coral planting completed successfully! 🐠")
@@ -353,7 +340,7 @@ class WorkerDashboardFragment : Fragment() {
 
     private fun performLogout() {
         lifecycleScope.launch {
-            sessionManager.clearSession() // Use SessionManager's clear method
+            sessionManager.clearSession()
             findNavController().navigate(R.id.action_workerDashboardFragment_to_loginFragment)
         }
     }

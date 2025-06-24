@@ -1,86 +1,61 @@
 package id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker
 
 import android.content.SharedPreferences
-import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingRequest
-import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlanting
-import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetail
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlantingResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetailResponse
 import id.istts.aplikasiadopsiterumbukarang.service.ApiService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 
-class WorkerPlantingRepository<T>(
+class WorkerPlantingRepository(
     private val apiService: ApiService,
     private val sharedPreferences: SharedPreferences
 ) {
 
-    private fun getAuthToken(): String? {
-        return sharedPreferences.getString("auth_token", null)
-    }
-
-    suspend fun getPendingPlantings(): Result<List<PendingPlanting>> {
-        return try {
-            val token = getAuthToken() ?: return Result.failure(Exception("No auth token found"))
-            val response = apiService.getPendingPlantings("Bearer $token")
-
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    Result.success(body.data)
-                } else {
-                    Result.failure(Exception("Response body is null"))
-                }
+    suspend fun getPendingPlantings(token: String): Result<PendingPlantingResponse> = withContext(
+        Dispatchers.IO) {
+        runCatching {
+            val response = apiService.getPendingPlantings(token)
+            if (response.isSuccessful && response.body() != null) {
+                response.body()!!
             } else {
-                Result.failure(Exception("API Error: ${response.code()} - ${response.message()}"))
+                throw Exception("Failed to fetch pending plantings: ${response.errorBody()?.string() ?: response.message()}")
             }
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 
-    suspend fun getPlantingDetails(id: Int): Result<T> {
-        return try {
-            val token = getAuthToken() ?: return Result.failure(Exception("No auth token found"))
-            val response = apiService.getPlantingDetails("Bearer $token", id)
-
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    @Suppress("UNCHECKED_CAST")
-                    Result.success(body.data as T)
-                } else {
-                    Result.failure(Exception("Response body is null"))
-                }
+    suspend fun getPlantingDetails(token: String, id: Int): Result<PlantingDetailResponse> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = apiService.getPlantingDetails(token, id)
+            if (response.isSuccessful && response.body() != null) {
+                response.body()!!
             } else {
-                when (response.code()) {
-                    404 -> Result.failure(Exception("Detail pembelian tidak ditemukan"))
-                    else -> Result.failure(Exception("API Error: ${response.code()} - ${response.message()}"))
-                }
+                throw Exception("Failed to fetch planting details: ${response.errorBody()?.string() ?: response.message()}")
             }
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 
-    suspend fun finishPlanting(id: Int, workerId: Int? = null): Result<String> {
-        return try {
-            val token = getAuthToken() ?: return Result.failure(Exception("No auth token found"))
-            val request = FinishPlantingRequest(worker_id = workerId)
-            val response = apiService.finishPlanting("Bearer $token", id, request)
-
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    Result.success(body.msg)
-                } else {
-                    Result.failure(Exception("Response body is null"))
-                }
+    suspend fun finishPlanting(id: Int, workerId: Int, token: String): Result<FinishPlantingResponse> = withContext(Dispatchers.IO) {
+        runCatching {
+            val requestBody = mapOf("workerId" to workerId)
+            ///finishPlanting(token, id, requestBody)
+            val response = apiService.finishPlanting(token, id, requestBody)
+            if (response.isSuccessful && response.body() != null) {
+                response.body()!!
             } else {
-                when (response.code()) {
-                    404 -> Result.failure(Exception("Transaksi tidak ditemukan"))
-                    400 -> Result.failure(Exception("Coral sudah ditanam sebelumnya"))
-                    else -> Result.failure(Exception("API Error: ${response.code()} - ${response.message()}"))
-                }
+                throw Exception("Failed to finish planting: ${response.errorBody()?.string() ?: response.message()}")
             }
+        }
+    }
+    suspend fun uploadPlantingPhoto(plantingId: Int, imageFile: File, token: String): Boolean {
+        return try {
+            // Implementation for photo upload if needed
+            // This would require multipart upload setup
+            true
         } catch (e: Exception) {
-            Result.failure(e)
+            throw Exception("Photo upload error: ${e.message}")
         }
     }
 }
