@@ -1,11 +1,13 @@
 package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.Entities
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.DAO.CorralDAO
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
+import kotlinx.parcelize.Parcelize
 
-
+@Parcelize
 @Entity(tableName = "terumbu_karang")
 data class TerumbuKarangEntities(
     @PrimaryKey(autoGenerate = false)
@@ -17,8 +19,11 @@ data class TerumbuKarangEntities(
     val stok_tersedia: Int,
     val is_deleted: Boolean,
     val img_path: String?=null,
-    val public_id: String?=null
-) {
+    val public_id: String?=null,
+    val is_created_locally: Boolean?=false,
+    val is_updated_locally: Boolean?=false,
+    val is_deleted_locally: Boolean?=false
+): Parcelable {
     companion object{
         fun fromCorral(corral: Coral): TerumbuKarangEntities {
             return TerumbuKarangEntities(

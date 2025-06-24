@@ -179,7 +179,8 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral,p
     fun confirmDeleteCoral() {
         val coralToDelete = _showDeleteDialog.value
         if (coralToDelete != null) {
-            deleteCoral(coralToDelete)
+//            deleteCoral(coralToDelete)
+            deleteCorralRepo(coralToDelete)
             _showDeleteDialog.value = null
         }
     }
@@ -218,6 +219,31 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral,p
                         _showMessage.value = "Failed to delete coral: $errorMessage"
                     }
                 }
+            } catch (e: Exception) {
+                _showMessage.value = "Network error: ${e.message}"
+            } finally {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+            }
+        }
+    }
+
+    fun deleteCorralRepo(coral: Coral){
+        val token = sessionManager.fetchAuthToken()
+        if (token.isNullOrEmpty()) {
+            _showMessage.value = "Authentication token not found"
+            _shouldNavigateToLogin.value = true
+            return
+        }
+        _uiState.value = _uiState.value.copy(isLoading = true)
+        viewModelScope.launch {
+            try {
+                val result = repository.deleteHybridly(coral.id_tk, token)
+                if(result == "remote delete success"){
+                    _showMessage.value = "Coral '${coral.tk_name}' deleted successfully"
+                }else{
+                    _showMessage.value = "Coral '${coral.tk_name}' deleted locally"
+                }
+                loadCoralDataRepo() // Refresh data after deletion
             } catch (e: Exception) {
                 _showMessage.value = "Network error: ${e.message}"
             } finally {
