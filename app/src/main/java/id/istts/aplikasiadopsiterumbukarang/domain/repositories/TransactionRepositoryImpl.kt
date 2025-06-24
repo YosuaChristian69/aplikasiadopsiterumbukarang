@@ -54,7 +54,7 @@ class TransactionRepositoryImpl(
             val token = sessionManager.fetchAuthToken()
                 ?: throw Exception("User not authenticated.")
 
-            val request = DebugFulfillmentRequest(coralId, locationId, amount)
+            val request = DebugFulfillmentRequest(coralId, locationId, amount, nickname, message)
             val response = apiService.fulfillOrderForDebug(token, request)
 
             if (!response.isSuccessful) {

@@ -106,6 +106,7 @@ class UserPaymentViewModel(
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             try {
+                Log.d("test value",nickname)
                 transactionRepository.fulfillOrderForDebug(coralId, locationId, amount,nickname,message)
                 _uiState.update { it.copy(isLoading = false) }
             } catch (e: Exception) {

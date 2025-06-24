@@ -156,7 +156,7 @@ class UserPaymentCoralFragment : Fragment() {
                 if (FAKE_PAYMENT_FOR_DEV) {
                     // --- FAKE PATH: For faster frontend development ---
                     Log.d("DEV_MODE", "Faking successful payment...")
-
+                    Log.d("coralnickname", args.coralNickname.toString())
                     viewModel.manuallyFulfillOrderForDebug(
                         args.coralId,
                         args.locationId,
