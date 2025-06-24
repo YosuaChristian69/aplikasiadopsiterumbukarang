@@ -21,6 +21,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,19 +32,24 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.AdminDashboardViewModelFullRepo
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralAdapter
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardUiState
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardViewModel
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
+import kotlin.getValue
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
+//import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.AdminDashboardViewModelFullRepo
 
 class AdminDashboardFragment : Fragment() {
 
     // ViewModel initialization
-    private lateinit var viewModel: AdminDashboardViewModel
+    private lateinit var viewModel: AdminDashboardViewModel // comment this if you want to try to use repository
+//    private lateinit var viewModel: AdminDashboardViewModelFullRepo // uncomment this if you want to try to use repository
     private lateinit var coralAdapter: CoralAdapter
-
     // View references
     private lateinit var welcomeTextView: TextView
     private lateinit var logoutButton: ImageButton
@@ -59,8 +66,12 @@ class AdminDashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //uncomment bellow codes if you want to try to use repository
+//        val factory = ViewModelFactory(RepostioryCorral(),CoralRepositoryImpl(/* inject your API service here */),
+//            SessionManager(requireContext()))
+//        viewModel = ViewModelProvider(this, factory).get(AdminDashboardViewModelFullRepo::class.java)
 
-        // Initialize ViewModel
+        // Initialize ViewModel AND comment this if you want to use repository
         viewModel = AdminDashboardViewModel(
             CoralRepositoryImpl(/* inject your API service here */),
             SessionManager(requireContext())

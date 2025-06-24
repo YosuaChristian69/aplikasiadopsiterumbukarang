@@ -1,0 +1,4 @@
+package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory
+
+class ViewModelFactoryAdminDashboard {
+}
