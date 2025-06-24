@@ -1,14 +1,32 @@
 package id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker
 
 // 4. Repository (Enhanced with validation)
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import android.util.Patterns
+import id.istts.aplikasiadopsiterumbukarang.domain.CollectionResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.EditProfileRequest
 import id.istts.aplikasiadopsiterumbukarang.service.ApiService
+import retrofit2.Response
 
 class UserRepository(private val apiService: ApiService) {
 
+    suspend fun getUserCoralCollection(token: String): Response<CollectionResponse> {
+        Log.d("UserRepository", "Attempting to fetch user coral collection with token.")
+        return try {
+            // Call the API service endpoint.
+            val response = apiService.getUserCoralCollection(token)
+            Log.d("UserRepository", "API response received with code: ${response.code()}")
+            response
+        } catch (e: Exception) {
+            // It's good practice to catch potential exceptions (e.g., network issues)
+            // and log them, although the ViewModel will also handle this.
+            Log.e("UserRepository", "Exception while fetching user coral collection", e)
+            // Re-throw the exception to be handled by the ViewModel's try-catch block.
+            throw e
+        }
+    }
     suspend fun editProfile(
         token: String,
         email: String? = null,

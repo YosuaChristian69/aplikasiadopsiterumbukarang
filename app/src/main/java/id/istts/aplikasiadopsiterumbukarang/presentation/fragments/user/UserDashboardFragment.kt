@@ -6,16 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar // Import ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.viewModels // Import for by viewModels()
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import id.istts.aplikasiadopsiterumbukarang.R
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.presentation.SelectionMode
+import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.UserCoralAdapter
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.user.UserDashboardViewModel// You'll need to create this ViewModel
+import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
+import kotlinx.coroutines.launch
 
 class UserDashboardFragment : Fragment() {
 
@@ -24,10 +30,20 @@ class UserDashboardFragment : Fragment() {
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var logoutButton: Button
 
+    // --- NEW: Add properties for RecyclerView and its components ---
+    private lateinit var myCoralsRecyclerView: RecyclerView
+    private lateinit var userCoralAdapter: UserCoralAdapter
+    private lateinit var loadingProgressBar: ProgressBar // For loading state
+
+    // --- NEW: Instantiate the ViewModel using KTX delegate ---
+    // Make sure to add the 'androidx.fragment:fragment-ktx' dependency
+    private val viewModel: UserDashboardViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_user_dashboard, container, false)
     }
 
@@ -36,158 +52,151 @@ class UserDashboardFragment : Fragment() {
 
         sessionManager = SessionManager(requireContext())
 
-        // Initialize views first
+        // Find all views in the layout
         initializeViews(view)
 
-        // Setup logout button immediately (tidak tergantung validasi)
+        // Setup UI components that don't depend on user login state
         setupLogoutButton()
+        setupRecyclerView()
 
+        // Observe changes from the ViewModel
+        observeViewModel()
+
+        // Validate user session and fetch data
         lifecycleScope.launch {
-            if (!validateUserAccess()) {
-                return@launch
+            if (validateUserAccess()) {
+                setupUserSpecificViews()
+                // Trigger data fetching from the ViewModel
+                viewModel.fetchUserCorals(sessionManager.fetchAuthToken()!!)
             }
-            setupViews()
         }
     }
 
     private fun initializeViews(view: View) {
-        try {
-            // Find the TextView that shows "Hi, USER" in your layout
-            userGreetingTextView = view.findViewById<TextView>(R.id.userGreetingTextView)
-                ?: throw IllegalStateException("userGreetingTextView not found in layout")
-
-            bottomNavigation = view.findViewById<BottomNavigationView>(R.id.bottom_navigation)
-                ?: throw IllegalStateException("bottom_navigation not found in layout")
-
-            logoutButton = view.findViewById<Button>(R.id.logoutButton)
-                ?: throw IllegalStateException("logoutButton not found in layout")
-
-            Log.d("UserDashboard", "All views initialized successfully")
-        } catch (e: Exception) {
-            Log.e("UserDashboard", "Error initializing views: ${e.message}")
-            e.printStackTrace()
-        }
+        userGreetingTextView = view.findViewById(R.id.userGreetingTextView)
+        bottomNavigation = view.findViewById(R.id.bottom_navigation)
+        logoutButton = view.findViewById(R.id.logoutButton)
+        // --- NEW: Initialize new views ---
+        myCoralsRecyclerView = view.findViewById(R.id.myCoralsRecyclerView)
+        // You might need to add a ProgressBar to your XML layout
+        // loadingProgressBar = view.findViewById(R.id.loadingProgressBar)
+        Log.d("UserDashboard", "All views initialized successfully")
     }
 
     private fun setupLogoutButton() {
-        try {
-            // Setup logout button click listener dengan logging
-            logoutButton.setOnClickListener {
-                Log.d("UserDashboard", "Logout button clicked!")
-                Toast.makeText(requireContext(), "Logout button pressed", Toast.LENGTH_SHORT).show()
-                performLogout()
+        logoutButton.setOnClickListener {
+            Log.d("UserDashboard", "Logout button clicked!")
+            performLogout()
+        }
+    }
+
+    // --- NEW: Function to set up the RecyclerView ---
+    private fun setupRecyclerView() {
+        // Initialize the adapter with an empty list
+        userCoralAdapter = UserCoralAdapter(emptyList())
+
+        myCoralsRecyclerView.apply {
+            // Set the layout manager to a 2-column grid
+            layoutManager = GridLayoutManager(context, 2)
+            // Set the adapter
+            adapter = userCoralAdapter
+        }
+        Log.d("UserDashboard", "RecyclerView setup complete")
+    }
+
+    // --- NEW: Function to observe LiveData from the ViewModel ---
+    private fun observeViewModel() {
+        viewModel.userCorals.observe(viewLifecycleOwner) { corals ->
+            // When the list of corals is updated, submit it to the adapter
+            Log.d("UserDashboard", "Observed ${corals.size} corals. Updating adapter.")
+            userCoralAdapter.updateData(corals)
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            // Show or hide the progress bar based on loading state
+            // loadingProgressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            Log.d("UserDashboard", "isLoading state changed: $isLoading")
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            // If there's an error, show a toast message
+            errorMessage?.let {
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                Log.e("UserDashboard", "Error observed: $it")
             }
-
-            // Pastikan button bisa diklik
-            logoutButton.isClickable = true
-            logoutButton.isEnabled = true
-
-            Log.d("UserDashboard", "Logout button setup complete")
-        } catch (e: Exception) {
-            Log.e("UserDashboard", "Error setting up logout button: ${e.message}")
-            e.printStackTrace()
         }
     }
 
     private fun validateUserAccess(): Boolean {
-        if (!isAdded || isDetached) {
-            Log.w("UserDashboard", "Fragment not properly attached")
-            return false
-        }
+        if (!isAdded) return false
 
         if (!sessionManager.isLoggedIn()) {
-            Log.w("UserDashboard", "User not logged in")
+            Log.w("UserDashboard", "User not logged in, navigating to login.")
             navigateToLogin()
             return false
         }
 
         val userStatus = sessionManager.fetchUserStatus()
         if (userStatus != "user") {
-            Log.w("UserDashboard", "Invalid user status: $userStatus")
+            Log.w("UserDashboard", "Invalid user status: $userStatus, navigating to login.")
             navigateToLogin()
             return false
         }
-
-        Log.d("UserDashboard", "User access validated successfully")
         return true
     }
 
-    private fun setupViews() {
-        try {
-            val userName = sessionManager.fetchUserName() ?: "User"
-            userGreetingTextView.text = "Hi, $userName"
+    private fun setupUserSpecificViews() {
+        val userName = sessionManager.fetchUserName() ?: "User"
+        userGreetingTextView.text = "Hi, $userName"
 
-            // Setup bottom navigation if needed
-            bottomNavigation.setOnItemSelectedListener { menuItem ->
-                when (menuItem.itemId) {
-                    // Handle navigation items based on your menu
-//                     R.id.nav_my_coral -> {
-//                         findNavController().navigate(R.id.action_userAddCoralFragment_to_userDashboardFragment)
-//                         true
-//                     }
-                     R.id.nav_adopt_coral ->{
-                         val action = UserDashboardFragmentDirections
-                             .actionUserDashboardFragmentToUserSelectSpeciesFragment(SelectionMode.USER_SINGLE_SELECTION)
-                         findNavController().navigate(action)
-                        true
-                     }
-                    else -> false
+        bottomNavigation.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_adopt_coral -> {
+                    val action = UserDashboardFragmentDirections
+                        .actionUserDashboardFragmentToUserSelectSpeciesFragment(SelectionMode.USER_SINGLE_SELECTION)
+                    findNavController().navigate(action)
+                    true
                 }
+                // Add other navigation cases here
+                else -> false
             }
-
-            Log.d("UserDashboard", "Views setup complete")
-        } catch (e: Exception) {
-            Log.e("UserDashboard", "Error setting up views: ${e.message}")
-            e.printStackTrace()
         }
+        Log.d("UserDashboard", "User-specific views setup complete for $userName")
     }
 
     private fun navigateToLogin() {
-        if (isAdded && !isDetached && !isRemoving) {
+        if (isAdded) {
             try {
-                Log.d("UserDashboard", "Navigating to login")
                 findNavController().navigate(R.id.action_userDashboardFragment_to_loginFragment)
             } catch (e: Exception) {
-                Log.e("UserDashboard", "Navigation error: ${e.message}")
-                e.printStackTrace()
+                Log.e("UserDashboard", "Navigation to login failed: ${e.message}")
             }
         }
     }
 
     private fun performLogout() {
-        if (!isAdded || isDetached) {
-            Log.w("UserDashboard", "Cannot perform logout - fragment not attached")
-            return
-        }
+        if (!isAdded) return
 
-        try {
-            Log.d("UserDashboard", "Performing logout...")
-
-            // Clear session data
-            sessionManager.clearSession()
-
-            // Show logout confirmation message
-            Toast.makeText(requireContext(), "Anda berhasil Logout", Toast.LENGTH_SHORT).show()
-
-            // Navigate to login screen
-            navigateToLogin()
-        } catch (e: Exception) {
-            Log.e("UserDashboard", "Error during logout: ${e.message}")
-            e.printStackTrace()
-            Toast.makeText(requireContext(), "Error during logout", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("UserDashboard", "Fragment resumed")
-        if (!validateUserAccess()) {
-            return
-        }
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = UserDashboardFragment()
+        Log.d("UserDashboard", "Performing logout...")
+        sessionManager.clearSession()
+        Toast.makeText(requireContext(), "Anda berhasil Logout", Toast.LENGTH_SHORT).show()
+        navigateToLogin()
     }
 }
+//```
+//
+//### **Next Steps:**
+//
+//1.  **Create the ViewModel:** You'll need to create the `UserDashboardViewModel.kt` file. This class will be responsible for calling your API repository to get the user's coral collection.
+//2.  **Add Dependencies:** Make sure you have the following dependencies in your `build.gradle.kts` file for the `by viewModels()` delegate to work:
+//```kotlin
+//// In your app-level build.gradle.kts
+//dependencies {
+//    // ...
+//    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
+//    implementation("androidx.fragment:fragment-ktx:1.7.1")
+//}
+//```
+//3.  **Add a ProgressBar:** For a better user experience, add a `ProgressBar` to your `fragment_user_dashboard.xml` layout so you can show a loading indicator while the data is being fetched.
+//
+//This refactored code now correctly uses the `RecyclerView` and `Adapter` we created, providing a clean, scalable, and modern foundation for your user dashboa

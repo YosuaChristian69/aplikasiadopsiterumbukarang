@@ -1,5 +1,6 @@
 package id.istts.aplikasiadopsiterumbukarang.service
 
+import id.istts.aplikasiadopsiterumbukarang.domain.CollectionResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
@@ -159,6 +160,11 @@ interface ApiService {
         @Header("x-auth-token") token: String,
         @Body request: DebugFulfillmentRequest
     ): Response<Unit>
+    @GET("transaksi/collection") // The endpoint URL from your router
+    suspend fun getUserCoralCollection(
+        @Header("x-auth-token") token: String // The authorization header
+    ): Response<CollectionResponse>
+
     //WORKER
     @POST("fetchAllUnfinishedTask")
     suspend fun fetchAllUnfinishedTasks(): Response<UnfinishedTasksResponse>

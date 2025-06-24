@@ -87,11 +87,12 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#4DFFFF"
-        app:menu="@menu/user_bottom_nav_menu"
+        android:elevation="8dp"
+        app:itemIconSize="40sp"
         app:labelVisibilityMode="labeled"
-        android:elevation="8dp" />
+        app:menu="@menu/user_bottom_nav_menu" />
 
 </RelativeLayout>
