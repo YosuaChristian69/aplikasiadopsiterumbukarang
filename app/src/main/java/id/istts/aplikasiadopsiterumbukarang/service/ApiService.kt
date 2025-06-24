@@ -172,25 +172,25 @@ interface ApiService {
 
     @GET("/users/worker/pendingPlantings")
     suspend fun getPendingPlantings(
-        @Header("Authorization") token: String
+        @Header("x-auth-token") token: String
     ): Response<PendingPlantingResponse>
 
     @GET("/users/worker/plantingDetails/{id}")
     suspend fun getPlantingDetails(
-        @Header("Authorization") token: String,
+        @Header("x-auth-token") token: String,
         @Path("id") id: Int
     ): Response<PlantingDetailResponse>
 
     @PUT("/users/worker/finishPlanting/{id}")
     suspend fun finishPlanting(
-        @Header("Authorization") token: String,
+        @Header("x-auth-token") token: String,
         @Path("id") id: Int,
         @Body request: FinishPlantingRequest
     ): Response<FinishPlantingResponse>
 
     @POST("/users/editProfile")
     suspend fun editProfile(
-        @Header("Authorization") token: String,
+        @Header("x-auth-token") token: String,
         @Body request: EditProfileRequest
     ): Response<EditProfileResponse>
 }
