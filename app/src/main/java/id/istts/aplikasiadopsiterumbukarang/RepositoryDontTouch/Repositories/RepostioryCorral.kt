@@ -61,7 +61,31 @@ class RepostioryCorral() {
             return "local delete success"
         }
     }
+    suspend fun updateHybridly(idTk:Int,token: String,editRequest: EditCoralRequest): String{
+        try {
+            var editResult = remote.editTerumbuKarang(idTk, token, editRequest)
+            if(!editResult.isSuccessful){
+                throw HttpException(editResult)
+            }
 
+            var coral = local.CorralDAO().getTerumbuKarangById(idTk)
+            if(coral == null){
+                return "No Data"
+            }
+            var updatedCoral = coral.copy(tk_name = editRequest.name!!, tk_jenis = editRequest.jenis!!, harga_tk = editRequest.harga!!, stok_tersedia = editRequest.stok!!, description = editRequest.description!!, is_updated_locally = true)
+            local.CorralDAO().updateTerumbuKarang(updatedCoral)
+
+            return "Update Success"
+        }catch (e: Exception){
+            var coral = local.CorralDAO().getTerumbuKarangById(idTk)
+            if(coral == null){
+                return "No Data"
+            }
+            var updatedCoral = coral.copy(tk_name = editRequest.name!!, tk_jenis = editRequest.jenis!!, harga_tk = editRequest.harga!!, stok_tersedia = editRequest.stok!!, description = editRequest.description!!, is_updated_locally = true)
+            local.CorralDAO().updateTerumbuKarang(updatedCoral)
+            return "Update Success"
+        }
+    }
     suspend fun syncWithRemote(token:String):List<Coral>{
         var retainDelete = false
         var retainUpdate = false

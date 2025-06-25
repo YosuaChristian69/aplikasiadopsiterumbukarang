@@ -18,12 +18,20 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.AdminDashboardViewModelFullRepo
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.EditCorralViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editCoral.EditCoralViewModel
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editCoral.EditCoralViewModelFactory
+//import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryEdit
+//import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactory
+//import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.EditCorralViewModelRepo
+
 
 class EditCoralFragment : Fragment() {
     private lateinit var backButton: ImageButton
@@ -37,8 +45,8 @@ class EditCoralFragment : Fragment() {
     private lateinit var loadingIndicator: ProgressBar
     private lateinit var currentImageView: ImageView
     private lateinit var sessionManager: SessionManager
-    private lateinit var viewModel: EditCoralViewModel
-
+//    private lateinit var viewModel: EditCoralViewModel
+    private lateinit var viewModel: EditCorralViewModelRepo
     private var coralId: Int = -1
 
     override fun onCreateView(
@@ -55,9 +63,11 @@ class EditCoralFragment : Fragment() {
 
     private fun initDependencies() {
         sessionManager = SessionManager(requireContext())
-        val repository = CoralRepositoryImpl()
-        val factory = EditCoralViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory)[EditCoralViewModel::class.java]
+//        val repository = CoralRepositoryImpl()
+//        val factory = EditCoralViewModelFactory(repository)
+//        viewModel = ViewModelProvider(this, factory)[EditCoralViewModel::class.java]
+        val factory = ViewModelFactory(RepostioryCorral(),CoralRepositoryImpl(/* inject your API service here */),sessionManager)
+        viewModel = ViewModelProvider(this, factory).get(EditCorralViewModelRepo::class.java)
     }
 
     private fun initViews(view: View) {

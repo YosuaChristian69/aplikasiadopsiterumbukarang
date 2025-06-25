@@ -47,8 +47,8 @@ import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.Rep
 class AdminDashboardFragment : Fragment() {
 
     // ViewModel initialization
-    private lateinit var viewModel: AdminDashboardViewModel // comment this if you want to try to use repository
-//    private lateinit var viewModel: AdminDashboardViewModelFullRepo // uncomment this if you want to try to use repository
+//    private lateinit var viewModel: AdminDashboardViewModel // comment this if you want to try to use repository
+    private lateinit var viewModel: AdminDashboardViewModelFullRepo // uncomment this if you want to try to use repository
     private lateinit var coralAdapter: CoralAdapter
     // View references
     private lateinit var welcomeTextView: TextView
@@ -67,15 +67,15 @@ class AdminDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //uncomment bellow codes if you want to try to use repository
-//        val factory = ViewModelFactory(RepostioryCorral(),CoralRepositoryImpl(/* inject your API service here */),
-//            SessionManager(requireContext()))
-//        viewModel = ViewModelProvider(this, factory).get(AdminDashboardViewModelFullRepo::class.java)
+        val factory = ViewModelFactory(RepostioryCorral(),CoralRepositoryImpl(/* inject your API service here */),
+            SessionManager(requireContext()))
+        viewModel = ViewModelProvider(this, factory).get(AdminDashboardViewModelFullRepo::class.java)
 
         // Initialize ViewModel AND comment this if you want to use repository
-        viewModel = AdminDashboardViewModel(
-            CoralRepositoryImpl(/* inject your API service here */),
-            SessionManager(requireContext())
-        )
+//        viewModel = AdminDashboardViewModel(
+//            CoralRepositoryImpl(/* inject your API service here */),
+//            SessionManager(requireContext())
+//        )
 
         setupViews(view)
         setupRecyclerView()
