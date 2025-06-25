@@ -8,15 +8,14 @@ import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.UserRepos
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import kotlinx.coroutines.launch
 
-class UserCoralDetailViewModel : ViewModel() {
+class UserCoralDetailViewModel(private val userRepository: UserRepository) : ViewModel() {
     val apiService = RetrofitClient.instance
-    private val userRepository = UserRepository(apiService)
 
     // CORRECTED: The LiveData now holds the flat CoralDetailResponse
     private val _coralDetail = MutableLiveData<CoralDetailResponse?>()
     val coralDetail: LiveData<CoralDetailResponse?> = _coralDetail
 
-    private val _isLoading = MutableLiveData<Boolean>()
+    private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _error = MutableLiveData<String?>()
