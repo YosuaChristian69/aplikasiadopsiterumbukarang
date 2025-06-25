@@ -15,53 +15,72 @@ class WorkerPlantingRepository(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun getPendingPlantings(token: String): Result<PendingPlantingResponse> = withContext(
-        Dispatchers.IO) {
+    suspend fun getPendingPlantings(token: String): Result<PendingPlantingResponse> = withContext(Dispatchers.IO) {
         runCatching {
-            val response = apiService.getPendingPlantings(token)
+            val response = apiService.getPendingPlantings("Bearer $token")
             if (response.isSuccessful && response.body() != null) {
                 response.body()!!
             } else {
-                throw Exception("Failed to fetch pending plantings: ${response.errorBody()?.string() ?: response.message()}")
+                val errorMessage = when (response.code()) {
+                    401 -> "Authentication failed"
+                    403 -> "Access denied"
+                    404 -> "Endpoint not found"
+                    500 -> "Server error"
+                    else -> "Failed to fetch pending plantings: ${response.errorBody()?.string() ?: response.message()}"
+                }
+                throw Exception(errorMessage)
             }
         }
     }
 
     suspend fun getPlantingDetails(token: String, id: Int): Result<PlantingDetailResponse> = withContext(Dispatchers.IO) {
         runCatching {
-            val response = apiService.getPlantingDetails(token, id)
+            val response = apiService.getPlantingDetails("Bearer $token", id)
             if (response.isSuccessful && response.body() != null) {
                 response.body()!!
             } else {
-                throw Exception("Failed to fetch planting details: ${response.errorBody()?.string() ?: response.message()}")
+                val errorMessage = when (response.code()) {
+                    401 -> "Authentication failed"
+                    403 -> "Access denied"
+                    404 -> "Planting details not found"
+                    500 -> "Server error"
+                    else -> "Failed to fetch planting details: ${response.errorBody()?.string() ?: response.message()}"
+                }
+                throw Exception(errorMessage)
             }
         }
     }
 
     suspend fun finishPlanting(id: Int, workerId: Int, token: String): Result<FinishPlantingResponse> = withContext(Dispatchers.IO) {
         runCatching {
-//            val requestBody = mapOf("workerId" to workerId)
             val requestBody = FinishPlantingRequest(workerId)
-            ///finishPlanting(token, id, requestBody)
             val response = apiService.finishPlanting(
                 request = requestBody,
-                token = token,
+                token = "Bearer $token",
                 id = id
             )
             if (response.isSuccessful && response.body() != null) {
                 response.body()!!
             } else {
-                throw Exception("Failed to finish planting: ${response.errorBody()?.string() ?: response.message()}")
+                val errorMessage = when (response.code()) {
+                    401 -> "Authentication failed"
+                    403 -> "Access denied"
+                    404 -> "Planting record not found"
+                    422 -> "Invalid request data"
+                    500 -> "Server error"
+                    else -> "Failed to finish planting: ${response.errorBody()?.string() ?: response.message()}"
+                }
+                throw Exception(errorMessage)
             }
         }
     }
-    suspend fun uploadPlantingPhoto(plantingId: Int, imageFile: File, token: String): Boolean {
-        return try {
+
+    suspend fun uploadPlantingPhoto(plantingId: Int, imageFile: File, token: String): Result<Boolean> = withContext(Dispatchers.IO) {
+        runCatching {
             // Implementation for photo upload if needed
             // This would require multipart upload setup
+            // For now, return success
             true
-        } catch (e: Exception) {
-            throw Exception("Photo upload error: ${e.message}")
         }
     }
 }

@@ -33,9 +33,6 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingR
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlantingResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetailResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.UnfinishedTasksResponse
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -48,6 +45,9 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 
 interface ApiService {
     @POST("/users/login")
@@ -200,9 +200,12 @@ interface ApiService {
         @Body request: FinishPlantingRequest
     ): Response<FinishPlantingResponse>
 
-    @POST("/users/editProfile")
+    @Multipart
+    @PUT("/users/worker/editUserWorker")
     suspend fun editProfile(
         @Header("x-auth-token") token: String,
-        @Body request: EditProfileRequest
+        @Part("name") name: RequestBody?,
+        @Part("email") email: RequestBody?,
+        @Part profile_picture: MultipartBody.Part?
     ): Response<EditProfileResponse>
 }

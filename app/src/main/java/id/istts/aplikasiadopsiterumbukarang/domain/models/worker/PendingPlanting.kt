@@ -9,5 +9,7 @@ data class PendingPlanting(
     val tanggal_pembelian: String,
     val total_harga: Double,
     val jumlah_jenis_coral: Int,
-    val ringkasan_coral: String
+    val ringkasan_coral: String,
+    val assignment_status: String, // New field
+    val assigned_worker: String?   // New field - nullable since it can be null for unassigned
 )

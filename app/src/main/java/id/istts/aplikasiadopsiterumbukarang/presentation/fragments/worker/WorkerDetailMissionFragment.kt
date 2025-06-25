@@ -53,11 +53,11 @@ class WorkerDetailMissionFragment : Fragment() {
             plantingDetail?.let { detail ->
                 // Update UI with planting details
                 // Get the first coral detail if available, or show default values
-                val firstCoral = detail.detail_coral.firstOrNull()
-
-                binding.tvCoralNameTitle.text = firstCoral?.nama_coral ?: "Coral Name"
-                binding.tvCoralSpecies.text = firstCoral?.jenis ?: "CORAL Species"
-                binding.tvOwnerName.text = detail.pembeli.nama ?: "Owner"
+//                val firstCoral = detail.detail_coral.firstOrNull()
+//
+//                binding.tvCoralNameTitle.text = firstCoral?.nama_coral ?: "Coral Name"
+//                binding.tvCoralSpecies.text = firstCoral?.jenis ?: "CORAL Species"
+//                binding.tvOwnerName.text = detail.pembeli.nama ?: "Owner"
 
                 // Optional: If you want to show additional information
                 // binding.tvPlantingStatus.text = detail.status_penanaman

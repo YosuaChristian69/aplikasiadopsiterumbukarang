@@ -1,14 +1,20 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerUpdateProfileBinding
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.WorkerProfile
@@ -20,6 +26,9 @@ import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.Worke
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 class WorkerUpdateProfileFragment : Fragment() {
 
@@ -30,6 +39,18 @@ class WorkerUpdateProfileFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
     private lateinit var editProfileViewModel: EditProfileViewModel
     private var currentWorkerProfile: WorkerProfile? = null
+    private var selectedImageFile: File? = null
+
+    // Activity result launcher for image selection
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                handleImageSelection(uri)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,16 +76,11 @@ class WorkerUpdateProfileFragment : Fragment() {
     }
 
     private fun setupViewModels() {
-        // Create UserRepository instance first
         val repository = UserRepository(RetrofitClient.instance)
-//        val factory = WorkerProfileViewModelFactory(userRepository, sessionManager)
-//        viewModel = ViewModelProvider(this, factory)[WorkerProfileViewModel::class.java]
 
-        // FIXED: Setup WorkerProfileViewModel with UserRepository (not SessionManager)
-        val factory = WorkerProfileViewModelFactory(repository,sessionManager) // Changed from sessionManager to repository
+        val factory = WorkerProfileViewModelFactory(repository, sessionManager)
         viewModel = ViewModelProvider(this, factory)[WorkerProfileViewModel::class.java]
 
-        // Setup EditProfileViewModel with the same repository
         val editProfileFactory = EditProfileViewModelFactory(repository)
         editProfileViewModel = ViewModelProvider(this, editProfileFactory)[EditProfileViewModel::class.java]
     }
@@ -73,12 +89,14 @@ class WorkerUpdateProfileFragment : Fragment() {
         // Observe worker profile data
         viewModel.workerProfile.observe(viewLifecycleOwner) { profile ->
             currentWorkerProfile = profile
-            // Populate the form with current WorkerProfile data
             binding.apply {
                 etName.setText(profile.name)
                 etEmail.setText(profile.email)
                 etDateOfBirth.setText(profile.dateOfBirth)
                 etPhoneNumber.setText(profile.phone)
+
+                // Load current profile image - Fixed the property access and Glide usage
+                loadProfileImage(profile)
             }
         }
 
@@ -95,6 +113,15 @@ class WorkerUpdateProfileFragment : Fragment() {
             }
         }
 
+        // Observe selected image
+        lifecycleScope.launch {
+            editProfileViewModel.selectedImageUri.collect { uri ->
+                uri?.let {
+                    binding.ivProfileImage.setImageURI(it)
+                }
+            }
+        }
+
         // Observe edit profile API state
         lifecycleScope.launch {
             editProfileViewModel.uiState.collect { state ->
@@ -106,11 +133,25 @@ class WorkerUpdateProfileFragment : Fragment() {
                     state.isSuccess -> {
                         binding.btnUpdate.isEnabled = true
                         binding.btnUpdate.text = "UPDATE"
-                        Toast.makeText(requireContext(),
-                            state.successMessage ?: "Profile updated successfully",
-                            Toast.LENGTH_SHORT).show()
 
-                        updateSessionManagerWithNewData()
+                        val message = if (state.photoUpdated) {
+                            "Profile and photo updated successfully"
+                        } else {
+                            state.successMessage ?: "Profile updated successfully"
+                        }
+
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+                        // Update session with new data if user data is available
+                        state.updatedUser?.let { userData ->
+                            sessionManager.updateUserDetailsFromResponse(
+                                userData.full_name,
+                                userData.email,
+                                userData.user_status,
+                                userData.img_path
+                            )
+                        }
+
                         viewModel.refreshProfile()
                         navigateBackToProfile()
                         editProfileViewModel.clearState()
@@ -128,6 +169,29 @@ class WorkerUpdateProfileFragment : Fragment() {
         }
     }
 
+    private fun loadProfileImage(profile: WorkerProfile) {
+        // First try to get image from WorkerProfile (assuming it has an image field)
+        // Since profileImageUrl doesn't exist, you need to check what field contains the image
+        val imageUrl: String? = when {
+            // Check if WorkerProfile has an image field (you'll need to verify this)
+            // profile.imageUrl != null -> profile.imageUrl
+            // profile.imagePath != null -> profile.imagePath
+            // For now, get from session
+            else -> sessionManager.fetchUserImagePath()
+        }
+
+        if (!imageUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(imageUrl) // Explicitly specify String type
+                .placeholder(R.drawable.ic_person)
+                .error(R.drawable.ic_person)
+                .into(binding.ivProfileImage)
+        } else {
+            // Set default image
+            binding.ivProfileImage.setImageResource(R.drawable.ic_person)
+        }
+    }
+
     private fun setupClickListeners() {
         binding.btnBack.setOnClickListener {
             navigateBackToProfile()
@@ -138,7 +202,11 @@ class WorkerUpdateProfileFragment : Fragment() {
         }
 
         binding.btnUploadProfile.setOnClickListener {
-            Toast.makeText(requireContext(), "Upload profile picture functionality", Toast.LENGTH_SHORT).show()
+            openImagePicker()
+        }
+
+        binding.ivProfileImage.setOnClickListener {
+            openImagePicker()
         }
 
         binding.etDateOfBirth.setOnClickListener {
@@ -147,10 +215,35 @@ class WorkerUpdateProfileFragment : Fragment() {
     }
 
     private fun loadCurrentProfile() {
-        // This will trigger the observer to populate the UI
-        // Make sure to call the method that loads the worker profile
-        // For example, if your WorkerProfileViewModel has a loadProfile() method:
+        // Load the current profile - implement this based on your WorkerProfileViewModel
         // viewModel.loadProfile()
+    }
+
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        imagePickerLauncher.launch(intent)
+    }
+
+    private fun handleImageSelection(uri: Uri) {
+        try {
+            editProfileViewModel.selectImage(uri)
+
+            // Convert URI to File for upload
+            val inputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
+            inputStream?.let { stream ->
+                val file = File(requireContext().cacheDir, "profile_${System.currentTimeMillis()}.jpg")
+                val outputStream = FileOutputStream(file)
+
+                stream.copyTo(outputStream)
+                stream.close()
+                outputStream.close()
+
+                selectedImageFile = file
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Error selecting image: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun updateProfile() {
@@ -171,11 +264,12 @@ class WorkerUpdateProfileFragment : Fragment() {
 
         val nameChanged = currentProfile.name != name
         val emailChanged = currentProfile.email != email
+        val hasSelectedImage = selectedImageFile != null
 
         val updatedName = if (nameChanged) name else null
         val updatedEmail = if (emailChanged) email else null
 
-        if (updatedName == null && updatedEmail == null) {
+        if (updatedName == null && updatedEmail == null && !hasSelectedImage) {
             Toast.makeText(requireContext(), "No changes detected", Toast.LENGTH_SHORT).show()
             return
         }
@@ -186,14 +280,7 @@ class WorkerUpdateProfileFragment : Fragment() {
             return
         }
 
-        editProfileViewModel.editProfile(token, updatedEmail, updatedName)
-    }
-
-    private fun updateSessionManagerWithNewData() {
-        val updatedName = binding.etName.text.toString().trim()
-        val updatedEmail = binding.etEmail.text.toString().trim()
-
-        sessionManager.saveUserDetails(updatedName, updatedEmail, sessionManager.fetchUserStatus() ?: "")
+        editProfileViewModel.editProfile(token, updatedEmail, updatedName, selectedImageFile)
     }
 
     private fun validateInput(name: String, email: String, phoneNumber: String): Boolean {
@@ -235,6 +322,7 @@ class WorkerUpdateProfileFragment : Fragment() {
             error.contains("Invalid email") -> "Please enter a valid email address."
             error.contains("Unauthorized") -> "Your session has expired. Please login again."
             error.contains("Network") || error.contains("timeout") -> "Network error. Please check your connection and try again."
+            error.contains("Error uploading photo") -> "Failed to upload photo. Please try again."
             else -> error
         }
     }
@@ -245,6 +333,8 @@ class WorkerUpdateProfileFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Clean up temporary files
+        selectedImageFile?.delete()
         _binding = null
     }
 }
