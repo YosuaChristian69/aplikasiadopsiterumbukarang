@@ -8,7 +8,9 @@ data class WorkerPlantingUiState(
     val pendingPlantings: List<PendingPlanting> = emptyList(),
     val selectedPlanting: PlantingDetail? = null,
     val totalPending: Int = 0,
-    val filterByAssignmentStatus: String? = null, // New field for filtering
-    val assignedPlantings: List<PendingPlanting> = emptyList(), // New field for assigned tasks
-    val unassignedPlantings: List<PendingPlanting> = emptyList() // New field for unassigned tasks
+    val filterByAssignmentStatus: String? = null,
+    val assignedPlantings: List<PendingPlanting> = emptyList(),
+    val unassignedPlantings: List<PendingPlanting> = emptyList(),
+    // ADDED: This property is required by WorkerDashboardFragment
+    val shouldNavigateToLogin: Boolean = false
 )

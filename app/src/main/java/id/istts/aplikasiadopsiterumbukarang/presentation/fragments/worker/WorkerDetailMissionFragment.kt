@@ -4,26 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerDetailMissionBinding
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel
+import kotlinx.coroutines.launch
 
 class WorkerDetailMissionFragment : Fragment() {
 
     private var _binding: FragmentWorkerDetailMissionBinding? = null
     private val binding get() = _binding!!
 
-    // ViewModel
-    private val viewModel: WorkerPlantingViewModel by viewModels()
+    private val viewModel: WorkerPlantingViewModel by activityViewModels()
+    private val args: WorkerDetailMissionFragmentArgs by navArgs()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentWorkerDetailMissionBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -31,93 +34,52 @@ class WorkerDetailMissionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupObservers()
-        setupClickListeners()
+        viewModel.loadPlantingDetails(args.missionId)
 
-        // Get mission_id from arguments manually
-        val missionId = arguments?.getInt("mission_id", 0) ?: 0
-        if (missionId != 0) {
-            viewModel.loadPlantingDetails(missionId)
-        }
+        setupListeners()
+        observeViewModel()
     }
 
-    private fun setupObservers() {
-        // Observe UI state
-        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
-            // Update greeting message
-            binding.tvGreeting.text = uiState.welcomeMessage ?: "Hi, Worker"
-        }
-
-        // Observe planting detail
-        viewModel.plantingDetail.observe(viewLifecycleOwner) { plantingDetail ->
-            plantingDetail?.let { detail ->
-                // Update UI with planting details
-                // Get the first coral detail if available, or show default values
-//                val firstCoral = detail.detail_coral.firstOrNull()
-//
-//                binding.tvCoralNameTitle.text = firstCoral?.nama_coral ?: "Coral Name"
-//                binding.tvCoralSpecies.text = firstCoral?.jenis ?: "CORAL Species"
-//                binding.tvOwnerName.text = detail.pembeli.nama ?: "Owner"
-
-                // Optional: If you want to show additional information
-                // binding.tvPlantingStatus.text = detail.status_penanaman
-                // binding.tvPurchaseDate.text = detail.tanggal_pembelian
-                // binding.tvTotalPrice.text = "Rp ${detail.total_harga}"
-                // binding.tvPlantingLocation.text = detail.lokasi_penanaman.nama_lokasi
-
-                // If you have multiple corals and want to show them all:
-                // val coralNames = detail.detail_coral.joinToString(", ") { it.nama_coral }
-                // binding.tvCoralNameTitle.text = coralNames
-
-                // Load coral image if available
-                // binding.ivCoralImage.load(detail.coralImageUrl)
-            }
-        }
-
-        // Observe loading state
-        viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            // Handle loading state - you can show/hide progress bar here
-            binding.btnNext.isEnabled = !isLoading
-        }
-
-        // Observe errors
-        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
-            errorMessage?.let {
-                // Show error message - you can use Snackbar or Toast
-                // Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
-                viewModel.clearError()
-            }
-        }
-
-        // Observe navigation to login
-        viewModel.shouldNavigateToLogin.observe(viewLifecycleOwner) { shouldNavigate ->
-            if (shouldNavigate) {
-                findNavController().navigate(R.id.action_workerDetailMission_to_workerDashboard)
-                viewModel.onNavigatedToLogin()
-            }
-        }
-    }
-
-    private fun setupClickListeners() {
-        // Next button - navigate to Do Mission
+    private fun setupListeners() {
         binding.btnNext.setOnClickListener {
-            val missionId = arguments?.getInt("mission_id", 0) ?: 0
-            if (missionId != 0) {
-                // Navigate manually using Bundle
-                val bundle = Bundle().apply {
-                    putInt("planting_id", missionId)
-                }
-                findNavController().navigate(
-                    R.id.action_workerDetailMission_to_workerDoMission,
-                    bundle
-                )
-            }
+            val action = WorkerDetailMissionFragmentDirections.actionWorkerDetailMissionToWorkerDoMission(args.missionId)
+            findNavController().navigate(action)
         }
 
-        // Back button - navigate back to dashboard
         binding.btnBack.setOnClickListener {
-            findNavController().navigate(R.id.action_workerDetailMission_to_workerDashboard)
+            findNavController().popBackStack()
         }
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    // The reference to progressBar has been removed as per your request.
+                    // You can manage the loading state differently, e.g., by disabling buttons.
+                    binding.btnNext.isEnabled = !state.isLoading
+                    binding.btnBack.isEnabled = !state.isLoading
+
+                    binding.tvGreeting.text = "Hi, ${state.userName.uppercase()}"
+
+                    state.selectedPlanting?.let { detail ->
+                        val firstCoral = detail.detail_coral.firstOrNull()
+                        binding.tvCoralNameTitle.text = firstCoral?.nama_coral ?: "N/A"
+                        binding.tvCoralSpecies.text = firstCoral?.jenis ?: "N/A"
+                        binding.tvOwnerName.text = detail.pembeli.nama
+                    }
+
+                    state.errorMessage?.let {
+                        showToast("Error: $it")
+                        viewModel.clearErrorMessage()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {

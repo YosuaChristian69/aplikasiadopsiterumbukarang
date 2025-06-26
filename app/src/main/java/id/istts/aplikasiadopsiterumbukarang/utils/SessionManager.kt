@@ -53,13 +53,13 @@ class SessionManager(context: Context) {
         return prefs.getString(USER_IMAGE_PATH, null)
     }
 
-    fun fetchUserBalance(): Float {
-        return prefs.getFloat(USER_BALANCE, 0.0f)
-    }
-
-    fun fetchUserJoinedAt(): String? {
-        return prefs.getString(USER_JOINED_AT, null)
-    }
+//    fun fetchUserBalance(): Float {
+//        return prefs.getFloat(USER_BALANCE, 0.0f)
+//    }
+//
+//    fun fetchUserJoinedAt(): String? {
+//        return prefs.getString(USER_JOINED_AT, null)
+//    }
 
     fun saveUserDetails(name: String, email: String, status: String) {
         editor.putString(USER_NAME, name)
