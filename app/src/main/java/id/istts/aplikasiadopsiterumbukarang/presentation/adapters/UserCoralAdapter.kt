@@ -77,23 +77,6 @@ class UserCoralAdapter(
         notifyDataSetChanged()
     }
 }
-//```
-//
-//### **How to Use This Adapter in `UserDashboardFragment.kt`**
-//
-//Now, in your `UserDashboardFragment.kt` file, you need to set up the `RecyclerView` and give it this adapter.
-//
-//1.  **Add Glide Dependency:** If you haven't already, add the Glide library to your `build.gradle.kts` file:
-//```kotlin
-//dependencies {
-//    // ... other dependencies
-//    implementation("com.github.bumptech.glide:glide:4.16.0")
-//}
-//```
-//
-//2.  **Set up the RecyclerView in your fragment:**
-//
-//```kotlin
-// Inside your UserDashboardFragment.kt
+
 
 

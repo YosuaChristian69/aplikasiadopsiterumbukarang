@@ -190,20 +190,3 @@ class UserDashboardFragment : Fragment() {
         navigateToLogin()
     }
 }
-//```
-//
-//### **Next Steps:**
-//
-//1.  **Create the ViewModel:** You'll need to create the `UserDashboardViewModel.kt` file. This class will be responsible for calling your API repository to get the user's coral collection.
-//2.  **Add Dependencies:** Make sure you have the following dependencies in your `build.gradle.kts` file for the `by viewModels()` delegate to work:
-//```kotlin
-//// In your app-level build.gradle.kts
-//dependencies {
-//    // ...
-//    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
-//    implementation("androidx.fragment:fragment-ktx:1.7.1")
-//}
-//```
-//3.  **Add a ProgressBar:** For a better user experience, add a `ProgressBar` to your `fragment_user_dashboard.xml` layout so you can show a loading indicator while the data is being fetched.
-//
-//This refactored code now correctly uses the `RecyclerView` and `Adapter` we created, providing a clean, scalable, and modern foundation for your user dashboa
