@@ -27,26 +27,37 @@ class EditProfileViewModel(private val repository: UserRepository) : ViewModel()
         _selectedImageUri.value = null
     }
 
+    // In EditProfileViewModel.kt
+
     fun editProfile(token: String, email: String?, name: String?, imageFile: File? = null) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-
-            repository.editProfile(token, email, name, imageFile)
-                .onSuccess { response ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        isSuccess = true,
-                        successMessage = response.msg,
-                        photoUpdated = response.photo_updated ?: false,
-                        updatedUser = response.user
-                    )
-                }
-                .onFailure { exception ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = exception.message ?: "Unknown error occurred"
-                    )
-                }
+            try {
+                val result = repository.editProfile(token, email, name, imageFile)
+                result
+                    .onSuccess { response ->
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            successMessage = response.msg,
+                            photoUpdated = response.photo_updated ?: false,
+                            updatedUser = response.user
+                        )
+                    }
+                    .onFailure { exception ->
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = exception.message ?: "Error tidak diketahui"
+                        )
+                    }
+            } catch (e: Exception) {
+                // Tangkap SEMUA kemungkinan error (termasuk dari mock)
+                // dan pastikan isLoading di-set ke false.
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "Terjadi error yang tidak terduga"
+                )
+            }
         }
     }
 
