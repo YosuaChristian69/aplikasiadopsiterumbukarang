@@ -77,6 +77,3 @@ class UserDashboardViewModel : ViewModel() {
         }
     }
 }
-//```
-//
-//This ViewModel is now ready to be used by the `UserDashboardFragment` in the Canvas. Your next step will be to create the `UserRepository` class, which will contain the Retrofit API service call to your backe
