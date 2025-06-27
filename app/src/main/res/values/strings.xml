@@ -124,4 +124,5 @@
     <string name="emoji_memo">📝</string>
     <string name="emoji_checkmark_button">✅</string>
     <string name="emoji_cross_button">❌</string>
+    <string name="emoji_pin">📍</string>
 </resources>

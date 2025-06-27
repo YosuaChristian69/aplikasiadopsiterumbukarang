@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import id.istts.aplikasiadopsiterumbukarang.R // Pastikan import R benar
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
+import id.istts.aplikasiadopsiterumbukarang.domain.models.Lokasi
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralAdapter
+import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.LokasiAdapter
 
 // Adapter untuk RecyclerView
 @BindingAdapter("coralListData")
@@ -51,8 +53,11 @@ fun bindStockStatusText(textView: TextView, stock: Int) {
         else -> "In Stock"
     }
 }
-
-// === BAGIAN YANG DIPERBAIKI ===
+@BindingAdapter("lokasiListData")
+fun bindLokasiRecyclerView(recyclerView: RecyclerView, data: List<Lokasi>?) {
+    val adapter = recyclerView.adapter as? LokasiAdapter
+    adapter?.submitList(data)
+}
 
 // Adapter untuk WARNA BACKGROUND indikator stok
 @BindingAdapter("stockStatusIndicatorColor")

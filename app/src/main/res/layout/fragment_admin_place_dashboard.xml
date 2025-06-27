@@ -1,326 +1,342 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
-    tools:context=".presentation.fragments.admin.AdminPlaceDashboardFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.placeDashboard.AdminPlaceDashboardViewModel" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#1a4d52"
-        android:paddingStart="24dp"
-        android:paddingTop="40dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="24dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:elevation="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_background"
+        tools:context=".presentation.fragments.admin.AdminPlaceDashboardFragment">
 
-        <!-- Welcome Text with Better Contrast -->
-        <TextView
-            android:id="@+id/greeting_text"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hi, USER"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/menuCard" />
-
-        <!-- Menu Button with Coral Theme -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/menuCard"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="#FFFFFF"
+            android:background="#1a4d52"
+            android:paddingStart="24dp"
+            android:paddingTop="40dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="24dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:elevation="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/logoutButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_logout"
-                android:contentDescription="Menu"
-                android:scaleType="center"
-                app:tint="#2a6e73" />
-        </androidx.cardview.widget.CardView>
-
-        <!-- Dashboard Title with Better Spacing -->
-        <TextView
-            android:id="@+id/title_places"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="MY PLACES"
-            android:textColor="#B8E6E1"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.08"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/greeting_text" />
-
-        <!-- Stats Section -->
-        <LinearLayout
-            android:id="@+id/statsLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@+id/title_places"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <!-- Total Places Stats -->
-            <androidx.cardview.widget.CardView
+            <!-- Welcome Text with Better Contrast -->
+            <TextView
+                android:id="@+id/greeting_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#2a6e73">
+                android:text='@{"Hi, " + viewModel.uiState.userName}'
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/menuCard" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginBottom="4dp"
-                        android:src="@drawable/ic_location_on"
-                        app:tint="#4CDDCF" />
-
-                    <TextView
-                        android:id="@+id/totalPlacesCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="8"
-                        android:textColor="#FFFFFF"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Total Places"
-                        android:textColor="#B8E6E1"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Active Places -->
+            <!-- Menu Button with Coral Theme -->
             <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#4CDDCF">
+                android:id="@+id/menuCard"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
+                <ImageButton
+                    android:id="@+id/logoutButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_business"
-                        app:tint="#1a4d52"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:id="@+id/activePlacesCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="6"
-                        android:textColor="#1a4d52"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Active Places"
-                        android:textColor="#1a4d52"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_logout"
+                    android:contentDescription="Menu"
+                    android:onClick="@{() -> viewModel.onLogoutClicked()}"
+                    android:scaleType="center"
+                    app:tint="#2a6e73" />
             </androidx.cardview.widget.CardView>
 
-        </LinearLayout>
+            <!-- Dashboard Title with Better Spacing -->
+            <TextView
+                android:id="@+id/title_places"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="MY PLACES"
+                android:textColor="#B8E6E1"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.08"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/greeting_text" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Content Area with Coral Background -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#E8F5F3"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Search Bar -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/searchCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#FFFFFF"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
+            <!-- Stats Section -->
             <LinearLayout
+                android:id="@+id/statsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
-                android:padding="12dp"
-                android:gravity="center_vertical">
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/title_places"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_search"
-                    app:tint="#2a6e73"
-                    android:layout_marginStart="8dp" />
-
-                <EditText
-                    android:id="@+id/searchEditText"
+                <!-- Total Places Stats -->
+                <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="12dp"
-                    android:background="@null"
-                    android:hint="Search places..."
-                    android:textColorHint="#7B8794"
-                    android:textColor="#2a6e73"
-                    android:textSize="16sp"
-                    android:maxLines="1"
-                    android:imeOptions="actionSearch" />
+                    android:layout_marginEnd="6dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#2a6e73">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginBottom="4dp"
+                            android:src="@drawable/ic_location_on"
+                            app:tint="#4CDDCF" />
+
+                        <TextView
+                            android:id="@+id/totalPlacesCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{String.valueOf(viewModel.uiState.totalPlacesCount)}"
+                            android:textColor="#FFFFFF"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Places"
+                            android:textColor="#B8E6E1"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Active Places -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#4CDDCF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_business"
+                            app:tint="#1a4d52"
+                            android:layout_marginBottom="4dp" />
+
+                        <TextView
+                            android:id="@+id/activePlacesCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{String.valueOf(viewModel.uiState.activePlacesCount)}"
+                            android:textColor="#1a4d52"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Active Places"
+                            android:textColor="#1a4d52"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <!-- RecyclerView with Better Styling -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_places"
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Content Area with Coral Background -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:clipToPadding="false"
-            android:paddingBottom="120dp"
-            android:scrollbars="none"
-            android:overScrollMode="never"
-            android:layoutAnimation="@anim/layout_animation_slide_up"
-            app:layout_constraintTop_toBottomOf="@+id/searchCard"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:listitem="@layout/item_place_card" />
-
-        <!-- Empty State Message -->
-        <LinearLayout
-            android:id="@+id/emptyStateLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@+id/recycler_view_places"
-            app:layout_constraintBottom_toBottomOf="@+id/recycler_view_places"
+            android:background="#E8F5F3"
+            app:layout_constraintTop_toBottomOf="@+id/headerLayout"
+            app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
+            <!-- Search Bar -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/searchCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="#2a6e73"
+                        android:layout_marginStart="8dp" />
+
+                    <EditText
+                        android:id="@+id/searchEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:background="@null"
+                        android:hint="Search places..."
+                        android:textColorHint="#7B8794"
+                        android:textColor="#2a6e73"
+                        android:textSize="16sp"
+                        android:maxLines="1"
+                        android:imeOptions="actionSearch" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- RecyclerView with Better Styling -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_places"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:paddingBottom="120dp"
+                android:visibility="@{!viewModel.uiState.isLoading &amp;&amp; !viewModel.uiState.displayedLokasi.empty ? View.VISIBLE : View.GONE}"
+                app:lokasiListData="@{viewModel.uiState.displayedLokasi}"
+                android:scrollbars="none"
+                android:overScrollMode="never"
+                android:layoutAnimation="@anim/layout_animation_slide_up"
+                app:layout_constraintTop_toBottomOf="@+id/searchCard"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:listitem="@layout/item_place_card" />
+
+            <!-- Empty State Message -->
+            <LinearLayout
+                android:id="@+id/emptyStateLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📍"
-                android:textSize="48sp"
-                android:layout_marginBottom="16dp" />
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="@{!viewModel.uiState.isLoading &amp;&amp; viewModel.uiState.displayedLokasi.empty ? View.VISIBLE : View.GONE}"
+                app:layout_constraintTop_toTopOf="@+id/recycler_view_places"
+                app:layout_constraintBottom_toBottomOf="@+id/recycler_view_places"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="No places added yet"
-                android:textColor="#7B8794"
-                android:textSize="16sp"
-                android:layout_marginBottom="8dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/emoji_pin"
+                    android:textSize="48sp"
+                    android:layout_marginBottom="16dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tap + to add your first place"
-                android:textColor="#B0BEC5"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No places added yet"
+                    android:textColor="#7B8794"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp" />
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tap + to add your first place"
+                    android:onClick="@{() -> viewModel.onAddPlaceClicked()}"
+                    android:textColor="#B0BEC5"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Enhanced Floating Action Button -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="100dp"
+            android:src="@drawable/ic_add"
+            android:contentDescription="Add New Place"
+            android:onClick="@{() -> viewModel.onAddPlaceClicked()}"
+            app:backgroundTint="#4CDDCF"
+            app:tint="#1a4d52"
+            app:elevation="12dp"
+            app:pressedTranslationZ="16dp"
+            app:rippleColor="#1a4d52"
+            app:borderWidth="0dp"
+            app:fabSize="normal"
+            app:maxImageSize="28dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Coral Themed Bottom Navigation -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#4CDDCF"
+            android:elevation="16dp"
+            app:itemIconTint="@color/bottom_nav_color"
+            app:itemTextColor="@color/bottom_nav_color"
+            app:itemRippleColor="#1a4d52"
+            app:menu="@menu/admin_bottom_nav_menu"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Enhanced Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_place"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="100dp"
-        android:src="@drawable/ic_add"
-        android:contentDescription="Add New Place"
-        app:backgroundTint="#4CDDCF"
-        app:tint="#1a4d52"
-        app:elevation="12dp"
-        app:pressedTranslationZ="16dp"
-        app:rippleColor="#1a4d52"
-        app:borderWidth="0dp"
-        app:fabSize="normal"
-        app:maxImageSize="28dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Coral Themed Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#4CDDCF"
-        android:elevation="16dp"
-        app:itemIconTint="@color/bottom_nav_color"
-        app:itemTextColor="@color/bottom_nav_color"
-        app:itemRippleColor="#1a4d52"
-        app:menu="@menu/admin_bottom_nav_menu"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

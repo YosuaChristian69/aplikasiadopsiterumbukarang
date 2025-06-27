@@ -1,7 +1,10 @@
 package id.istts.aplikasiadopsiterumbukarang.domain.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Lokasi(
     @SerializedName("id_lokasi")
     val idLokasi: Int,
@@ -23,4 +26,4 @@ data class Lokasi(
 
     @SerializedName("terumbu_karangs")
     val corals: List<Coral>? = null
-)
+): Parcelable
