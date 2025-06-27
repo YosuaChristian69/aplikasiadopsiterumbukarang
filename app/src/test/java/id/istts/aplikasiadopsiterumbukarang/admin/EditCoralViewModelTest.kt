@@ -32,7 +32,6 @@ class EditCoralViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-
         mockRepository = mock()
         viewModel = EditCoralViewModel(mockRepository)
     }
@@ -55,6 +54,21 @@ class EditCoralViewModelTest {
         is_deleted = false,
         public_id = "test_public_id_123"
     )
+
+    // --- Tes untuk setInitialCoralData (Pengganti fetchCoralData) ---
+
+    @Test
+    fun `setInitialCoralData - SUKSES akan mengisi LiveData coral`() {
+        // Aksi: Panggil fungsi baru untuk mengisi data awal
+        viewModel.setInitialCoralData(fakeCoral)
+
+        // Verifikasi: Pastikan LiveData coral berisi data yang benar
+        val coralValue = viewModel.coral.value
+        assertEquals(fakeCoral, coralValue)
+    }
+
+
+    // --- Tes untuk validasi (Tidak ada perubahan, sudah benar) ---
 
     @Test
     fun `validateFields - SUKSES jika semua input valid`() {
@@ -97,31 +111,8 @@ class EditCoralViewModelTest {
         assertEquals("Price must be a valid number", errors["price"])
     }
 
-    @Test
-    fun `fetchCoralData - SUKSES akan mengisi LiveData coral`() = runTest {
-        whenever(mockRepository.getSingleCoral(fakeCoralId, fakeToken))
-            .thenReturn(Result.success(fakeCoral))
 
-        viewModel.fetchCoralData(fakeCoralId, fakeToken)
-
-        verify(mockRepository).getSingleCoral(fakeCoralId, fakeToken)
-        assertEquals(fakeCoral, viewModel.coral.value)
-        assertNull(viewModel.errorMessage.value)
-        assertFalse(viewModel.isLoading.value ?: true)
-    }
-
-    @Test
-    fun `fetchCoralData - GAGAL akan mengisi LiveData errorMessage`() = runTest {
-        val errorMessage = "Coral not found"
-        whenever(mockRepository.getSingleCoral(any(), any()))
-            .thenReturn(Result.failure(Exception(errorMessage)))
-
-        viewModel.fetchCoralData(fakeCoralId, fakeToken)
-
-        assertEquals(errorMessage, viewModel.errorMessage.value)
-        assertNull(viewModel.coral.value)
-        assertFalse(viewModel.isLoading.value ?: true)
-    }
+    // --- Tes untuk updateCoral (Tidak ada perubahan, sudah benar) ---
 
     @Test
     fun `updateCoral - SUKSES akan set updateSuccess menjadi true`() = runTest {
@@ -129,8 +120,10 @@ class EditCoralViewModelTest {
         whenever(mockRepository.editCoral(fakeCoralId, fakeToken, editRequest))
             .thenReturn(Result.success("Coral updated successfully"))
 
+        // Panggil fungsi update
         viewModel.updateCoral(fakeCoralId, fakeToken, editRequest)
 
+        // Verifikasi
         verify(mockRepository).editCoral(fakeCoralId, fakeToken, editRequest)
         assertTrue(viewModel.updateSuccess.value ?: false)
         assertNull(viewModel.errorMessage.value)
@@ -143,9 +136,16 @@ class EditCoralViewModelTest {
         val editRequest = EditCoralRequest("Nama Baru", "Jenis Baru", 120000, 15, "Deskripsi baru")
         whenever(mockRepository.editCoral(any(), any(), any()))
             .thenReturn(Result.failure(Exception(errorMessage)))
+
+        // Panggil fungsi update
         viewModel.updateCoral(fakeCoralId, fakeToken, editRequest)
+
+        // Verifikasi
         assertEquals(errorMessage, viewModel.errorMessage.value)
         assertNull(viewModel.updateSuccess.value)
         assertFalse(viewModel.isLoading.value ?: true)
     }
+
+    // CATATAN: Tes `fetchCoralData - GAGAL` dihapus karena sudah tidak relevan.
+    // ViewModel tidak lagi melakukan fetch, jadi tidak ada skenario kegagalan fetch di dalam ViewModel.
 }

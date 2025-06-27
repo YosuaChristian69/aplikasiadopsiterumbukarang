@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import id.istts.aplikasiadopsiterumbukarang.databinding.ItemPlaceCardBinding
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Lokasi
 
-// Adapter sekarang hanya menerima ClickListener
 class LokasiAdapter(private val listener: LokasiClickListener) :
     ListAdapter<Lokasi, LokasiAdapter.LokasiViewHolder>(LokasiDiffCallback()) {
 

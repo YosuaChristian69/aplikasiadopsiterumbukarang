@@ -124,7 +124,7 @@ class AdminDashboardViewModelTest {
         whenever(mockCoralRepository.getCoralList(any())).thenReturn(Result.success(refreshedList))
 
         // WHEN: Panggil fungsi delete
-        viewModel.onCoralDeleteClick(coralToDelete, 0) // Pilih coral untuk dihapus
+        viewModel.onCoralDeleteClick(coralToDelete) // Pilih coral untuk dihapus
         viewModel.confirmDeleteCoral()
 
         // THEN:
@@ -144,7 +144,7 @@ class AdminDashboardViewModelTest {
         whenever(mockCoralRepository.deleteCoral(any(), any())).thenReturn(Result.failure(Exception(errorMessage)))
 
         // WHEN: Panggil fungsi delete
-        viewModel.onCoralDeleteClick(coralToDelete, 0)
+        viewModel.onCoralDeleteClick(coralToDelete)
         viewModel.confirmDeleteCoral()
 
         // THEN:
