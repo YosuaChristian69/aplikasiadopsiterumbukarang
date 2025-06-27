@@ -1,7 +1,21 @@
 package id.istts.aplikasiadopsiterumbukarang.domain.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+//data class Coral(
+//    val id_tk: Int,
+//    val tk_name: String,
+//    val tk_jenis: String,
+//    val harga_tk: Int,
+//    val stok_tersedia: Int,
+//    val description: String,
+//    val is_deleted: Boolean,
+//    val img_path: String?,
+//    val public_id: String?
+//)
+@Parcelize // <-- TAMBAHKAN ANOTASI INI
 data class Coral(
     val id_tk: Int,
     val tk_name: String,
@@ -12,7 +26,7 @@ data class Coral(
     val is_deleted: Boolean,
     val img_path: String?,
     val public_id: String?
-)
+) : Parcelable
 //data class Coral(
 //    @SerializedName("id_tk")
 //    val id_tk: Int,

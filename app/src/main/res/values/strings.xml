@@ -115,4 +115,13 @@
 
 
     <string name="google_maps_key">AIzaSyAFM3pv_vc91MHK2GjFsb7_dIZtXn24H4o</string>
+    <string name="emoji_coral_branch">🪸</string>
+    <string name="emoji_fish">🐠</string>
+    <string name="emoji_tag">🏷️</string>
+    <string name="emoji_dna">🧬</string>
+    <string name="emoji_money_bag">💰</string>
+    <string name="emoji_package">📦</string>
+    <string name="emoji_memo">📝</string>
+    <string name="emoji_checkmark_button">✅</string>
+    <string name="emoji_cross_button">❌</string>
 </resources>

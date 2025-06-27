@@ -1,304 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardContainer"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:layout_marginStart="4dp"
-    android:layout_marginEnd="4dp"
-    android:foreground="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
-    android:longClickable="true"
-    app:cardBackgroundColor="#FFFFFF"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="8dp"
-    app:cardMaxElevation="12dp"
-    app:cardUseCompatPadding="true">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+        <variable
+            name="coral"
+            type="id.istts.aplikasiadopsiterumbukarang.domain.models.Coral" />
+        <variable
+            name="listener"
+            type="id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralClickListener" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:longClickable="true"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:cardMaxElevation="12dp"
+        app:cardUseCompatPadding="true">
 
-        <!-- Menu Icon (Three Dots) - Top Right -->
-        <!-- Replace ImageView with a more visible button -->
-        <Button
-            android:id="@+id/btnDetails"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:text="Details"
-            android:textColor="#2a6e73"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:backgroundTint="#E8F5F3"
-            android:padding="8dp"
-            android:fontFamily="sans-serif-medium"
-            android:contentDescription="View Coral Details"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:backgroundTint="?attr/colorPrimary"
-            app:tint="#FFFFFF"/>
-
-        <!-- Coral Image Container with Coral Theme -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/imageContainer"
-            android:layout_width="0dp"
-            android:layout_height="140dp"
-            android:layout_marginTop="8dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#E8F5F3"
-            app:layout_constraintTop_toBottomOf="@+id/btnDetails"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <!-- Coral Themed Gradient Overlay -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/gradient_background"
-                android:alpha="0.1" />
-
-            <!-- Coral Image -->
-            <ImageView
-                android:id="@+id/ivCoralImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_coral_logo"
-                android:contentDescription="Coral Image" />
-
-            <!-- Stock Status Indicator with Coral Colors -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/stockIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|end"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#4CDDCF">
-
-                <TextView
-                    android:id="@+id/tvStockStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="In Stock"
-                    android:textColor="#1a4d52"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp" />
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- Content Section -->
-        <LinearLayout
-            android:id="@+id/contentLayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/imageContainer"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:padding="16dp">
 
-            <!-- Coral Name with Theme Colors -->
-            <TextView
-                android:id="@+id/tvCoralName"
+            <Button
+                android:id="@+id/btnDetails"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Blue Coral"
-                android:textColor="#1a4d52"
-                android:textSize="18sp"
+                android:layout_height="36dp"
+                android:text="Details"
+                android:textColor="#2a6e73"
                 android:textStyle="bold"
+                android:textSize="12sp"
+                android:backgroundTint="#E8F5F3"
+                android:padding="8dp"
                 android:fontFamily="sans-serif-medium"
-                android:layout_marginBottom="4dp"
-                android:maxLines="2"
-                android:ellipsize="end" />
+                android:contentDescription="View Coral Details"
+                android:onClick="@{() -> listener.onItemClick(coral)}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Coral Type with Coral Theme Icon -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+            <androidx.cardview.widget.CardView
+                android:id="@+id/imageContainer"
+                android:layout_width="0dp"
+                android:layout_height="140dp"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#E8F5F3"
+                app:layout_constraintTop_toBottomOf="@+id/btnDetails"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <View
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:background="@drawable/circle_shape"
-                    android:backgroundTint="#4CDDCF"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/gradient_background"
+                    android:alpha="0.1" />
 
-                <TextView
-                    android:id="@+id/tvCoralType"
+                <ImageView
+                    android:id="@+id/ivCoralImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:coralImage="@{coral.img_path}"
+                    tools:src="@drawable/ic_coral_logo"
+                    android:contentDescription="Coral Image" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/stockIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hard Coral"
-                    android:textColor="#2a6e73"
-                    android:textSize="14sp"
-                    android:fontFamily="sans-serif"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    app:stockStatusIndicatorColor="@{coral.stok_tersedia}"
+                    tools:cardBackgroundColor="#4CDDCF">
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvStockStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        app:stockStatusText="@{coral.stok_tersedia}"
+                        app:stockStatusTextColor="@{coral.stok_tersedia}"
+                        tools:text="In Stock"
+                        tools:textColor="#1a4d52" />
+                </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
-            <!-- Price and Stock Information with Coral Background -->
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
+                android:id="@+id/contentLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_background"
-                android:backgroundTint="#E8F5F3"
-                android:padding="12dp"
-                android:layout_marginTop="8dp">
-
-                <!-- Price Section with Coral Theme -->
-                <LinearLayout
-                    android:id="@+id/priceLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Price"
-                        android:textColor="#2a6e73"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:id="@+id/tvCoralPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rp 150,000"
-                        android:textColor="#1a4d52"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-medium" />
-
-                </LinearLayout>
-
-                <!-- Stock Section with Coral Theme -->
-                <LinearLayout
-                    android:id="@+id/stockLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="end"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Available"
-                        android:textColor="#2a6e73"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:id="@+id/tvCoralStock"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="10 units"
-                        android:textColor="#4CDDCF"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:fontFamily="sans-serif-medium" />
-
-                </LinearLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
-
-        <!-- Quick Action Buttons (Initially Hidden) -->
-        <LinearLayout
-            android:id="@+id/quickActionsLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp"
-            android:gravity="end"
-            android:visibility="gone"
-            android:alpha="0"
-            app:layout_constraintTop_toBottomOf="@+id/contentLayout"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <!-- Edit Button with Coral Theme -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btnEditCard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#2a6e73">
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/imageContainer"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
-                    android:id="@+id/btnEdit"
+                    android:id="@+id/tvCoralName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Edit"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
+                    android:text="@{coral.tk_name}"
+                    android:textColor="#1a4d52"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-medium"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true" />
+                    android:layout_marginBottom="4dp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    tools:text="Blue Coral" />
 
-            </androidx.cardview.widget.CardView>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
 
-            <!-- Delete Button with Warning Color -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btnDeleteCard"
-                android:layout_width="wrap_content"
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:background="@drawable/circle_shape"
+                        android:backgroundTint="#4CDDCF"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvCoralType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{coral.tk_jenis}"
+                        android:textColor="#2a6e73"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        tools:text="Hard Coral" />
+                </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_background"
+                    android:backgroundTint="#E8F5F3"
+                    android:padding="12dp"
+                    android:layout_marginTop="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/priceLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Price"
+                            android:textColor="#2a6e73"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:id="@+id/tvCoralPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:coralPrice="@{coral.harga_tk}"
+                            android:textColor="#1a4d52"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            tools:text="Rp 150,000" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/stockLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="end"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Available"
+                            android:textColor="#2a6e73"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:id="@+id/tvCoralStock"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:coralStock="@{coral.stok_tersedia}"
+                            android:textColor="#4CDDCF"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            tools:text="10 units" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quickActionsLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#E74C3C">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="end"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:alpha="0"
+                app:layout_constraintTop_toBottomOf="@+id/contentLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <TextView
-                    android:id="@+id/btnDelete"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnEditCard"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Delete"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true" />
+                    android:layout_marginEnd="8dp"
+                    android:onClick="@{() -> listener.onEditClick(coral)}"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#2a6e73">
+                    <TextView
+                        android:id="@+id/btnEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Edit"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="false"
+                        android:focusable="false" />
+                </androidx.cardview.widget.CardView>
 
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnDeleteCard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> listener.onDeleteClick(coral)}"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#E74C3C">
+                    <TextView
+                        android:id="@+id/btnDelete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delete"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="false"
+                        android:focusable="false" />
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>
