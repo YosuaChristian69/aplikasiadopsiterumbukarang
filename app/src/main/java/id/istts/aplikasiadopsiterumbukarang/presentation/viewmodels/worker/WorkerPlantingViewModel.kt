@@ -12,9 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import android.util.Log
+import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.IWorkerPlantingRepository
 
 class WorkerPlantingViewModel(
-    private val repository: WorkerPlantingRepository,
+    private val repository: IWorkerPlantingRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 

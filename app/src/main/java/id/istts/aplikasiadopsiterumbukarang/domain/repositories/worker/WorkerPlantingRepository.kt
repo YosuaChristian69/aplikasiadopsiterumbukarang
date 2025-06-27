@@ -12,9 +12,9 @@ import kotlinx.coroutines.withContext
 class WorkerPlantingRepository(
     private val apiService: ApiService,
     private val sharedPreferences: SharedPreferences
-) {
+):IWorkerPlantingRepository {
 
-    suspend fun getPendingPlantings(token: String): Result<PendingPlantingResponse> = withContext(Dispatchers.IO) {
+    override suspend fun getPendingPlantings(token: String): Result<PendingPlantingResponse> = withContext(Dispatchers.IO) {
         runCatching {
             val response = apiService.getPendingPlantings("$token")
             if (response.isSuccessful && response.body() != null) {
@@ -32,7 +32,7 @@ class WorkerPlantingRepository(
         }
     }
 
-    suspend fun getPlantingDetails(token: String, id: Int): Result<PlantingDetailResponse> = withContext(Dispatchers.IO) {
+    override suspend fun getPlantingDetails(token: String, id: Int): Result<PlantingDetailResponse> = withContext(Dispatchers.IO) {
         runCatching {
             val response = apiService.getPlantingDetails("$token", id)
             if (response.isSuccessful && response.body() != null) {
@@ -52,7 +52,7 @@ class WorkerPlantingRepository(
 
     // CORRECTED: The signature of this function now matches what the ViewModel is calling.
     // It no longer takes a File and prepares a simple JSON request body.
-    suspend fun finishPlanting(id: Int, workerId: Int, token: String): Result<FinishPlantingResponse> = withContext(Dispatchers.IO) {
+    override suspend fun finishPlanting(id: Int, workerId: Int, token: String): Result<FinishPlantingResponse> = withContext(Dispatchers.IO) {
         runCatching {
             val requestBody = FinishPlantingRequest(workerId = workerId)
             val response = apiService.finishPlanting(
