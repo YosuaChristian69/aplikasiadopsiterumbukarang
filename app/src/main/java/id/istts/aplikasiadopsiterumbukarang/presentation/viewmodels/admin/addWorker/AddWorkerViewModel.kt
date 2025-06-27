@@ -34,12 +34,12 @@ class AddWorkerViewModel(
                 } else {
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = try {
-                        val errorJson = JsonParser.parseString(errorBody)
-                        errorJson.asJsonObject.get("msg").asString
+//                        val errorJson = JsonParser.parseString(errorBody)
+//                        errorJson.asJsonObject.get("msg").asString
                     } catch (e: Exception) {
                         "Failed to add worker. Please try again."
                     }
-                    _addWorkerResult.value = Result.failure(Exception(errorMessage))
+//                    _addWorkerResult.value = Result.failure(Exception(errorMessage))
                 }
             } catch (e: Exception) {
                 _addWorkerResult.value = Result.failure(e)

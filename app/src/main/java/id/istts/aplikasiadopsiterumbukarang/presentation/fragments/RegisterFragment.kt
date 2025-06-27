@@ -30,7 +30,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.gms.safetynet.SafetyNet
+//import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import id.istts.aplikasiadopsiterumbukarang.R

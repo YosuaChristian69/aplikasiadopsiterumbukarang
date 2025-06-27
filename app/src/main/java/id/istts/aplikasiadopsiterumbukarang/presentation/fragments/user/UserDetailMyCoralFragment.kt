@@ -24,19 +24,29 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.domain.models.CoralDetailResponse
+import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.UserRepository
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.user.UserCoralDetailViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.user.UserCoralDetailViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class UserDetailMyCoralFragment : Fragment(), OnMapReadyCallback {
-    private val viewModel: UserCoralDetailViewModel by viewModels()
+    private val viewModel: UserCoralDetailViewModel by viewModels {
+        val apiService = RetrofitClient.instance
+        // Instantiate your repository (ideally through dependency injection)
+        val repository = UserRepository(apiService) // Example instantiation
+        UserCoralDetailViewModelFactory(repository)
+    }
+//    private val viewModel: UserCoralDetailViewModel by viewModels()
     private val args: UserDetailMyCoralFragmentArgs by navArgs()
     private lateinit var sessionManager: SessionManager
 
     private var googleMap: GoogleMap? = null
     private var locationLatLng: LatLng? = null
     private lateinit var mapView: MapView
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
