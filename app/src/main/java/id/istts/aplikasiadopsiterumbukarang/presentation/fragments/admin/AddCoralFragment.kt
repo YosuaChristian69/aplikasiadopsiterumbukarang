@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,8 +15,10 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
@@ -23,6 +26,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.AddCorralViewModelRepo
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.EditCorralViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addCoral.AddCoralViewModel
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addCoral.AddCoralEvent
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
@@ -30,6 +37,7 @@ import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryAdd
 
 class AddCoralFragment : Fragment() {
 
@@ -49,7 +57,8 @@ class AddCoralFragment : Fragment() {
     private lateinit var cancelButton: MaterialButton
 
     // ViewModel
-    private lateinit var viewModel: AddCoralViewModel
+    private lateinit var viewModel: AddCorralViewModelRepo
+//    private lateinit var viewModel: AddCoralViewModel
 
     // Modern Photo Picker (Android 13+) and fallback
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -109,11 +118,13 @@ class AddCoralFragment : Fragment() {
         val addCoralUseCase = AddCoralUseCase(coralRepository, fileUtils)
 
         // 2. Berikan semua dependencies tersebut ke constructor ViewModel
-        viewModel = AddCoralViewModel(
-            sessionManager = sessionManager,
-            fileUtils = fileUtils,
-            addCoralUseCase = addCoralUseCase
-        )
+//        viewModel = AddCoralViewModel(
+//            sessionManager = sessionManager,
+//            fileUtils = fileUtils,
+//            addCoralUseCase = addCoralUseCase
+//        )
+        val factory = ViewModelFactoryAdd(RepostioryCorral(), sessionManager, fileUtils, addCoralUseCase, requireContext())
+        viewModel = ViewModelProvider(this, factory).get(AddCorralViewModelRepo::class.java)
     }
 
     private fun initViews(view: View) {
@@ -160,7 +171,7 @@ class AddCoralFragment : Fragment() {
             val harga = coralhargaEditText.text.toString()
 
             if (viewModel.validateInputs(name, type, description, total, harga)) {
-                viewModel.saveCoral(name, type, description, total, harga)
+                viewModel.saveCoralRepo(name, type, description, total, harga)
             }
         }
 
@@ -250,6 +261,9 @@ class AddCoralFragment : Fragment() {
                 }
             }
             .show()
+//        val contentResolver = context?.contentResolver
+//        val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+//        contentResolver.takePersistableUriPermission(uri, takeFlags)
     }
 
     private fun checkCameraPermissionAndOpen() {

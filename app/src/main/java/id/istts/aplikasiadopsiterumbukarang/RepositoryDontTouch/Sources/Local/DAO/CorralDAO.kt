@@ -9,13 +9,13 @@ import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.En
 
 @Dao
 interface CorralDAO {
-    @Query("SELECT * FROM terumbu_karang where is_deleted = 0")
+    @Query("SELECT * FROM terumbu_karang where is_deleted = 0 order by id_tk asc")
     suspend fun getAllTerumbuKarang(): List<TerumbuKarangEntities>
 
-    @Query("SELECT * FROM terumbu_karang")
+    @Query("SELECT * FROM terumbu_karang order by id_tk asc")
     suspend fun getAllTerumbuKarangIncludingTheDeletedOnes(): List<TerumbuKarangEntities>
 
-    @Query("SELECT * FROM terumbu_karang WHERE id_tk = :id")
+    @Query("SELECT * FROM terumbu_karang WHERE id_tk = :id ")
     suspend fun getTerumbuKarangById(id: Int): TerumbuKarangEntities?
     @Insert
     suspend fun insertTerumbuKarang(terumbuKarang: TerumbuKarangEntities)

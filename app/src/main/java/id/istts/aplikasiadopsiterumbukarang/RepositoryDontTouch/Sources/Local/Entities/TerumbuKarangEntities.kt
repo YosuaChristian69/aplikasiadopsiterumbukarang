@@ -1,5 +1,6 @@
 package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.Entities
 
+import android.net.Uri
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -22,7 +23,8 @@ data class TerumbuKarangEntities(
     val public_id: String?=null,
     val is_created_locally: Boolean?=false,
     val is_updated_locally: Boolean?=false,
-    val is_deleted_locally: Boolean?=false
+    val is_deleted_locally: Boolean?=false,
+    val uri: String?=null
 ): Parcelable {
     companion object{
         fun fromCorral(corral: Coral): TerumbuKarangEntities {

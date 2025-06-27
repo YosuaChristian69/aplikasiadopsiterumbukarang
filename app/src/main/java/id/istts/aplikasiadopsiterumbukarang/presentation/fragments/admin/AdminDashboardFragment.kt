@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -42,6 +43,8 @@ import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 import kotlin.getValue
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactory
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
+import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
+
 //import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.AdminDashboardViewModelFullRepo
 
 class AdminDashboardFragment : Fragment() {
@@ -67,8 +70,9 @@ class AdminDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //uncomment bellow codes if you want to try to use repository
+        val fileUtils = FileUtils(requireContext())
         val factory = ViewModelFactory(RepostioryCorral(),CoralRepositoryImpl(/* inject your API service here */),
-            SessionManager(requireContext()))
+            SessionManager(requireContext()),fileUtils, requireContext())
         viewModel = ViewModelProvider(this, factory).get(AdminDashboardViewModelFullRepo::class.java)
 
         // Initialize ViewModel AND comment this if you want to use repository

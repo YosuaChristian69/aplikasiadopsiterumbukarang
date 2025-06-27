@@ -1,18 +1,54 @@
 package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories
 
+import android.content.Context
+import android.net.Uri
+import androidx.core.content.FileProvider
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Application.Applicatione
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.Entities.TerumbuKarangEntities
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
+import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
+import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
+import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
 
 class RepostioryCorral() {
     var local = Applicatione.db
     var remote = RetrofitClient.instance
 
-    suspend fun getAllTerumbuKarangHybridly(token: String):List<Coral>{
+    suspend fun copyImageToInternalStorage(context: Context, uri: Uri): File? = withContext(Dispatchers.IO) {
+        try {
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext null
+            val mimeType = context.contentResolver.getType(uri)
+            val extension = when (mimeType) {
+                "image/png" -> ".png"
+                "image/jpeg" -> ".jpeg"
+                "image/jpg" -> ".jpg"
+                else -> ".img"
+            }
+            val fileName = "img_${System.currentTimeMillis()}.${extension}"
+            val targetFile = File(context.filesDir, fileName)
+
+            inputStream.use { input ->
+                FileOutputStream(targetFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            targetFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+    suspend fun getAllTerumbuKarangHybridly(token: String,fileUtils: FileUtils?=null,context: Context?=null):List<Coral>{
         try {
             var rawdata = remote.getTerumbuKarang(token)
             if(!rawdata.isSuccessful){
@@ -21,8 +57,7 @@ class RepostioryCorral() {
             var body = rawdata.body()
             var data = body?.data
             if (data == null){data = listOf()}
-//            syncFromRemote(token)
-            var synchronized_data = syncWithRemote(token)
+            var synchronized_data = syncWithRemote(token =  token, fileUtils =  fileUtils, context = context)
             println("take data from remote")
             return synchronized_data
         }catch (e: Exception){
@@ -86,11 +121,61 @@ class RepostioryCorral() {
             return "Update Success"
         }
     }
-    suspend fun syncWithRemote(token:String):List<Coral>{
+
+    suspend fun insertHybridly(token: String,
+                                           name: String,
+                                           type: String,
+                                           description: String,
+                                           total: Int,
+                                           harga: Int,
+                                           uri: Uri,
+                                           fileUtils: FileUtils,
+                                context: Context?=null):String{
+        try {
+            var AddCoralUC = AddCoralUseCase(CoralRepositoryImpl(), fileUtils)
+            var params = AddCoralUseCase.AddCoralParams(
+                token = token,
+                name = name.trim(),
+                jenis = type.trim(),
+                harga = harga.toString().trim(),
+                stok = total.toString().trim(),
+                description = description.trim(),
+                imageUri = uri
+            )
+            var result = AddCoralUC.execute(params)
+            result.onSuccess {
+                return "success remotely"
+            }
+            result.onFailure {
+                var idTk = local.CorralDAO().getAllTerumbuKarang()
+                var id = idTk.last().id_tk+1
+                var path = ""
+                if (context!=null){
+                    val safeFile = copyImageToInternalStorage(context, uri)
+                    path = FileProvider.getUriForFile(context, "${context.packageName}.provider", safeFile).toString()
+                }
+                val data = TerumbuKarangEntities(id_tk = id,tk_name = name, tk_jenis = type, harga_tk = harga, stok_tersedia = total, description = description, is_created_locally = true, is_deleted = false, img_path = path)
+//                val data = TerumbuKarangEntities(id_tk = id,tk_name = name, tk_jenis = type, harga_tk = harga, stok_tersedia = total, description = description, is_created_locally = true, is_deleted = false, img_path = uri.toString())
+                local.CorralDAO().insertTerumbuKarang(data)
+                return "inserted locally"
+            }
+            return "success remotely"
+        }catch (e: Exception){
+            var idTk = local.CorralDAO().getAllTerumbuKarangIncludingTheDeletedOnes()
+            var id = idTk.last().id_tk+1
+            val data = TerumbuKarangEntities(id_tk = id,tk_name = name, tk_jenis = type, harga_tk = harga, stok_tersedia = total, description = description, is_created_locally = true, is_deleted = false, img_path = uri.toString())
+            local.CorralDAO().insertTerumbuKarang(data)
+            return "inserted locally"
+        }
+    }
+
+    suspend fun syncWithRemote(token:String,fileUtils: FileUtils?=null, context: Context?=null):List<Coral>{
         var retainDelete = false
         var retainUpdate = false
         var retainCreate = false
         var copyData: MutableList<Coral> = mutableListOf()
+        var copyInsertData: MutableList<TerumbuKarangEntities> = mutableListOf()
+        var MSrepo = CoralRepositoryImpl()
 
         var Rawdata = remote.getTerumbuKarang(token)
         if(!Rawdata.isSuccessful){
@@ -107,12 +192,35 @@ class RepostioryCorral() {
             println("localdata not empty")
         }
         if(!localData.isEmpty()){
-            println("Ahaa")
-            println("Ahaa")
-            println("Ahaa")
             localData.forEach {
                 if(it.is_created_locally == true){
-//                    remote.addTerumbuKarang(token, Response<it.tk_name>, it.tk_jenis, it.harga_tk, it.stok_tersedia, it.description, null)
+                    val executedCodes = AddCoralUseCase.AddCoralParams(
+                        token = token,
+                        name = it.tk_name.trim(),
+                        jenis = it.tk_jenis.trim(),
+                        harga = it.harga_tk.toString().trim(),
+                        stok = it.stok_tersedia.toString().trim(),
+                        description = it.description.trim(),
+                        imageUri = Uri.parse(it.img_path)
+//                        imageUri = File(it.img_path)
+                    )
+                    if(fileUtils!=null && context!=null){
+                        val result = AddCoralUseCase(MSrepo, fileUtils).execute(executedCodes)
+                        result.onSuccess { success ->
+//                            context.contentResolver?.delete(Uri.parse(it.img_path), null, null)
+                            println("deleted inserted tk : "+it.id_tk)
+                            local.CorralDAO().deleteTerumbuKarang(it)
+                        }
+                        result.onFailure { fail ->
+                            retainCreate = true
+                            copyInsertData.add(it)
+                            local.CorralDAO().deleteTerumbuKarang(it)
+                        }
+                    }else{
+                        retainCreate = true
+                        copyInsertData.add(it)
+                        local.CorralDAO().deleteTerumbuKarang(it)
+                    }
                 }
                 if(it.is_updated_locally == true){
                     var updateResult = remote.editTerumbuKarang(it.id_tk, token, editRequest = EditCoralRequest(it.tk_name, it.tk_jenis, it.harga_tk, it.stok_tersedia, it.description))
@@ -137,16 +245,48 @@ class RepostioryCorral() {
 
         var refetchedData = refetchData(token)
         if(retainDelete==false && retainUpdate==false && retainCreate==false){
-//            local.CorralDAO().deleteAllTerumbuKarang()
-            refetchedData.forEach {
-                local.CorralDAO().insertTerumbuKarang(TerumbuKarangEntities.fromCorral(it))
+            local.CorralDAO().deleteAllTerumbuKarang()
+            try {
+                var a = local.CorralDAO().getAllTerumbuKarangIncludingTheDeletedOnes()
+                a.forEach {
+                    println("a id : "+it.id_tk)
+                }
+                var refetch_id = 0
+                refetchedData.forEach {
+                    println("refetched id : "+it.id_tk)
+                    if(refetch_id!=it.id_tk){
+                        refetch_id = it.id_tk
+                        local.CorralDAO().insertTerumbuKarang(TerumbuKarangEntities.fromCorral(it))
+                    }
+                }
+            }catch (e: Exception){
+                println("retain false error:"+e.message)
+                println("Ahaa the error is in retain false")
+                println("Ahaa the error is in retain false")
+//                refetchedData.forEach {
+//                    local.CorralDAO().insertTerumbuKarang(TerumbuKarangEntities.fromCorral(it))
+//                }
             }
+
             return refetchedData
         }else{
 //            local.CorralDAO().deleteAllTerumbuKarang()
-            refetchedData.forEach {
-                if(!copyData.any { a -> a.id_tk == it.id_tk }){
-                    local.CorralDAO().insertTerumbuKarang(TerumbuKarangEntities.fromCorral(it))
+            try {
+                refetchedData.forEach {
+                    if(!copyData.any { a -> a.id_tk == it.id_tk}){
+                        local.CorralDAO().insertTerumbuKarang(TerumbuKarangEntities.fromCorral(it))
+                    }
+                }
+            }catch (e: Exception){
+                println("Ahaa the error is in inserting retain update delete")
+                println("Ahaa the error is in inserting retain update delete")
+            }
+
+            if(copyInsertData.isNotEmpty()){
+                copyInsertData.forEach {
+                    var idTk = local.CorralDAO().getAllTerumbuKarangIncludingTheDeletedOnes()
+                    var id = idTk.last().id_tk+1
+                    local.CorralDAO().insertTerumbuKarang(it.copy(id_tk = id))
                 }
             }
             return local.CorralDAO().getAllTerumbuKarang().map { it.toCorral() }

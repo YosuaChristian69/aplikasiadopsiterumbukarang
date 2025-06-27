@@ -1,18 +1,20 @@
 package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardUiState
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
+import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral,private val coralRepository: CoralRepository, private val sessionManager: SessionManager):
+class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral,private val coralRepository: CoralRepository, private val sessionManager: SessionManager, val fileUtils: FileUtils?=null,val context: Context?=null):
     ViewModel() {
 
     private val _uiState = MutableStateFlow(AdminDashboardUiState())
@@ -84,7 +86,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral,p
             try {
                 val authToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
                 val tokenfix = authToken.replace("Bearer ", "", ignoreCase = true)
-                val result = repository.getAllTerumbuKarangHybridly(tokenfix)
+                val result = repository.getAllTerumbuKarangHybridly(tokenfix,fileUtils,context)
 
                 val totalCorals = result.size
                 val lowStockCount = result.count { it.stok_tersedia < 10 }
