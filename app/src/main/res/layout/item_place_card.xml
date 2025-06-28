@@ -238,15 +238,14 @@
                                 android:foreground="?attr/selectableItemBackgroundBorderless"
                                 app:cardBackgroundColor="#4CDDCF"
                                 app:cardCornerRadius="16dp"
-                                app:cardElevation="3dp">
-
-                                <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:layout_gravity="center"
-                                    android:contentDescription="View on Maps"
-                                    android:src="@drawable/ic_map"
-                                    app:tint="#1a4d52" />
+                                app:cardElevation="3dp"
+                                android:onClick="@{() -> listener.onMapsClick(lokasi)}"> <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="View on Maps"
+                                android:src="@drawable/ic_map"
+                                app:tint="#1a4d52" />
                             </androidx.cardview.widget.CardView>
                         </LinearLayout>
 

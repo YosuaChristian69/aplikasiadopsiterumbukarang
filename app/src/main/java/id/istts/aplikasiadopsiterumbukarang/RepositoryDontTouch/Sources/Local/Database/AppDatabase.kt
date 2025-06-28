@@ -13,7 +13,7 @@ import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.En
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.Entities.WorkerEntities
 //import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.TypeConverter.DateConverter
 
-@Database(entities = [TerumbuKarangEntities::class, LokasiEntities::class, WorkerEntities::class], version = 1)
+@Database(entities = [TerumbuKarangEntities::class, LokasiEntities::class, WorkerEntities::class], version = 2)
 //@TypeConverters(DateConverter::class)
 
 abstract class AppDatabase: RoomDatabase() {

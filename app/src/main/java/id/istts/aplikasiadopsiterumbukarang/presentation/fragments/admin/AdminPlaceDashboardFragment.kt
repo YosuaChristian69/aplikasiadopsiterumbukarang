@@ -1,5 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAdminPlaceDashboardBinding
+import id.istts.aplikasiadopsiterumbukarang.domain.models.Lokasi
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.RepositoryProvider
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.LokasiAdapter
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.LokasiClickListener
@@ -58,22 +61,38 @@ class AdminPlaceDashboardFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        val lokasiAdapter = LokasiAdapter(LokasiClickListener(
-            onEditClick = { lokasi ->
-                // TODO: Implement navigation to EditPlaceFragment
-                // val action = AdminPlaceDashboardFragmentDirections.actionToEditPlace(lokasi)
-                // findNavController().navigate(action)
+        // ===== PERUBAHAN DIMULAI DI SINI =====
+        // Kita sekarang membuat listener menggunakan 'object :' karena ini adalah interface
+        val clickListener = object : LokasiClickListener {
+            override fun onEditClick(lokasi: Lokasi) {
+                // Logika untuk edit tetap sama
                 Toast.makeText(context, "Edit ${lokasi.lokasiName}", Toast.LENGTH_SHORT).show()
-            },
-            onMapsClick = { lokasi ->
-                // TODO: Implement intent to open maps
             }
-        ))
+
+            override fun onMapsClick(lokasi: Lokasi) {
+                // Logika untuk membuka maps tetap sama persis
+                val gmmIntentUri = Uri.parse("geo:0,0?q=${lokasi.latitude},${lokasi.longitude}(${lokasi.lokasiName})")
+                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                mapIntent.setPackage("com.google.android.apps.maps")
+
+                if (mapIntent.resolveActivity(requireContext().packageManager) != null) {
+                    startActivity(mapIntent)
+                } else {
+                    Toast.makeText(context, "Google Maps tidak terpasang.", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        val lokasiAdapter = LokasiAdapter(clickListener) // Berikan listener yang baru dibuat
+
+        // Pastikan ID RecyclerView sudah benar sesuai file XML Anda
         binding.recyclerViewPlaces.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = lokasiAdapter
         }
+        // ===== PERUBAHAN SELESAI DI SINI =====
     }
+
 
     private fun setupListeners() {
         // Search

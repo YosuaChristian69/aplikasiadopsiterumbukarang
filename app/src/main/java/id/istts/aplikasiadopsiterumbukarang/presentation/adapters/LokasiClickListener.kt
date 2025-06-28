@@ -2,8 +2,10 @@ package id.istts.aplikasiadopsiterumbukarang.presentation.adapters
 
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Lokasi
 
-class LokasiClickListener(
-    val onEditClick: (lokasi: Lokasi) -> Unit,
-    val onMapsClick: (lokasi: Lokasi) -> Unit
-    // Tambahkan listener lain jika perlu, misal onDelete
-)
+// UBAH DARI 'class' MENJADI 'interface'
+interface LokasiClickListener {
+    // UBAH DARI 'val' DI CONSTRUCTOR MENJADI 'fun'
+    fun onEditClick(lokasi: Lokasi)
+    fun onMapsClick(lokasi: Lokasi)
+    // Anda bisa menambahkan fungsi lain di sini jika perlu
+}
