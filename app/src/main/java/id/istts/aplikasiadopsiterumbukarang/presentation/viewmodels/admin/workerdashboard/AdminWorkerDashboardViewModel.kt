@@ -107,6 +107,7 @@ class AdminWorkerDashboardViewModel(
     }
 
     // Method untuk search/filter workers
+    // Method untuk search/filter workers
     fun searchWorkers(query: String) {
         val filteredList = if (query.isBlank()) {
             originalWorkersList
@@ -117,8 +118,8 @@ class AdminWorkerDashboardViewModel(
                         worker.id_user.contains(query, ignoreCase = true)
             }
         }
-        // Jangan update stats saat search, hanya daftar yang ditampilkan
-        _workers.value = filteredList
+
+        handleData(filteredList)
     }
     fun onAddWorkerClicked() {
         _navigateToAddWorker.value = true
