@@ -1,4 +1,4 @@
-package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker
+package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.register
 
 import android.content.Context
 import android.util.Log
@@ -11,9 +11,8 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.service.ApiService
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
-import kotlin.collections.contains
 
-public class AdminWorkerDashboardViewModelRepo(private val apiService: ApiService?=null,private val repository: RepositoryWorker, private val context: Context?=null): ViewModel() {
+public class AdminWorkerDashboardViewModelRepo(private val apiService: ApiService?=null, private val repository: RepositoryWorker, private val context: Context?=null): ViewModel() {
     private val _workers = MutableLiveData<List<Worker>>()
     val workers: LiveData<List<Worker>> = _workers
 

@@ -29,13 +29,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryForAdminWorker
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepositoryWorker
-import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerDashboardViewModelRepo
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.register.AdminWorkerDashboardViewModelRepo
 
 
 class AdminWorkerDashboardFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
-//    private lateinit var viewModel: AdminWorkerDashboardViewModelRepo
-    private lateinit var viewModel: AdminWorkerDashboardViewModel
+    private lateinit var viewModel: AdminWorkerDashboardViewModelRepo
+    //private lateinit var viewModel: AdminWorkerDashboardViewModel
     private lateinit var workerAdapter: WorkerAdapter
 
     // Objek Binding untuk mengakses View secara aman dan efisien
@@ -58,10 +58,10 @@ class AdminWorkerDashboardFragment : Fragment() {
         // Inisialisasi ViewModel menggunakan Factory
         val apiService = RetrofitClient.instance
         val viewModelFactory = AdminWorkerDashboardViewModelFactory(apiService)
-        viewModel = ViewModelProvider(this, viewModelFactory)[AdminWorkerDashboardViewModel::class.java]
+        //viewModel = ViewModelProvider(this, viewModelFactory)[AdminWorkerDashboardViewModel::class.java]
 
-//        val factory = ViewModelFactoryForAdminWorker(RepositoryWorker(), sessionManager, requireContext())
-//        viewModel = ViewModelProvider(this, factory).get(AdminWorkerDashboardViewModelRepo::class.java)
+        val factory = ViewModelFactoryForAdminWorker(RepositoryWorker(), sessionManager, requireContext())
+        viewModel = ViewModelProvider(this, factory).get(AdminWorkerDashboardViewModelRepo::class.java)
 
         // Menghubungkan ViewModel dan LifecycleOwner ke layout
         binding.viewModel = viewModel
