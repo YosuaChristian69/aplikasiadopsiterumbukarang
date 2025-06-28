@@ -1,167 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presentation.fragments.worker.WorkerDoMissionFragment"
-    android:orientation="vertical"
-    android:background="#0f4f5c"
-    android:padding="16dp">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel" />
+        <import type="android.view.View"/>
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="32dp">
+        android:layout_height="match_parent"
+        android:background="#0f4f5c"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".presentation.fragments.worker.WorkerDoMissionFragment">
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_person"
-            app:tint="@android:color/white"
-            android:layout_marginEnd="12dp" />
-
-        <TextView
-            android:id="@+id/tv_greeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hi, DIVER"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="normal" />
-
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <androidx.cardview.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="8dp"
-            android:layout_marginBottom="24dp">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="32dp"
+            android:orientation="horizontal">
 
-            <LinearLayout
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_person"
+                app:tint="@android:color/white" />
+
+            <TextView
+                android:id="@+id/tv_greeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:text="Mission #123" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp">
 
-                <Button
-                    android:id="@+id/btn_upload_coral"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="📤 Upload Coral Picture"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:backgroundTint="#2196F3"
-                    android:layout_marginBottom="24dp"
-                    android:elevation="2dp" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:background="#e0e0e0"
-                    android:layout_marginBottom="24dp">
-
-                    <ImageView
-                        android:id="@+id/iv_coral_preview"
+                    <Button
+                        android:id="@+id/btn_upload_coral"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:visibility="gone" />
+                        android:layout_height="56dp"
+                        android:layout_marginBottom="24dp"
+                        android:backgroundTint="#2196F3"
+                        android:elevation="2dp"
+                        android:text="📤 Upload Coral Picture"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginBottom="24dp"
+                        android:background="#e0e0e0">
+
+                        <ImageView
+                            android:id="@+id/iv_coral_preview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tv_no_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="No image selected"
+                            android:textColor="#888888"
+                            android:textSize="14sp" />
+
+                    </FrameLayout>
 
                     <TextView
-                        android:id="@+id/tv_no_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="No image selected"
-                        android:textColor="#888888"
+                        android:layout_marginBottom="8dp"
+                        android:text="Longitude"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/et_longitude"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@android:drawable/editbox_background_normal"
+                        android:hint="Value"
+                        android:inputType="numberDecimal|numberSigned"
+                        android:padding="12dp"
                         android:textSize="14sp" />
 
-                </FrameLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Latitude"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Longitude"
-                    android:textColor="#333333"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    <EditText
+                        android:id="@+id/et_latitude"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:drawable/editbox_background_normal"
+                        android:hint="Value"
+                        android:inputType="numberDecimal|numberSigned"
+                        android:padding="12dp"
+                        android:textSize="14sp" />
 
-                <EditText
-                    android:id="@+id/et_longitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:hint="Value"
-                    android:inputType="numberDecimal|numberSigned"
-                    android:background="@android:drawable/editbox_background_normal"
-                    android:padding="12dp"
-                    android:textSize="14sp"
-                    android:layout_marginBottom="20dp" />
+                </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Latitude"
-                    android:textColor="#333333"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+            </androidx.cardview.widget.CardView>
 
-                <EditText
-                    android:id="@+id/et_latitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:hint="Value"
-                    android:inputType="numberDecimal|numberSigned"
-                    android:background="@android:drawable/editbox_background_normal"
-                    android:padding="12dp"
-                    android:textSize="14sp" />
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="@{viewModel.uiState.isLoading ? View.VISIBLE : View.GONE}"
+                tools:visibility="gone" />
 
-            </LinearLayout>
+        </FrameLayout>
 
-        </androidx.cardview.widget.CardView>
+        <Button
+            android:id="@+id/btn_done"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="12dp"
+            android:backgroundTint="#4CAF50"
+            android:elevation="2dp"
+            android:enabled="@{!viewModel.uiState.isLoading}"
+            android:text="DONE"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#F44336"
+            android:elevation="2dp"
+            android:enabled="@{!viewModel.uiState.isLoading}"
+            android:text="BACK"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-    </FrameLayout>
-
-    <Button
-        android:id="@+id/btn_done"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="DONE"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:backgroundTint="#4CAF50"
-        android:layout_marginBottom="12dp"
-        android:elevation="2dp" />
-
-    <Button
-        android:id="@+id/btn_back"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="BACK"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:backgroundTint="#F44336"
-        android:elevation="2dp" />
-
-</LinearLayout>
+    </LinearLayout>
+</layout>

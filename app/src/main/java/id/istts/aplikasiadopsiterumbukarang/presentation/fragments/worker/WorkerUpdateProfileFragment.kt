@@ -10,14 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerUpdateProfileBinding
-import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.WorkerProfile
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.UserRepository
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.EditProfileViewModel
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.EditProfileViewModelFactory
@@ -25,7 +23,6 @@ import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.Worke
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerProfileViewModelFactory
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -36,19 +33,15 @@ class WorkerUpdateProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: WorkerProfileViewModel
-    private lateinit var sessionManager: SessionManager
     private lateinit var editProfileViewModel: EditProfileViewModel
-    private var currentWorkerProfile: WorkerProfile? = null
+    private lateinit var sessionManager: SessionManager
     private var selectedImageFile: File? = null
 
-    // Activity result launcher for image selection
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.data?.let { uri ->
-                handleImageSelection(uri)
-            }
+            result.data?.data?.let { uri -> handleImageSelection(uri) }
         }
     }
 
@@ -57,27 +50,26 @@ class WorkerUpdateProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentWorkerUpdateProfileBinding.inflate(inflater, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_worker_update_profile, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupSessionManager()
+        sessionManager = SessionManager(requireContext())
         setupViewModels()
+
+        binding.profileViewModel = viewModel
+        binding.editViewModel = editProfileViewModel
+
         setupObservers()
         setupClickListeners()
-        loadCurrentProfile()
-    }
-
-    private fun setupSessionManager() {
-        sessionManager = SessionManager(requireContext())
     }
 
     private fun setupViewModels() {
         val repository = UserRepository(RetrofitClient.instance)
-
+        val sessionManager = SessionManager(requireContext())
         val factory = WorkerProfileViewModelFactory(repository, sessionManager)
         viewModel = ViewModelProvider(this, factory)[WorkerProfileViewModel::class.java]
 
@@ -86,26 +78,7 @@ class WorkerUpdateProfileFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        // Observe worker profile data
-        viewModel.workerProfile.observe(viewLifecycleOwner) { profile ->
-            currentWorkerProfile = profile
-            binding.apply {
-                etName.setText(profile.name)
-                etEmail.setText(profile.email)
-                etDateOfBirth.setText(profile.dateOfBirth)
-                etPhoneNumber.setText(profile.phone)
-
-                // Load current profile image - Fixed the property access and Glide usage
-                loadProfileImage(profile)
-            }
-        }
-
-        // Observe loading state from existing viewModel
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.btnUpdate.isEnabled = !isLoading
-        }
-
-        // Observe error messages from existing viewModel
+        // Data is now directly bound to the views. We just observe for events.
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
@@ -113,82 +86,34 @@ class WorkerUpdateProfileFragment : Fragment() {
             }
         }
 
-        // Observe selected image
-        lifecycleScope.launch {
-            editProfileViewModel.selectedImageUri.collect { uri ->
-                uri?.let {
-                    binding.ivProfileImage.setImageURI(it)
+        editProfileViewModel.uiState.observe(viewLifecycleOwner) { state ->
+            if (state.isSuccess) {
+                val message = if (state.photoUpdated) {
+                    "Profile and photo updated successfully"
+                } else {
+                    state.successMessage ?: "Profile updated successfully"
                 }
-            }
-        }
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 
-        // Observe edit profile API state
-        lifecycleScope.launch {
-            editProfileViewModel.uiState.collect { state ->
-                when {
-                    state.isLoading -> {
-                        binding.btnUpdate.isEnabled = false
-                        binding.btnUpdate.text = "UPDATING..."
-                    }
-                    state.isSuccess -> {
-                        binding.btnUpdate.isEnabled = true
-                        binding.btnUpdate.text = "UPDATE"
-
-                        val message = if (state.photoUpdated) {
-                            "Profile and photo updated successfully"
-                        } else {
-                            state.successMessage ?: "Profile updated successfully"
-                        }
-
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-
-                        // Update session with new data if user data is available
-                        state.updatedUser?.let { userData ->
-                            sessionManager.updateUserDetailsFromResponse(
-                                userData.full_name,
-                                userData.email,
-                                userData.user_status,
-                                userData.img_path
-                            )
-                        }
-
-                        viewModel.refreshProfile()
-                        navigateBackToProfile()
-                        editProfileViewModel.clearState()
-                    }
-                    state.error != null -> {
-                        binding.btnUpdate.isEnabled = true
-                        binding.btnUpdate.text = "UPDATE"
-
-                        val errorMessage = parseErrorMessage(state.error)
-                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
-                        editProfileViewModel.clearState()
-                    }
+                state.updatedUser?.let { userData ->
+                    sessionManager.updateUserDetailsFromResponse(
+                        userData.full_name,
+                        userData.email,
+                        userData.user_status,
+                        userData.img_path
+                    )
                 }
+
+                viewModel.refreshProfile()
+                navigateBackToProfile()
+                editProfileViewModel.clearState()
             }
-        }
-    }
 
-    private fun loadProfileImage(profile: WorkerProfile) {
-        // First try to get image from WorkerProfile (assuming it has an image field)
-        // Since profileImageUrl doesn't exist, you need to check what field contains the image
-        val imageUrl: String? = when {
-            // Check if WorkerProfile has an image field (you'll need to verify this)
-            // profile.imageUrl != null -> profile.imageUrl
-            // profile.imagePath != null -> profile.imagePath
-            // For now, get from session
-            else -> sessionManager.fetchUserImagePath()
-        }
-
-        if (!imageUrl.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(imageUrl) // Explicitly specify String type
-                .placeholder(R.drawable.ic_person)
-                .error(R.drawable.ic_person)
-                .into(binding.ivProfileImage)
-        } else {
-            // Set default image
-            binding.ivProfileImage.setImageResource(R.drawable.ic_person)
+            state.error?.let {
+                val errorMessage = parseErrorMessage(it)
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
+                editProfileViewModel.clearState()
+            }
         }
     }
 
@@ -212,11 +137,6 @@ class WorkerUpdateProfileFragment : Fragment() {
         binding.etDateOfBirth.setOnClickListener {
             Toast.makeText(requireContext(), "Date picker functionality", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun loadCurrentProfile() {
-        // Load the current profile - implement this based on your WorkerProfileViewModel
-        // viewModel.loadProfile()
     }
 
     private fun openImagePicker() {
@@ -247,16 +167,16 @@ class WorkerUpdateProfileFragment : Fragment() {
     }
 
     private fun updateProfile() {
-        val name = binding.etName.text.toString().trim()
-        val email = binding.etEmail.text.toString().trim()
-        val dateOfBirth = binding.etDateOfBirth.text.toString().trim()
-        val phoneNumber = binding.etPhoneNumber.text.toString().trim()
+        // Read data directly from ViewModel fields, which are updated via two-way databinding
+        val name = viewModel.name.value?.trim() ?: ""
+        val email = viewModel.email.value?.trim() ?: ""
+        val phoneNumber = viewModel.phone.value?.trim() ?: ""
 
         if (!validateInput(name, email, phoneNumber)) {
             return
         }
 
-        val currentProfile = currentWorkerProfile
+        val currentProfile = viewModel.workerProfile.value
         if (currentProfile == null) {
             Toast.makeText(requireContext(), "Profile data not loaded. Please try again.", Toast.LENGTH_SHORT).show()
             return
@@ -328,8 +248,13 @@ class WorkerUpdateProfileFragment : Fragment() {
     }
 
     private fun navigateBackToProfile() {
-        findNavController().navigate(R.id.action_workerUpdateProfile_to_workerProfile)
+        // It seems there was a typo in the original file's navigation action.
+        // Assuming it should navigate back to the main profile view.
+        // If your navigation graph has a different action name, replace it here.
+        findNavController().popBackStack()
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

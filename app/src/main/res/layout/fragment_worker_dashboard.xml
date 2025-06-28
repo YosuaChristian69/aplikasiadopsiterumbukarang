@@ -1,108 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#003C43"
-    tools:context=".presentation.fragments.worker.WorkerDashboardFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
-        android:id="@+id/header_layout"
+    <data>
+        <variable
+            name="viewModel"
+            type="id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel" />
+        <import type="android.view.View"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center_vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="#003C43"
+        tools:context=".presentation.fragments.worker.WorkerDashboardFragment">
+
+        <LinearLayout
+            android:id="@+id/header_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_greeting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{`HI, ` + viewModel.uiState.userName.toUpperCase()}"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="HI, DIVER"/>
+
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Logout"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_missions"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="16dp"
+            android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/header_layout"
+            app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:missionListData="@{viewModel.uiState.pendingPlantings}"
+            android:visibility="@{!viewModel.uiState.pendingPlantings.isEmpty() ? View.VISIBLE : View.GONE}"
+            tools:listitem="@layout/item_worker_mission"/>
 
         <TextView
-            android:id="@+id/tv_greeting"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="HI, DIVER"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
-
-        <Button
-            android:id="@+id/logoutButton"
+            android:id="@+id/tv_no_missions"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:background="@drawable/logout_button_background"
-            android:text="Logout"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:text="No missions available at the moment."
+            android:textColor="@android:color/darker_gray"
+            android:textSize="16sp"
+            android:visibility="@{viewModel.uiState.pendingPlantings.isEmpty() &amp;&amp; !viewModel.uiState.isLoading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/header_layout"
+            app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="gone"/>
 
-    <TextView
-        android:id="@+id/tv_mission_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Your Missions"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_layout"/>
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.uiState.isLoading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_missions"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:paddingHorizontal="16dp"
-        android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/tv_mission_header"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_worker_mission"/>
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:menu="@menu/worker_bottom_nav_menu" />
 
-    <TextView
-        android:id="@+id/tv_no_missions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No missions available at the moment."
-        android:textColor="@android:color/darker_gray"
-        android:textSize="16sp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tv_mission_header"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:visibility="visible"/>
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:visibility="visible"/>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="#77B0AA"
-        app:itemIconTint="@color/bottom_nav_color"
-        app:itemTextColor="@android:color/white"
-        app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/worker_bottom_nav_menu" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

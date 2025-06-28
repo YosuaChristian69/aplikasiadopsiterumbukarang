@@ -5,39 +5,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerDashboardBinding
-import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.WorkerPlantingRepository
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel
-import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModelFactory
-import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import kotlinx.coroutines.launch
 
 class WorkerDashboardFragment : Fragment() {
 
     private var _binding: FragmentWorkerDashboardBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: WorkerPlantingViewModel by activityViewModels {
-        WorkerPlantingViewModelFactory(
-            WorkerPlantingRepository(RetrofitClient.instance, requireContext().getSharedPreferences("app_prefs", 0)),
-            SessionManager(requireContext())
-        )
-    }
-
+    private val viewModel: WorkerPlantingViewModel by activityViewModels()
     private lateinit var missionAdapter: MissionAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentWorkerDashboardBinding.inflate(inflater, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_worker_dashboard, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = viewModel
         return binding.root
     }
 
@@ -46,13 +35,10 @@ class WorkerDashboardFragment : Fragment() {
         setupRecyclerView()
         setupListeners()
         observeViewModel()
-
-        // Explicitly tell the ViewModel to load the data now that the view is ready.
         viewModel.loadPendingPlantings()
     }
 
     private fun setupRecyclerView() {
-        // Initialize the adapter and set what happens when a mission is clicked
         missionAdapter = MissionAdapter { mission ->
             navigateToWorkerDetailMission(mission.id_htrans)
         }
@@ -68,49 +54,29 @@ class WorkerDashboardFragment : Fragment() {
                     findNavController().navigate(R.id.action_workerDashboard_to_workerDashboardProfile)
                     true
                 }
-                R.id.navigation_mission -> {
-                    // User is already on the mission screen, do nothing.
-                    true
-                }
+                R.id.navigation_mission -> true
                 else -> false
             }
         }
     }
 
     private fun observeViewModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.uiState.collect { state ->
-                        binding.progressBar.isVisible = state.isLoading
-                        binding.tvGreeting.text = "HI, ${state.userName.uppercase()}"
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            if (state.shouldNavigateToLogin) {
+                navigateToLogin()
+                viewModel.onNavigatedToLogin()
+            }
+            state.errorMessage?.let {
+                showToast("Error: $it")
+                viewModel.clearErrorMessage()
+            }
+        }
 
-                        // Submit the list of missions to the adapter
-                        missionAdapter.submitList(state.pendingPlantings)
-
-                        // Show/hide the list or the "no missions" text based on data
-                        binding.rvMissions.isVisible = state.pendingPlantings.isNotEmpty()
-                        binding.tvNoMissions.isVisible = state.pendingPlantings.isEmpty() && !state.isLoading
-
-                        state.errorMessage?.let {
-                            showToast("Error: $it")
-                            viewModel.clearErrorMessage()
-                        }
-
-                        if (state.shouldNavigateToLogin) {
-                            navigateToLogin()
-                            viewModel.onNavigatedToLogin()
-                        }
-                    }
-                }
-
-                launch {
-                    viewModel.eventFlow.collect { event ->
-                        when(event) {
-                            is WorkerPlantingViewModel.ViewEvent.ShowToast -> showToast(event.message)
-                            else -> {} // Other events can be handled here
-                        }
-                    }
+        viewModel.viewEvent.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { viewEvent ->
+                when(viewEvent) {
+                    is WorkerPlantingViewModel.ViewEvent.ShowToast -> showToast(viewEvent.message)
+                    else -> {}
                 }
             }
         }

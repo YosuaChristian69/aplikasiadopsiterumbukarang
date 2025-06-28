@@ -8,17 +8,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import id.istts.aplikasiadopsiterumbukarang.R // ADDED: This import is required
+import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerDoMissionBinding
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel
-import kotlinx.coroutines.launch
 
 class WorkerDoMissionFragment : Fragment() {
 
@@ -40,12 +37,15 @@ class WorkerDoMissionFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentWorkerDoMissionBinding.inflate(inflater, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_worker_do_mission, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = viewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.tvGreeting.text = "Mission #${args.plantingId}"
         setupListeners()
         observeViewModel()
     }
@@ -64,34 +64,27 @@ class WorkerDoMissionFragment : Fragment() {
                 showToast("Please upload a picture of the planted coral.")
                 return@setOnClickListener
             }
-
+            // Note: The original code asks for an image but the refactored ViewModel/Repo
+            // does not upload it. This logic is preserved as per the provided files.
             viewModel.finishPlanting(args.plantingId)
         }
     }
 
     private fun observeViewModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.uiState.collect { state ->
-                        binding.progressBar.isVisible = state.isLoading
-                        binding.btnDone.isEnabled = !state.isLoading
-                        binding.tvGreeting.text = "Mission #${args.plantingId}"
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            state.errorMessage?.let {
+                showToast("Error: $it")
+                viewModel.clearErrorMessage()
+            }
+        }
 
-                        state.errorMessage?.let {
-                            showToast("Error: $it")
-                            viewModel.clearErrorMessage()
-                        }
-                    }
-                }
-                launch {
-                    viewModel.eventFlow.collect { event ->
-                        when (event) {
-                            is WorkerPlantingViewModel.ViewEvent.ShowToast -> showToast(event.message)
-                            is WorkerPlantingViewModel.ViewEvent.NavigateBack -> {
-                                findNavController().popBackStack(R.id.workerDashboardFragment, false)
-                            }
-                        }
+        viewModel.viewEvent.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { viewEvent ->
+                when (viewEvent) {
+                    is WorkerPlantingViewModel.ViewEvent.ShowToast -> showToast(viewEvent.message)
+                    is WorkerPlantingViewModel.ViewEvent.NavigateBack -> {
+                        // Navigate back to the main dashboard, not just one step
+                        findNavController().popBackStack(R.id.workerDashboardFragment, false)
                     }
                 }
             }

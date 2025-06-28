@@ -1,51 +1,45 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.WorkerPlantingUiState
-import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.WorkerPlantingRepository
+import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.IWorkerPlantingRepository
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import android.util.Log
-import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.IWorkerPlantingRepository
 
 class WorkerPlantingViewModel(
     private val repository: IWorkerPlantingRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(WorkerPlantingUiState())
-    val uiState = _uiState.asStateFlow()
+    private val _uiState = MutableLiveData(WorkerPlantingUiState())
+    val uiState: LiveData<WorkerPlantingUiState> = _uiState
 
-    private val _eventFlow = MutableSharedFlow<ViewEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    // Use a SingleLiveEvent pattern for events that should only be observed once.
+    private val _viewEvent = MutableLiveData<Event<ViewEvent>>()
+    val viewEvent: LiveData<Event<ViewEvent>> = _viewEvent
 
     init {
         val userStatus = sessionManager.fetchUserStatus()
         val userName = sessionManager.fetchUserName()
         if (!sessionManager.isLoggedIn() || userStatus != "worker") {
-            _uiState.update { it.copy(shouldNavigateToLogin = true) }
+            _uiState.value = _uiState.value?.copy(shouldNavigateToLogin = true)
         } else {
-            _uiState.update { it.copy(userName = userName ?: "Worker") }
+            _uiState.value = _uiState.value?.copy(userName = userName ?: "Worker")
             loadPendingPlantings()
         }
     }
 
     fun loadPendingPlantings() {
-        // Only fetch if not already loading
-        if (_uiState.value.isLoading) return
+        if (_uiState.value?.isLoading == true) return
 
-        _uiState.update { it.copy(isLoading = true) }
+        _uiState.value = _uiState.value?.copy(isLoading = true)
         viewModelScope.launch {
             try {
                 val token = sessionManager.fetchAuthToken()
-                Log.d("ViewModelToken", "Token being sent: $token") // This log is still useful
-
                 if (token.isNullOrEmpty()) {
                     handleAuthenticationError()
                     return@launch
@@ -53,23 +47,22 @@ class WorkerPlantingViewModel(
 
                 repository.getPendingPlantings(token)
                     .onSuccess { response ->
-                        Log.d("WorkerViewModel", "Fetched data: ${response.data}")
-                        _uiState.update {
-                            it.copy(
+                        _uiState.postValue(
+                            _uiState.value?.copy(
                                 isLoading = false,
                                 pendingPlantings = response.data ?: emptyList()
                             )
-                        }
+                        )
                     }
                     .onFailure { exception -> handleError(exception, "Failed to load pending plantings") }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = "Unexpected error: ${e.message}") }
+                _uiState.postValue(_uiState.value?.copy(isLoading = false, errorMessage = "Unexpected error: ${e.message}"))
             }
         }
     }
 
     fun loadPlantingDetails(id: Int) {
-        _uiState.update { it.copy(isLoading = true, selectedPlanting = null) }
+        _uiState.value = _uiState.value?.copy(isLoading = true, selectedPlanting = null)
         viewModelScope.launch {
             try {
                 val token = sessionManager.fetchAuthToken()
@@ -79,17 +72,17 @@ class WorkerPlantingViewModel(
                 }
                 repository.getPlantingDetails(token, id)
                     .onSuccess { response ->
-                        _uiState.update { it.copy(isLoading = false, selectedPlanting = response.data) }
+                        _uiState.postValue(_uiState.value?.copy(isLoading = false, selectedPlanting = response.data))
                     }
                     .onFailure { exception -> handleError(exception, "Failed to load planting details") }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = "Unexpected error: ${e.message}") }
+                _uiState.postValue(_uiState.value?.copy(isLoading = false, errorMessage = "Unexpected error: ${e.message}"))
             }
         }
     }
 
     fun finishPlanting(id: Int) {
-        _uiState.update { it.copy(isLoading = true) }
+        _uiState.value = _uiState.value?.copy(isLoading = true)
         viewModelScope.launch {
             try {
                 val token = sessionManager.fetchAuthToken()
@@ -101,49 +94,60 @@ class WorkerPlantingViewModel(
 
                 repository.finishPlanting(id, workerId, token)
                     .onSuccess {
-                        _eventFlow.emit(ViewEvent.ShowToast("Coral planting completed successfully! 🐠"))
-                        _eventFlow.emit(ViewEvent.NavigateBack) // Navigate back after completion
+                        _viewEvent.postValue(Event(ViewEvent.ShowToast("Coral planting completed successfully! 🐠")))
+                        _viewEvent.postValue(Event(ViewEvent.NavigateBack))
                         loadPendingPlantings() // Refresh the main list
                     }
                     .onFailure { exception -> handleError(exception, "Failed to complete planting") }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = "Unexpected error: ${e.message}") }
+                _uiState.postValue(_uiState.value?.copy(isLoading = false, errorMessage = "Unexpected error: ${e.message}"))
             } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                _uiState.postValue(_uiState.value?.copy(isLoading = false))
             }
         }
     }
 
     private fun handleError(exception: Throwable, defaultMessage: String) {
         val errorMessage = if (exception.message?.contains("401") == true) {
-            _uiState.update { it.copy(shouldNavigateToLogin = true) }
+            _uiState.postValue(_uiState.value?.copy(shouldNavigateToLogin = true))
             "Session expired. Please login again."
         } else {
             exception.message ?: defaultMessage
         }
-        _uiState.update { it.copy(isLoading = false, errorMessage = errorMessage) }
+        _uiState.postValue(_uiState.value?.copy(isLoading = false, errorMessage = errorMessage))
     }
 
     private fun handleAuthenticationError() {
-        _uiState.update {
-            it.copy(
-                isLoading = false,
-                errorMessage = "Authentication token not found.",
-                shouldNavigateToLogin = true
-            )
-        }
+        _uiState.value = _uiState.value?.copy(
+            isLoading = false,
+            errorMessage = "Authentication token not found.",
+            shouldNavigateToLogin = true
+        )
     }
 
     fun clearErrorMessage() {
-        _uiState.update { it.copy(errorMessage = null) }
+        _uiState.value = _uiState.value?.copy(errorMessage = null)
     }
 
     fun onNavigatedToLogin() {
-        _uiState.update { it.copy(shouldNavigateToLogin = false) }
+        _uiState.value = _uiState.value?.copy(shouldNavigateToLogin = false)
     }
 
     sealed class ViewEvent {
         data class ShowToast(val message: String) : ViewEvent()
         object NavigateBack : ViewEvent()
+    }
+
+    // Helper class for events
+    class Event<T>(private val content: T) {
+        private var hasBeenHandled = false
+        fun getContentIfNotHandled(): T? {
+            return if (hasBeenHandled) {
+                null
+            } else {
+                hasBeenHandled = true
+                content
+            }
+        }
     }
 }

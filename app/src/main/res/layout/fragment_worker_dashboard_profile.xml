@@ -1,245 +1,248 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/underwater_background"
-    tools:context=".presentation.fragments.worker.WorkerDashboardProfileFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Header Section -->
+    <data>
+        <variable
+            name="viewModel"
+            type="id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerProfileViewModel" />
+    </data>
+
     <RelativeLayout
-        android:id="@+id/header_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:paddingTop="40dp"
-        android:paddingHorizontal="24dp">
-
-        <!-- Profile Title -->
-        <TextView
-            android:id="@+id/tv_profile_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="PROFILE"
-            android:textColor="@android:color/white"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.1" />
-
-        <!-- Edit Button -->
-        <ImageButton
-            android:id="@+id/btn_edit_profile"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_edit"
-            android:contentDescription="Edit Profile"
-            android:backgroundTint="#4DFFFF" />
-
-    </RelativeLayout>
-
-    <!-- Scrollable Content Container -->
-    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header_layout"
-        android:layout_above="@id/bottom_navigation"
-        android:fillViewport="true">
+        android:background="@drawable/underwater_background"
+        tools:context=".presentation.fragments.worker.WorkerDashboardProfileFragment">
 
-        <!-- Profile Content Section -->
-        <LinearLayout
-            android:id="@+id/profile_content"
+        <RelativeLayout
+            android:id="@+id/header_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            android:paddingBottom="24dp">
+            android:layout_alignParentTop="true"
+            android:paddingTop="40dp"
+            android:paddingHorizontal="24dp">
 
-            <!-- Profile Photo -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="200dp"
-                android:layout_height="250dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp">
-
-                <ImageView
-                    android:id="@+id/iv_profile_photo"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="Profile Photo" />
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Name -->
             <TextView
-                android:id="@+id/tv_name"
+                android:id="@+id/tv_profile_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Paul Sniders"
-                android:textColor="#00E5E5"
-                android:textSize="28sp"
+                android:layout_centerHorizontal="true"
+                android:text="PROFILE"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:letterSpacing="0.1" />
 
-            <!-- Job Title -->
-            <TextView
-                android:id="@+id/tv_job_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Diver"
-                android:textColor="#00E5E5"
-                android:textSize="18sp"
-                android:layout_marginBottom="32dp" />
+            <ImageButton
+                android:id="@+id/btn_edit_profile"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_edit"
+                android:contentDescription="Edit Profile"
+                android:backgroundTint="#4DFFFF" />
 
-            <!-- Profile Information -->
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/header_layout"
+            android:layout_above="@id/bottom_navigation"
+            android:fillViewport="true">
+
             <LinearLayout
+                android:id="@+id/profile_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
                 android:orientation="vertical"
-                android:layout_marginBottom="24dp">
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="24dp">
 
-                <!-- Date of Birth -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="250dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="24dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="8dp">
+
+                    <ImageView
+                        android:id="@+id/iv_profile_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        app:profileImageUrl="@{viewModel.workerProfile.profilePhotoUrl}"
+                        tools:src="@drawable/ic_person_placeholder"
+                        android:contentDescription="Profile Photo" />
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@{viewModel.workerProfile.name}"
+                    android:textColor="#00E5E5"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"
+                    tools:text="Paul Sniders" />
+
+                <TextView
+                    android:id="@+id/tv_job_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@{viewModel.workerProfile.jobTitle}"
+                    android:textColor="#00E5E5"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="32dp"
+                    tools:text="Diver" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="vertical"
+                    android:layout_marginBottom="24dp">
 
-                    <TextView
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="DOB"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp">
 
-                    <TextView
-                        android:id="@+id/tv_dob"
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="DOB"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_dob"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{`: ` + viewModel.workerProfile.dateOfBirth}"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            tools:text=": DD/MM/YYYY" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text=": DD/MM/YYYY"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp" />
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Email"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_email"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text="@{`: ` + viewModel.workerProfile.email}"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            tools:text=": PaulSniders@gmail.com" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Phone"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_phone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{`: ` + viewModel.workerProfile.phone}"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            tools:text=": 081234567890" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Joined"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_joined_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{`: ` + viewModel.workerProfile.joinedDate}"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp"
+                            tools:text=": DD/MM/YYYY" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-                <!-- Email -->
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tv_worker_id"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Email"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_email"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text=": PaulSniders@gmail.com"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp" />
-
-                </LinearLayout>
-
-                <!-- Phone -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Phone"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_phone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=": 081234567890"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp" />
-
-                </LinearLayout>
-
-                <!-- Joined Date -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Joined"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_joined_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=": DD/MM/YYYY"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp" />
-
-                </LinearLayout>
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="40dp"
+                    android:text="@{`ID: ` + viewModel.workerProfile.workerId}"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="ID :1234-4321-1234" />
 
             </LinearLayout>
 
-            <!-- Worker ID -->
-            <TextView
-                android:id="@+id/tv_worker_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="40dp"
-                android:text="ID :1234-4321-1234"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+        </ScrollView>
 
-        </LinearLayout>
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#4DFFFF"
+            app:itemIconTint="@android:color/black"
+            app:itemTextColor="@android:color/black"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/worker_bottom_nav_menu" />
 
-    </ScrollView>
-
-    <!-- Bottom Navigation using BottomNavigationView -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#4DFFFF"
-        app:itemIconTint="@android:color/black"
-        app:itemTextColor="@android:color/black"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/worker_bottom_nav_menu" />
-
-</RelativeLayout>
+    </RelativeLayout>
+</layout>
