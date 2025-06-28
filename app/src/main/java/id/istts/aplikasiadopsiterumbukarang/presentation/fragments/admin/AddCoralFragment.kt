@@ -2,6 +2,7 @@ package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.admin
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -286,13 +287,22 @@ class AddCoralFragment : Fragment() {
     }
 
     private fun openGalleryModern() {
-        // Use modern photo picker for Android 13+ (API 33+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        // 1. Cek apakah Photo Picker modern BENAR-BENAR TERSEDIA di perangkat ini.
+        //    Ini lebih andal daripada hanya memeriksa versi Android.
+        if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(requireContext())) {
+            // Jika tersedia, gunakan Photo Picker modern yang aman.
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         } else {
-            // Fallback to legacy method for older versions
+            // Jika TIDAK TERSEDIA (misalnya di emulator tanpa Google Play),
+            // langsung gunakan metode lama sebagai fallback yang pasti ada.
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            pickImageLauncher.launch(intent)
+
+            // Tambahkan try-catch sebagai pengaman tambahan kalau-kalau tidak ada galeri sama sekali
+            try {
+                pickImageLauncher.launch(intent)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(requireContext(), "No gallery app found.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
