@@ -95,6 +95,7 @@ class WorkerPlantingViewModel(
                 val token = sessionManager.fetchAuthToken()
                 Log.d("tokenworker", sessionManager.fetchAuthToken().toString())
                 val workerId = sessionManager.fetchUserId()
+                Log.d("tokenworker", sessionManager.fetchUserId().toString())
                 if (token.isNullOrEmpty() || workerId <= 0) {
                     handleAuthenticationError()
                     return@launch

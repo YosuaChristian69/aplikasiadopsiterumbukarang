@@ -1,6 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import androidx.navigation.fragment.navArgs
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerDetailMissionBinding
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel
+import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
 
 class WorkerDetailMissionFragment : Fragment() {
@@ -25,7 +27,11 @@ class WorkerDetailMissionFragment : Fragment() {
 
     private val viewModel: WorkerPlantingViewModel by activityViewModels()
     private val args: WorkerDetailMissionFragmentArgs by navArgs()
+    private lateinit var sessionManager: SessionManager
 
+    private fun setupSessionManager() {
+        sessionManager = SessionManager(requireContext())
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentWorkerDetailMissionBinding.inflate(inflater, container, false)
         return binding.root
@@ -35,7 +41,8 @@ class WorkerDetailMissionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.loadPlantingDetails(args.missionId)
-
+        setupSessionManager()
+        Log.d("session manager",sessionManager.fetchUserEmail().toString())
         setupListeners()
         observeViewModel()
     }

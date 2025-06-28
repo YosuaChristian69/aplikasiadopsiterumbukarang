@@ -76,6 +76,7 @@ class WorkerProfileViewModel(private val sessionManager: SessionManager) : ViewM
             if (updatedProfile.name != _workerProfile.value?.name ||
                 updatedProfile.email != _workerProfile.value?.email) {
                 sessionManager.saveUserDetails(
+                    updatedProfile.workerId.toInt(),
                     updatedProfile.name,
                     updatedProfile.email,
                     updatedProfile.jobTitle

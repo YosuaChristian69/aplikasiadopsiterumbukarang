@@ -2,6 +2,7 @@ package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import androidx.navigation.fragment.navArgs
 import id.istts.aplikasiadopsiterumbukarang.R // ADDED: This import is required
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerDoMissionBinding
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel
+import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
 
 class WorkerDoMissionFragment : Fragment() {
@@ -29,7 +31,11 @@ class WorkerDoMissionFragment : Fragment() {
     private val args: WorkerDoMissionFragmentArgs by navArgs()
 
     private var imageUri: Uri? = null
+    private lateinit var sessionManager: SessionManager
 
+    private fun setupSessionManager() {
+        sessionManager = SessionManager(requireContext())
+    }
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             imageUri = it
@@ -48,6 +54,8 @@ class WorkerDoMissionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
         observeViewModel()
+        setupSessionManager()
+        Log.d("session manager",sessionManager.fetchUserId().toString())
     }
 
     private fun setupListeners() {

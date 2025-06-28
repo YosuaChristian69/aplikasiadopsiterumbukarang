@@ -102,6 +102,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
             try {
                 val userDetails = decodeTokenPayload(loginResponse.token)
                 sessionManager?.saveUserDetails(
+                    userDetails.getInt("id_user"),
                     userDetails.getString("full_name"),
                     userDetails.getString("email"),
                     userDetails.getString("status")

@@ -26,7 +26,11 @@ class WorkerDashboardFragment : Fragment() {
 
     private var _binding: FragmentWorkerDashboardBinding? = null
     private val binding get() = _binding!!
+    private lateinit var sessionManager: SessionManager
 
+    private fun setupSessionManager() {
+        sessionManager = SessionManager(requireContext())
+    }
     private val viewModel: WorkerPlantingViewModel by activityViewModels {
         WorkerPlantingViewModelFactory(
             WorkerPlantingRepository(RetrofitClient.instance, requireContext().getSharedPreferences("app_prefs", 0)),
@@ -43,6 +47,7 @@ class WorkerDashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupSessionManager()
         setupRecyclerView()
         setupListeners()
         observeViewModel()

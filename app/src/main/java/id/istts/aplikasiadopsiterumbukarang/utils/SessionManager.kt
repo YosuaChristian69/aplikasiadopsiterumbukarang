@@ -61,7 +61,8 @@ class SessionManager(context: Context) {
 //        return prefs.getString(USER_JOINED_AT, null)
 //    }
 
-    fun saveUserDetails(name: String, email: String, status: String) {
+    fun saveUserDetails(id:Int , name: String, email: String, status: String) {
+        editor.putInt(USER_ID, id)
         editor.putString(USER_NAME, name)
         editor.putString(USER_EMAIL, email)
         editor.putString(USER_STATUS, status)
