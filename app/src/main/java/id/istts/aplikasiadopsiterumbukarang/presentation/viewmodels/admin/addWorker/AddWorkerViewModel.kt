@@ -32,14 +32,18 @@ class AddWorkerViewModel(
                     val message = response.body()?.msg ?: "Worker added successfully!"
                     _addWorkerResult.value = Result.success(message)
                 } else {
+                    // Ambil body error sebagai string
                     val errorBody = response.errorBody()?.string()
                     val errorMessage = try {
-//                        val errorJson = JsonParser.parseString(errorBody)
-//                        errorJson.asJsonObject.get("msg").asString
+                        // Parsing JSON untuk mendapatkan pesan dari field "msg"
+                        val errorJson = JsonParser.parseString(errorBody).asJsonObject
+                        errorJson.get("msg").asString
                     } catch (e: Exception) {
-                        "Failed to add worker. Please try again."
+                        // Fallback jika parsing gagal atau body kosong
+                        "Failed to add worker. Unknown error."
                     }
-//                    _addWorkerResult.value = Result.failure(Exception(errorMessage))
+                    // Update LiveData dengan hasil kegagalan
+                    _addWorkerResult.value = Result.failure(Exception(errorMessage))
                 }
             } catch (e: Exception) {
                 _addWorkerResult.value = Result.failure(e)

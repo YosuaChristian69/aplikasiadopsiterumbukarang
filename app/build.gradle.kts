@@ -65,6 +65,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.google.code.gson:gson:2.10.1")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 
     // Google Play Services
@@ -107,4 +108,22 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+// TAMBAHKAN SEMUA DI BAWAH INI
+// 1. Untuk testing LiveData (InstantTaskExecutorRule)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+// 2. Untuk testing Coroutines (TestDispatcher, runTest)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+
+// 3. Untuk Mocking (Mockito)
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0") // Penting untuk mock class final di Kotlin
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1") // Helper functions untuk Kotlin
+    // 4. TAMBAHKAN INI: Library MockK untuk mocking di Kotlin
+    testImplementation("io.mockk:mockk:1.13.11")
+    testImplementation("io.mockk:mockk-android:1.13.11") // Penting untuk mockkStatic
+
+    // 5. TAMBAHKAN INI: Library Turbine untuk testing Flow
+    testImplementation("app.cash.turbine:turbine:1.1.0")
 }

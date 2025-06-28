@@ -129,9 +129,17 @@ class AddWorkerViewModelTest {
         // THEN: The result LiveData should contain a failure with the parsed error message.
         verify(mockRepository).addWorker(token, request, mockUri, mockContext)
         assertEquals(false, viewModel.isLoading.value)
+
         val result = viewModel.addWorkerResult.value
-        assertTrue(result?.isFailure ?: false)
-        assertEquals("Email already registered", result?.exceptionOrNull()?.message)
+        // 1. Pastikan hasilnya tidak null, ini akan gagal lebih awal dengan pesan jelas jika ada masalah
+        assertNotNull("addWorkerResult LiveData should not be null", result)
+
+        // 2. Sekarang kita bisa aman menggunakan 'result'
+        assertTrue("Result should be a failure", result!!.isFailure)
+        assertEquals(
+            "Email already registered",
+            result.exceptionOrNull()?.message
+        )
     }
 
     @Test
