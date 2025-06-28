@@ -17,6 +17,10 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryAdd
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.AddCorralViewModelRepo
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerEditUserViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editUser.EditUserViewModel
@@ -24,11 +28,14 @@ import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editUs
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import java.text.SimpleDateFormat
 import java.util.*
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryForAdminWorker
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepositoryWorker
 
 class EditUserFragment : Fragment() {
 
     private lateinit var sessionManager: SessionManager
-    private lateinit var viewModel: EditUserViewModel
+    private lateinit var viewModel: AdminWorkerEditUserViewModelRepo
+//    private lateinit var viewModel: EditUserViewModel
 
     // UI Elements
     private lateinit var backButton: ImageButton
@@ -60,7 +67,10 @@ class EditUserFragment : Fragment() {
         // 2. Buat instance Factory kita, berikan ApiService
         val viewModelFactory = EditUserViewModelFactory(apiService)
         // 3. Buat ViewModel menggunakan Factory tersebut
-        viewModel = ViewModelProvider(this, viewModelFactory)[EditUserViewModel::class.java]
+//        viewModel = ViewModelProvider(this, viewModelFactory)[EditUserViewModel::class.java]
+
+        val factory = ViewModelFactoryForAdminWorker(RepositoryWorker(), sessionManager, requireContext())
+        viewModel = ViewModelProvider(this, factory).get(AdminWorkerEditUserViewModelRepo::class.java)
 
         if (validateAccess()) {
             setupViews(view)

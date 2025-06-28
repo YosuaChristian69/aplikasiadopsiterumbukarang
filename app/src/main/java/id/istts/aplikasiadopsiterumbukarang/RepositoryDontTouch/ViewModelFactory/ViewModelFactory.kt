@@ -8,6 +8,7 @@ import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.Rep
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.AddCorralViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.EditCorralViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerDashboardViewModelRepo
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerEditUserViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
 import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
@@ -38,6 +39,9 @@ class ViewModelFactoryForAdminWorker(private val repository: RepositoryWorker, p
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AdminWorkerDashboardViewModelRepo::class.java)) {
             return AdminWorkerDashboardViewModelRepo(repository = repository, context = context) as T
+        }
+        if (modelClass.isAssignableFrom(AdminWorkerEditUserViewModelRepo::class.java)) {
+            return AdminWorkerEditUserViewModelRepo(repository = repository, context = context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

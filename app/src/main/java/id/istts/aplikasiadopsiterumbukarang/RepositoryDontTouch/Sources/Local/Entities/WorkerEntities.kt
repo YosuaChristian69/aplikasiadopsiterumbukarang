@@ -23,7 +23,8 @@ data class WorkerEntities(
     val joined_at: String?,
     val img_path:String="",
     val public_id:String="",
-    val is_updated_locally: Boolean? = false
+    val is_updated_locally: Boolean? = false,
+    val is_inserted_locally: Boolean? = false,
 ) {
     companion object{
 //        val dateFormate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())

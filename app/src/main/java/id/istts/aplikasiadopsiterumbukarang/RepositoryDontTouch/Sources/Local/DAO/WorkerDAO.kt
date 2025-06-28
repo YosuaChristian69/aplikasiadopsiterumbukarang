@@ -1,6 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.DAO
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -15,13 +16,16 @@ interface WorkerDAO {
     suspend fun getWorkerWithBiggestID(): WorkerEntities
 
     @Query("SELECT * FROM workers WHERE id_user = :id")
-    suspend fun getWorkerById(id: String): WorkerEntities?
+    suspend fun getWorkerById(id: String): WorkerEntities
     @Insert
     suspend fun insertWorker(worker: WorkerEntities)
     @Update
     suspend fun updateWorker(worker: WorkerEntities)
+    @Delete
+    suspend fun deleteSingleWorker(worker: WorkerEntities)
+
     @Query("DELETE FROM workers")
     suspend fun deleteAllWorkers()
-    @Query("DELETE FROM workers WHERE password !=null and is_updated_locally = 1  ")
+    @Query("DELETE FROM workers WHERE password !=null and is_updated_locally = 0  ")
     suspend fun deleteWorkerExceptIfItIsLocallyModifiedOrCreated()
 }

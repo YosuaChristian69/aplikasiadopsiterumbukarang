@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerEditUserViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAdminWorkerDashboardBinding // <-- IMPORT KELAS BINDING
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.WorkerAdapter
@@ -26,9 +27,14 @@ import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryForAdminWorker
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepositoryWorker
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerDashboardViewModelRepo
+
 
 class AdminWorkerDashboardFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
+//    private lateinit var viewModel: AdminWorkerDashboardViewModelRepo
     private lateinit var viewModel: AdminWorkerDashboardViewModel
     private lateinit var workerAdapter: WorkerAdapter
 
@@ -53,6 +59,9 @@ class AdminWorkerDashboardFragment : Fragment() {
         val apiService = RetrofitClient.instance
         val viewModelFactory = AdminWorkerDashboardViewModelFactory(apiService)
         viewModel = ViewModelProvider(this, viewModelFactory)[AdminWorkerDashboardViewModel::class.java]
+
+//        val factory = ViewModelFactoryForAdminWorker(RepositoryWorker(), sessionManager, requireContext())
+//        viewModel = ViewModelProvider(this, factory).get(AdminWorkerDashboardViewModelRepo::class.java)
 
         // Menghubungkan ViewModel dan LifecycleOwner ke layout
         binding.viewModel = viewModel
