@@ -3,9 +3,11 @@ package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactor
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepositoryWorker
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.AddCorralViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.EditCorralViewModelRepo
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerDashboardViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
 import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
@@ -27,6 +29,15 @@ class ViewModelFactoryAdd(private val repository: RepostioryCorral,private val s
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AddCorralViewModelRepo::class.java)) {
             return AddCorralViewModelRepo(repository,sessionManager,fileUtils,addCoralUseCase,context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
+class ViewModelFactoryForAdminWorker(private val repository: RepositoryWorker, private val sessionManager: SessionManager,private val context: Context?=null) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AdminWorkerDashboardViewModelRepo::class.java)) {
+            return AdminWorkerDashboardViewModelRepo(repository = repository, context = context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

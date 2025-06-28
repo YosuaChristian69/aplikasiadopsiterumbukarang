@@ -27,16 +27,24 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryAdd
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.AddCorralViewModelRepo
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerDashboardViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.WorkerAdapter
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.workerdashboard.AdminWorkerDashboardViewModel
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.workerdashboard.AdminWorkerDashboardViewModelFactory
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryForAdminWorker
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepositoryWorker
+//import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerDashboardViewModelRepo
 
 class AdminWorkerDashboardFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
-    private lateinit var viewModel: AdminWorkerDashboardViewModel
+    private lateinit var viewModel: AdminWorkerDashboardViewModelRepo
+//    private lateinit var viewModel: AdminWorkerDashboardViewModel
     private var bottomNavigation: BottomNavigationView? = null
     private var recyclerView: RecyclerView? = null
     private lateinit var logoutButton: ImageButton
@@ -60,7 +68,10 @@ class AdminWorkerDashboardFragment : Fragment() {
         sessionManager = SessionManager(requireContext())
         val apiService = RetrofitClient.instance
         val viewModelFactory = AdminWorkerDashboardViewModelFactory(apiService)
-        viewModel = ViewModelProvider(this, viewModelFactory)[AdminWorkerDashboardViewModel::class.java]
+//        viewModel = ViewModelProvider(this, viewModelFactory)[AdminWorkerDashboardViewModel::class.java]
+
+        val factory = ViewModelFactoryForAdminWorker(RepositoryWorker(), sessionManager, requireContext())
+        viewModel = ViewModelProvider(this, factory).get(AdminWorkerDashboardViewModelRepo::class.java)
 
         if (validateAccess()) {
             setupViews(view)
