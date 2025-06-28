@@ -1,327 +1,297 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
-    tools:context=".presentation.fragments.admin.AdminWorkerDashboardFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Header Section with Coral Green Theme -->
+    <data>
+        <variable
+            name="viewModel"
+            type="id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.workerdashboard.AdminWorkerDashboardViewModel" />
+        <import type="android.view.View"/>
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#1a4d52"
-        android:paddingStart="24dp"
-        android:paddingTop="40dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="24dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:elevation="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_background"
+        tools:context=".presentation.fragments.admin.AdminWorkerDashboardFragment">
 
-        <!-- Welcome Text with Better Contrast -->
-        <TextView
-            android:id="@+id/tv_user_greeting"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hi, USER"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/menuCard" />
-
-        <!-- Menu Button with Coral Theme -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/menuCard"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="#FFFFFF"
+            android:background="#1a4d52"
+            android:paddingStart="24dp"
+            android:paddingTop="40dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="24dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:elevation="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/logoutButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_logout"
-                android:contentDescription="Menu"
-                android:scaleType="center"
-                app:tint="#2a6e73" />
-        </androidx.cardview.widget.CardView>
-
-        <!-- Dashboard Title with Better Spacing -->
-        <TextView
-            android:id="@+id/tv_dashboard_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="MY WORKERS TEAM"
-            android:textColor="#B8E6E1"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.08"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_user_greeting" />
-
-        <!-- Stats Section -->
-        <LinearLayout
-            android:id="@+id/statsLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@+id/tv_dashboard_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <!-- Total Workers Stats -->
-            <androidx.cardview.widget.CardView
+            <TextView
+                android:id="@+id/tv_user_greeting"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#2a6e73">
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/menuCard"
+                tools:text="Hi, Admin"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        android:src="@drawable/ic_total_worker"
-                        app:tint="#4CDDCF" />
-
-                    <TextView
-                        android:id="@+id/totalWorkersCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="5"
-                        android:textColor="#FFFFFF"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Total Workers"
-                        android:textColor="#B8E6E1"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Active Workers -->
             <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#4CDDCF">
+                android:id="@+id/menuCard"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <LinearLayout
+                <ImageButton
+                    android:id="@+id/logoutButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_check_circle"
-                        app:tint="#1a4d52"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:id="@+id/activeWorkersCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="4"
-                        android:textColor="#1a4d52"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Active Today"
-                        android:textColor="#1a4d52"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_logout"
+                    android:contentDescription="Menu"
+                    android:scaleType="center"
+                    app:tint="#2a6e73"
+                    android:onClick="@{() -> viewModel.onLogoutClicked()}"/>
             </androidx.cardview.widget.CardView>
 
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Content Area with Coral Background -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#E8F5F3"
-        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Search Bar -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/searchCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="#FFFFFF"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            <TextView
+                android:id="@+id/tv_dashboard_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="MY WORKERS TEAM"
+                android:textColor="#B8E6E1"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.08"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_user_greeting" />
 
             <LinearLayout
+                android:id="@+id/statsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
-                android:padding="12dp"
-                android:gravity="center_vertical">
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/tv_dashboard_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_search"
-                    app:tint="#2a6e73"
-                    android:layout_marginStart="8dp" />
-
-                <EditText
-                    android:id="@+id/searchEditText"
+                <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="12dp"
-                    android:background="@null"
-                    android:hint="Search workers..."
-                    android:textColorHint="#7B8794"
-                    android:textColor="#2a6e73"
-                    android:textSize="16sp"
-                    android:maxLines="1"
-                    android:imeOptions="actionSearch" />
+                    android:layout_marginEnd="6dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#2a6e73">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:src="@drawable/ic_total_worker"
+                            app:tint="#4CDDCF" />
+                        <TextView
+                            android:id="@+id/totalWorkersCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.totalWorkersCount.toString()}"
+                            android:textColor="#FFFFFF"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            tools:text="5"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Workers"
+                            android:textColor="#B8E6E1"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#4CDDCF">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:tint="#1a4d52"
+                            android:layout_marginBottom="4dp" />
+                        <TextView
+                            android:id="@+id/activeWorkersCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.activeWorkersCount.toString()}"
+                            android:textColor="#1a4d52"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            tools:text="4"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Active Today"
+                            android:textColor="#1a4d52"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- RecyclerView with Better Styling -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_workers"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:clipToPadding="false"
-            android:paddingBottom="120dp"
-            android:scrollbars="none"
-            android:overScrollMode="never"
-            android:layoutAnimation="@anim/layout_animation_slide_up"
-            app:layout_constraintTop_toBottomOf="@+id/searchCard"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:listitem="@layout/item_worker_card" />
-
-        <!-- Empty State Message -->
-        <LinearLayout
-            android:id="@+id/emptyStateLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@+id/rv_workers"
-            app:layout_constraintBottom_toBottomOf="@+id/rv_workers"
+            android:background="#E8F5F3"
+            app:layout_constraintTop_toBottomOf="@+id/headerLayout"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
+            <androidx.cardview.widget.CardView
+                android:id="@+id/searchCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="#2a6e73"
+                        android:layout_marginStart="8dp" />
+                    <EditText
+                        android:id="@+id/searchEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:background="@null"
+                        android:hint="Search workers..."
+                        android:text="@={viewModel.searchQuery}"
+                        android:textColorHint="#7B8794"
+                        android:textColor="#2a6e73"
+                        android:textSize="16sp"
+                        android:maxLines="1"
+                        android:imeOptions="actionSearch" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_workers"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:paddingBottom="120dp"
+                android:scrollbars="none"
+                android:overScrollMode="never"
+                android:layoutAnimation="@anim/layout_animation_slide_up"
+                app:layout_constraintTop_toBottomOf="@+id/searchCard"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:listitem="@layout/item_worker_card"
+                android:visibility="@{viewModel.workers.empty ? View.GONE : View.VISIBLE}"
+                />
+
+            <LinearLayout
+                android:id="@+id/emptyStateLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="👥"
-                android:textSize="48sp"
-                android:layout_marginBottom="16dp" />
+                android:orientation="vertical"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="@+id/rv_workers"
+                app:layout_constraintBottom_toBottomOf="@+id/rv_workers"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="@{viewModel.workers.empty ? View.VISIBLE : View.GONE}"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="👥"
+                    android:textSize="48sp"
+                    android:layout_marginBottom="16dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No workers found"
+                    android:textColor="#7B8794"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="No workers in your team yet"
-                android:textColor="#7B8794"
-                android:textSize="16sp"
-                android:layout_marginBottom="8dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tap + to add your first worker"
-                android:textColor="#B0BEC5"
-                android:textSize="14sp" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_worker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="100dp"
+            android:src="@drawable/ic_add"
+            android:contentDescription="Add New Worker"
+            app:backgroundTint="#4CDDCF"
+            app:tint="#1a4d52"
+            app:elevation="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:onClick="@{() -> viewModel.onAddWorkerClicked()}"/>
 
-        </LinearLayout>
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#4CDDCF"
+            android:elevation="16dp"
+            app:itemIconTint="@color/bottom_nav_color"
+            app:itemTextColor="@color/bottom_nav_color"
+            app:menu="@menu/admin_bottom_nav_menu"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Enhanced Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_worker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="100dp"
-        android:src="@drawable/ic_add"
-        android:contentDescription="Add New Worker"
-        app:backgroundTint="#4CDDCF"
-        app:tint="#1a4d52"
-        app:elevation="12dp"
-        app:pressedTranslationZ="16dp"
-        app:rippleColor="#1a4d52"
-        app:borderWidth="0dp"
-        app:fabSize="normal"
-        app:maxImageSize="28dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Coral Themed Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#4CDDCF"
-        android:elevation="16dp"
-        app:itemIconTint="@color/bottom_nav_color"
-        app:itemTextColor="@color/bottom_nav_color"
-        app:itemRippleColor="#1a4d52"
-        app:menu="@menu/admin_bottom_nav_menu"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
