@@ -56,7 +56,7 @@ class WorkerPlantingRepository(
         runCatching {
             val requestBody = FinishPlantingRequest(workerId = workerId)
             val response = apiService.finishPlanting(
-                token = "$token",
+                token = token,
                 id = id,
                 request = requestBody
             )

@@ -93,13 +93,14 @@ class WorkerPlantingViewModel(
         viewModelScope.launch {
             try {
                 val token = sessionManager.fetchAuthToken()
+                Log.d("tokenworker", sessionManager.fetchAuthToken().toString())
                 val workerId = sessionManager.fetchUserId()
                 if (token.isNullOrEmpty() || workerId <= 0) {
                     handleAuthenticationError()
                     return@launch
                 }
 
-                repository.finishPlanting(id, workerId, token)
+                repository.finishPlanting(id = id, workerId= workerId, token = token)
                     .onSuccess {
                         _eventFlow.emit(ViewEvent.ShowToast("Coral planting completed successfully! 🐠"))
                         _eventFlow.emit(ViewEvent.NavigateBack) // Navigate back after completion
