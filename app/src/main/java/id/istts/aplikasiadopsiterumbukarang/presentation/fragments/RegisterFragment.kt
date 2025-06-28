@@ -34,11 +34,17 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.data.datasource.RegisterRemoteDataSource
+import id.istts.aplikasiadopsiterumbukarang.data.repository.RegisterRepositoryImpl
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.register.RegisterViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.register.RegisterViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
 
 class RegisterFragment : Fragment() {
 
     private lateinit var viewModel: RegisterViewModel
+    private lateinit var viewModelFactory: RegisterViewModelFactory
+
 
     // UI Components
     private lateinit var videoView: VideoView
@@ -78,8 +84,8 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initializeViews(view)
         initializeViewModel()
+        initializeViews(view)
         setupVideoBackground(view)
         animateRegisterCard(view)
         setupClickListeners()
@@ -107,7 +113,17 @@ class RegisterFragment : Fragment() {
     }
 
     private fun initializeViewModel() {
-        viewModel = ViewModelProvider(this)[RegisterViewModel::class.java]
+        // 1. Create the data source
+        val remoteDataSource = RegisterRemoteDataSource(RetrofitClient.instance)
+
+        // 2. Create the repository
+        val repository = RegisterRepositoryImpl(remoteDataSource)
+
+        // 3. Create the factory
+        viewModelFactory = RegisterViewModelFactory(repository)
+
+        // 4. Initialize the ViewModel using the factory
+        viewModel = ViewModelProvider(this, viewModelFactory)[RegisterViewModel::class.java]
     }
 
     private fun setupVideoBackground(view: View) {
