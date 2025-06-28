@@ -201,7 +201,7 @@ interface ApiService {
 //        @Path("id") id: Int,
 //        @Body request: FinishPlantingRequest
 //    ): Response<FinishPlantingResponse>
-    @Multipart
+//    @Multipart
     @PUT("worker/finishPlanting/{id}")
     suspend fun finishPlanting(
     @Header("x-auth-token") token: String,
