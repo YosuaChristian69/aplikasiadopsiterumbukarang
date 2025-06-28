@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -286,23 +287,37 @@ class AddCoralFragment : Fragment() {
         takePhotoLauncher.launch(intent)
     }
 
-    private fun openGalleryModern() {
-        // 1. Cek apakah Photo Picker modern BENAR-BENAR TERSEDIA di perangkat ini.
-        //    Ini lebih andal daripada hanya memeriksa versi Android.
-        if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(requireContext())) {
-            // Jika tersedia, gunakan Photo Picker modern yang aman.
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        } else {
-            // Jika TIDAK TERSEDIA (misalnya di emulator tanpa Google Play),
-            // langsung gunakan metode lama sebagai fallback yang pasti ada.
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+    // File: AddCoralFragment.kt
 
-            // Tambahkan try-catch sebagai pengaman tambahan kalau-kalau tidak ada galeri sama sekali
+    private fun openGalleryModern() {
+        // Prioritas 1: Coba gunakan Photo Picker modern jika tersedia.
+        if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(requireContext())) {
             try {
-                pickImageLauncher.launch(intent)
+                // Lakukan peluncuran di dalam try-catch sebagai pengaman utama.
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                // Jika berhasil, fungsi berhenti di sini.
+                return
             } catch (e: ActivityNotFoundException) {
-                Toast.makeText(requireContext(), "No gallery app found.", Toast.LENGTH_SHORT).show()
+                // Kasus langka: isAvailable() true tapi launch() gagal.
+                // Biarkan kode melanjutkan ke metode fallback di bawah.
+                Log.e("AddCoralFragment", "Photo Picker tersedia tapi gagal diluncurkan.", e)
             }
+        }
+
+        // Prioritas 2 (Fallback): Jika Photo Picker modern tidak tersedia atau gagal, gunakan Intent galeri lama.
+        // Ini akan dieksekusi jika blok 'if' di atas tidak berhasil 'return'.
+        try {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*" // Eksplisit tentukan tipe untuk dicari
+            pickImageLauncher.launch(intent)
+        } catch (e: ActivityNotFoundException) {
+            // Penanganan Final: Jika cara lama pun gagal, berarti tidak ada aplikasi galeri sama sekali.
+            // Tampilkan pesan ke pengguna dan jangan buat aplikasi crash.
+            Toast.makeText(
+                requireContext(),
+                "Tidak ditemukan aplikasi Galeri di perangkat ini.",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
