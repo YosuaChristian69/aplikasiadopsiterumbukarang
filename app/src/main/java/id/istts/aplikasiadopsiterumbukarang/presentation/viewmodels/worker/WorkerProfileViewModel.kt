@@ -33,7 +33,9 @@ class WorkerProfileViewModel(private val sessionManager: SessionManager) : ViewM
             val userName = sessionManager.fetchUserName() ?: "Unknown User"
             val userEmail = sessionManager.fetchUserEmail() ?: "No Email"
             val userStatus = sessionManager.fetchUserStatus() ?: "Worker"
-
+            val userImagePath = sessionManager.fetchUserImagePath() ?: null
+            val userJoinedDate = sessionManager.fetchUserJoinedAt() ?: "01/01/2024"
+            val userId = sessionManager.fetchUserId().toString() ?: "-1"
             // Create profile with session data and placeholder values
             // In a real app, you would fetch this from an API or database
             val profile = WorkerProfile(
@@ -42,9 +44,9 @@ class WorkerProfileViewModel(private val sessionManager: SessionManager) : ViewM
                 jobTitle = if (userStatus.equals("worker", ignoreCase = true)) "Diver" else userStatus,
                 dateOfBirth = "01/01/1990", // Placeholder - should come from API
                 phone = "081234567890", // Placeholder - should come from API
-                joinedDate = "01/01/2024", // Placeholder - should come from API
-                workerId = "1234-4321-1234", // Placeholder - should come from API
-                profilePhotoUrl = null // Placeholder - should come from API
+                joinedDate = userJoinedDate, // Placeholder - should come from API
+                workerId = userId, // Placeholder - should come from API
+                profilePhotoUrl = userImagePath // Placeholder - should come from API
             )
 
             _workerProfile.value = profile

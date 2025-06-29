@@ -22,5 +22,9 @@ data class CoralDetail(
     val subtotal: Double,
 
     @SerializedName("deskripsi")
-    val deskripsi: String?
+    val deskripsi: String?,
+
+    // ADDED: New field to hold the image URL from the API response
+    @SerializedName("ImgUrl")
+    val ImgUrl: String?
 )

@@ -1,174 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#1A4A52"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".presentation.fragments.worker.WorkerDetailMissionFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Header Section -->
-    <LinearLayout
+    <data>
+        <variable
+            name="viewModel"
+            type="id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel" />
+        <import type="android.view.View"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="24dp">
-
-        <ImageView
-            android:id="@+id/iv_user_avatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_person"
-            android:scaleType="centerInside"
-            android:padding="8dp" />
-
-        <TextView
-            android:id="@+id/tv_greeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="Hi, DIVER"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="normal" />
-
-    </LinearLayout>
-
-    <!-- Main Content Card -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="24dp"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="8dp"
-        android:layout_marginHorizontal="8dp">
+        android:layout_height="match_parent"
+        android:background="#1A4A52"
+        tools:context=".presentation.fragments.worker.WorkerDetailMissionFragment">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="32dp">
+            android:padding="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Title -->
-            <TextView
-                android:id="@+id/tv_coral_name_title"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Coral Name"
-                android:textColor="#333333"
-                android:textSize="24sp"
-                android:textStyle="normal"
-                android:layout_marginBottom="24dp" />
-
-            <!-- Coral Image -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="24dp">
 
-<!--                <ImageView-->
-<!--                    android:id="@+id/iv_coral_image"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:scaleType="centerCrop"-->
-<!--                    android:src=""-->
-<!--                    tools:src="" />-->
+                <ImageView
+                    android:id="@+id/iv_user_avatar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_person"
+                    android:scaleType="centerInside"
+                    android:padding="8dp" />
+
+                <TextView
+                    android:id="@+id/tv_greeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@{`Hi, ` + viewModel.uiState.userName.toUpperCase()}"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="normal"
+                    tools:text="Hi, DIVER"/>
+
+            </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                android:layout_marginHorizontal="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="32dp">
+
+                    <TextView
+                        android:id="@+id/tv_coral_name_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.uiState.selectedPlanting.detail_coral.get(0).nama_coral ?? `N/A`}"
+                        android:textColor="#333333"
+                        android:textSize="24sp"
+                        android:textStyle="normal"
+                        android:layout_marginBottom="24dp"
+                        tools:text="Coral Name"/>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="24dp">
+
+                        <ImageView
+                            android:id="@+id/iv_coral_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            app:imageUrl="@{viewModel.uiState.selectedPlanting.detail_coral.get(0).ImgUrl}"
+                            tools:src="@drawable/ic_coral_logo" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/tv_coral_species"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.uiState.selectedPlanting.detail_coral.get(0).jenis ?? `N/A`}"
+                        android:textColor="#333333"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"
+                        tools:text="CORAL Species"/>
+
+                    <TextView
+                        android:id="@+id/tv_owner_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name of the owner"
+                        android:textColor="#666666"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tv_owner_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.uiState.selectedPlanting.pembeli.nama ?? `N/A`}"
+                        android:textColor="#333333"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="Cinthya"/>
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Coral Species -->
-            <TextView
-                android:id="@+id/tv_coral_species"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="CORAL Species"
-                android:textColor="#333333"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
+                android:orientation="vertical"
+                android:layout_marginHorizontal="8dp">
 
-            <!-- Owner Label -->
-            <TextView
-                android:id="@+id/tv_owner_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name of the owner"
-                android:textColor="#666666"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp" />
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="25dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="12dp">
 
-            <!-- Owner Name -->
-            <TextView
-                android:id="@+id/tv_owner_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cinthya"
-                android:textColor="#333333"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                    <Button
+                        android:id="@+id/btn_next"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="#4EF8BF"
+                        android:backgroundTint="#4EF8BF"
+                        android:elevation="0dp"
+                        android:enabled="@{!viewModel.uiState.isLoading}"
+                        android:text="NEXT"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="25dp"
+                    app:cardElevation="4dp">
+
+                    <Button
+                        android:id="@+id/btn_back"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="#FF4757"
+                        android:text="BACK"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:enabled="@{!viewModel.uiState.isLoading}"
+                        android:elevation="0dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
-
-    <!-- Action Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginHorizontal="8dp">
-
-        <!-- Next Button -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="25dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="12dp">
+            android:visibility="@{viewModel.uiState.isLoading ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="gone"/>
 
-            <Button
-                android:id="@+id/btn_next"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="#4EF8BF"
-                android:backgroundTint="#4EF8BF"
-                android:elevation="0dp"
-                android:text="NEXT"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- Back Button -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="25dp"
-            app:cardElevation="4dp">
-
-            <Button
-                android:id="@+id/btn_back"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="#FF4757"
-                android:text="BACK"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:elevation="0dp"
-                style="?android:attr/borderlessButtonStyle" />
-
-        </androidx.cardview.widget.CardView>
-
-    </LinearLayout>
-
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
