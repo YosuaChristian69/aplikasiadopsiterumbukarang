@@ -1,4 +1,6 @@
-package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo
+package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker
+
+//package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,11 +13,10 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
 import kotlinx.coroutines.launch
 
-class EditCorralViewModelRepo(private val coralRepository: RepostioryCorral,private val repository: CoralRepository): ViewModel() {
+class EditCorralViewModelRepo2(private val coralRepository: RepostioryCorral,private val repository: CoralRepository): ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    // LiveData ini akan kita isi dari Parcelable, bukan dari fetch
     private val _coral = MutableLiveData<Coral>()
     val coral: LiveData<Coral> = _coral
 
@@ -25,19 +26,39 @@ class EditCorralViewModelRepo(private val coralRepository: RepostioryCorral,priv
     private val _updateSuccess = MutableLiveData<Boolean>()
     val updateSuccess: LiveData<Boolean> = _updateSuccess
 
-    // HAPUS FUNGSI INI! Ini adalah sumber masalah.
-    /*
+    var local = Applicatione.db
+//    fun fetchCoralData(id: Int, token: String) {
+//        _isLoading.value = true
+//        viewModelScope.launch {
+//            repository.getSingleCoral(id, token)
+//                .onSuccess { coral ->
+//                    _coral.value = coral
+//                }
+//                .onFailure { exception ->
+//                    _errorMessage.value = exception.message ?: "Failed to load coral data"
+//                }
+//            _isLoading.value = false
+//        }
+//    }
+
     fun fetchCoralData(id: Int, token: String) {
         _isLoading.value = true
         viewModelScope.launch {
-            // ...
+            var corralData = local.CorralDAO().getTerumbuKarangById(id)
+            if (corralData != null) {
+                _coral.value = corralData.toCorral()
+            }else{
+                _errorMessage.value = "Coral Data not found"
+            }
+//            repository.getSingleCoral(id, token)
+//                .onSuccess { coral ->
+//                    _coral.value = coral
+//                }
+//                .onFailure { exception ->
+//                    _errorMessage.value = exception.message ?: "Failed to load coral data"
+//                }
+            _isLoading.value = false
         }
-    }
-    */
-
-    // BUAT FUNGSI BARU INI untuk menerima data dari Fragment
-    fun setInitialCoralData(coral: Coral) {
-        _coral.value = coral
     }
 
     fun updateCoral(id: Int, token: String, editRequest: EditCoralRequest) {
@@ -59,7 +80,7 @@ class EditCorralViewModelRepo(private val coralRepository: RepostioryCorral,priv
             _isLoading.value = false
         }
     }
-    // Fungsi updateCoral tetap sama, ini sudah benar.
+
 //    fun updateCoral(id: Int, token: String, editRequest: EditCoralRequest) {
 //        _isLoading.value = true
 //        viewModelScope.launch {
@@ -74,7 +95,6 @@ class EditCorralViewModelRepo(private val coralRepository: RepostioryCorral,priv
 //        }
 //    }
 
-    // Fungsi validasi tetap sama, ini sudah benar.
     fun validateFields(
         name: String,
         species: String,
@@ -86,19 +106,31 @@ class EditCorralViewModelRepo(private val coralRepository: RepostioryCorral,priv
         if (name.trim().isEmpty()) {
             errors["name"] = "Coral name is required"
         }
+
         if (species.trim().isEmpty()) {
             errors["species"] = "Coral species is required"
         }
+
         if (price.trim().isEmpty()) {
             errors["price"] = "Price is required"
-        } else if (price.toIntOrNull() == null) {
-            errors["price"] = "Price must be a valid number"
+        } else {
+            try {
+                price.toInt()
+            } catch (e: NumberFormatException) {
+                errors["price"] = "Price must be a valid number"
+            }
         }
+
         if (stock.trim().isEmpty()) {
             errors["stock"] = "Stock is required"
-        } else if (stock.toIntOrNull() == null) {
-            errors["stock"] = "Stock must be a valid number"
+        } else {
+            try {
+                stock.toInt()
+            } catch (e: NumberFormatException) {
+                errors["stock"] = "Stock must be a valid number"
+            }
         }
+
         return Pair(errors.isEmpty(), errors)
     }
 }
