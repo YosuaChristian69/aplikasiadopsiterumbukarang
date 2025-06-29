@@ -20,13 +20,18 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepositoryWorker
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactoryForAdminWorker
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerEditUserViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAddWorkerBinding
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addWorker.AddWorkerViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.addWorkerRepo.AddWorkerViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
 
@@ -37,7 +42,8 @@ class AddWorkerFragment : Fragment() {
     private lateinit var fileUtils: FileUtils
 
     // Initialize ViewModel
-    private val viewModel: AddWorkerViewModel by viewModels()
+    private lateinit var viewModel: AddWorkerViewModelRepo
+//    private val viewModel: AddWorkerViewModel by viewModels()
 
     // Image handling variables
     private var selectedImageUri: Uri? = null
@@ -103,6 +109,9 @@ class AddWorkerFragment : Fragment() {
 
         sessionManager = SessionManager(requireContext())
         fileUtils = FileUtils(requireContext())
+
+        val factory = ViewModelFactoryForAdminWorker(RepositoryWorker(), sessionManager, requireContext())
+        viewModel = ViewModelProvider(this, factory).get(AddWorkerViewModelRepo::class.java)
         setupClickListeners()
         observeViewModel()
     }
