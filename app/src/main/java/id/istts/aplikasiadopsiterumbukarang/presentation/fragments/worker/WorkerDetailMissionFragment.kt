@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide // ADDED: Import Glide
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerDetailMissionBinding
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel
@@ -62,8 +63,6 @@ class WorkerDetailMissionFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    // The reference to progressBar has been removed as per your request.
-                    // You can manage the loading state differently, e.g., by disabling buttons.
                     binding.btnNext.isEnabled = !state.isLoading
                     binding.btnBack.isEnabled = !state.isLoading
 
@@ -74,6 +73,16 @@ class WorkerDetailMissionFragment : Fragment() {
                         binding.tvCoralNameTitle.text = firstCoral?.nama_coral ?: "N/A"
                         binding.tvCoralSpecies.text = firstCoral?.jenis ?: "N/A"
                         binding.tvOwnerName.text = detail.pembeli.nama
+
+                        // ADDED: Load the coral image using Glide
+                        // This assumes you have an ImageView with the id 'iv_coral_image' in your layout
+                        firstCoral?.ImgUrl?.let { imageUrl ->
+                            Glide.with(this@WorkerDetailMissionFragment)
+                                .load(imageUrl)
+                                .placeholder(R.drawable.ic_coral_logo) // Optional: a placeholder image
+                                .error(R.drawable.ic_coral_logo) // Optional: an error image
+                                .into(binding.ivCoralImage) // The target ImageView
+                        }
                     }
 
                     state.errorMessage?.let {

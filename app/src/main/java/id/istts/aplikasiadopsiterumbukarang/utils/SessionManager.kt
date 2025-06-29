@@ -57,9 +57,9 @@ class SessionManager(context: Context) {
 //        return prefs.getFloat(USER_BALANCE, 0.0f)
 //    }
 //
-//    fun fetchUserJoinedAt(): String? {
-//        return prefs.getString(USER_JOINED_AT, null)
-//    }
+    fun fetchUserJoinedAt(): String? {
+        return prefs.getString(USER_JOINED_AT, null)
+    }
 
     fun saveUserDetails(id:Int , name: String, email: String, status: String) {
         editor.putInt(USER_ID, id)
