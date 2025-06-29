@@ -1,6 +1,7 @@
 package id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker
 
 import android.content.SharedPreferences
+import android.util.Log
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.FinishPlantingResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PendingPlantingResponse
@@ -63,8 +64,10 @@ class WorkerPlantingRepository(
 
             val imagePart = img_url!!.let {
                 val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
-                MultipartBody.Part.createFormData("profile_picture", it.name, requestFile)
+                MultipartBody.Part.createFormData("assignment_picture", it.name, requestFile)
             }
+            Log.d("workerId",workerIdPart.toString())
+            Log.d("img",imagePart.toString())
             val response = apiService.finishPlanting(
                 token = token,
                 id = id,
@@ -75,12 +78,14 @@ class WorkerPlantingRepository(
             if (response.isSuccessful && response.body() != null) {
                 response.body()!!
             } else {
+                val errorBodyString = response.errorBody()?.string() ?: response.message()
+                Log.d("FinishPlantingRepo", "API Error - Code: ${response.code()}, Body: $errorBodyString")
                 val errorMessage = when (response.code()) {
                     401 -> "Authentication failed"
                     403 -> "Access denied"
                     404 -> "Planting record not found"
                     422 -> "Invalid request data."
-                    500 -> "Server error"
+                    500 -> "Server error${response.errorBody()?.string() ?: response.message()}\""
                     else -> "Failed to finish planting: ${response.errorBody()?.string() ?: response.message()}"
                 }
                 throw Exception(errorMessage)

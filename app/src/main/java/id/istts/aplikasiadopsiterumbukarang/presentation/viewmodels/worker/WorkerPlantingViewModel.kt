@@ -95,9 +95,10 @@ class WorkerPlantingViewModel(
         viewModelScope.launch {
             try {
                 val token = sessionManager.fetchAuthToken()
-                Log.d("tokenworker", sessionManager.fetchAuthToken().toString())
+//                Log.d("tokenworker", sessionManager.fetchAuthToken().toString())
                 val workerId = sessionManager.fetchUserId()
                 Log.d("tokenworker", sessionManager.fetchUserId().toString())
+                Log.d("file", img_url.toString())
                 if (token.isNullOrEmpty() || workerId <= 0) {
                     handleAuthenticationError()
                     return@launch
