@@ -9,6 +9,7 @@ import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRep
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.EditCorralViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.register.AdminWorkerDashboardViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.Worker.AdminWorkerEditUserViewModelRepo
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboardRepo.AdminDashboardViewModelFullRepo
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
 import id.istts.aplikasiadopsiterumbukarang.usecases.AddCoralUseCase
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
@@ -17,7 +18,13 @@ import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 class ViewModelFactory(private val repository: RepostioryCorral, private val coralRepository: CoralRepository, private val sessionManager: SessionManager,private val fileUtils: FileUtils?=null,private val context: Context?=null) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AdminDashboardViewModelFullRepo::class.java)) {
-            return AdminDashboardViewModelFullRepo(repository,coralRepository,sessionManager,fileUtils,context) as T
+            return AdminDashboardViewModelFullRepo(
+                repository,
+                coralRepository,
+                sessionManager,
+                fileUtils,
+                context
+            ) as T
         }
         if (modelClass.isAssignableFrom(EditCorralViewModelRepo::class.java)) {
             return EditCorralViewModelRepo(repository,coralRepository) as T

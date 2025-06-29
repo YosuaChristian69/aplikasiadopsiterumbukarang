@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide
 import id.istts.aplikasiadopsiterumbukarang.R
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactory
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboardRepo.AdminDashboardViewModelFullRepo
 import id.istts.aplikasiadopsiterumbukarang.databinding.DialogCoralDetailsBinding
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentAdminDashboardBinding
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
@@ -25,6 +26,8 @@ import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralAdapter
 import id.istts.aplikasiadopsiterumbukarang.presentation.adapters.CoralClickListener
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardViewModel
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editCoral.EditCoralViewModel
+import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editCoral.EditCoralViewModelFactory
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
@@ -34,7 +37,8 @@ class AdminDashboardFragment : Fragment() {
     private var _binding: FragmentAdminDashboardBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: AdminDashboardViewModel // Atau ViewModelFullRepo Anda
+    private lateinit var viewModel: AdminDashboardViewModelFullRepo
+//    private lateinit var viewModel: AdminDashboardViewModel // Atau ViewModelFullRepo Anda
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentAdminDashboardBinding.inflate(inflater, container, false)
@@ -44,12 +48,15 @@ class AdminDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this,
-            AdminDashboardViewModelFactory( // Gunakan Factory yang sesuai
-                CoralRepositoryImpl(), // Ganti dengan instance API service yang benar
-                SessionManager(requireContext())
-            )
-        )[AdminDashboardViewModel::class.java]
+//        viewModel = ViewModelProvider(this,
+//            AdminDashboardViewModelFactory( // Gunakan Factory yang sesuai
+//                CoralRepositoryImpl(), // Ganti dengan instance API service yang benar
+//                SessionManager(requireContext())
+//            )
+//        )[AdminDashboardViewModel::class.java]
+
+        val factory = ViewModelFactory(RepostioryCorral(),CoralRepositoryImpl(), SessionManager(requireContext()), FileUtils(requireContext()),requireContext())
+        viewModel = ViewModelProvider(this, factory)[AdminDashboardViewModelFullRepo::class.java]
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner

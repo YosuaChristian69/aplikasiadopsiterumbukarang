@@ -94,7 +94,7 @@ class RepositoryWorker {
             }
 
             var localUpdateResult = localUpdate(id,updateData)
-            
+
             return remoteData.body()?.user!!
         }catch (e: Exception){
             println("error : "+e.message)
