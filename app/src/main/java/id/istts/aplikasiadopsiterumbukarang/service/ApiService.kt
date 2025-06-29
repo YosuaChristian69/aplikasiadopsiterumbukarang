@@ -208,7 +208,7 @@ interface ApiService {
     @Header("x-auth-token") token: String,
     @Path("id") id: Int,
 //    @Body request: FinishPlantingRequest,
-    @Part("worker_id") workerId: RequestBody?,
+    @Part("worker_id") workerId: RequestBody,
 //    @SerializedName("worker_id")
 //    val workerId: Int
     @Part assignment_picture: MultipartBody.Part
