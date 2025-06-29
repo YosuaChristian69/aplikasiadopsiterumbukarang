@@ -104,10 +104,17 @@ class AdminDashboardFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.shouldNavigateToLogin.observe(viewLifecycleOwner) { navigate ->
-            if (navigate) {
-                findNavController().navigate(R.id.action_adminDashboardFragment_to_loginFragment)
-                viewModel.onNavigated()
+        // di dalam observeViewModel()
+        viewModel.shouldNavigateToLogin.observe(viewLifecycleOwner) { event ->
+            // Dapatkan konten HANYA JIKA belum pernah ditangani
+            event.getContentIfNotHandled()?.let { navigate ->
+                if (navigate) {
+                    // Pengecekan currentDestination tetap merupakan pengaman yang baik
+                    if (findNavController().currentDestination?.id == R.id.adminDashboardFragment) {
+                        findNavController().navigate(R.id.action_adminDashboardFragment_to_loginFragment)
+                    }
+                    // Kita tidak perlu memanggil viewModel.onNavigated() lagi untuk event ini
+                }
             }
         }
 

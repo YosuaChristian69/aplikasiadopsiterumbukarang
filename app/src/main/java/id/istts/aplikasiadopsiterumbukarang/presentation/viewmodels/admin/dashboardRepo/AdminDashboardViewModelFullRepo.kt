@@ -9,6 +9,7 @@ import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.Rep
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardUiState
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepository
+import id.istts.aplikasiadopsiterumbukarang.utils.Event
 import id.istts.aplikasiadopsiterumbukarang.utils.FileUtils
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
@@ -20,8 +21,8 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
     val uiState: LiveData<AdminDashboardUiState> = _uiState
 
     // Navigation flags
-    private val _shouldNavigateToLogin = MutableLiveData<Boolean>()
-    val shouldNavigateToLogin: LiveData<Boolean> = _shouldNavigateToLogin
+    private val _shouldNavigateToLogin = MutableLiveData<Event<Boolean>>()
+    val shouldNavigateToLogin: LiveData<Event<Boolean>> = _shouldNavigateToLogin
 
     private val _shouldNavigateToAddCoral = MutableLiveData<Boolean>()
     val shouldNavigateToAddCoral: LiveData<Boolean> = _shouldNavigateToAddCoral
@@ -45,7 +46,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
 
     fun validateUserAccess() {
         if (!sessionManager.isLoggedIn() || sessionManager.fetchUserStatus() != "admin") {
-            _shouldNavigateToLogin.value = true
+            _shouldNavigateToLogin.value = Event(true)
         } else {
             loadUserInfo()
             loadCoralDataRepo()
@@ -66,7 +67,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
                 isLoading = false,
                 error = "Authentication token not found"
             )
-            _shouldNavigateToLogin.value = true
+            _shouldNavigateToLogin.value = Event(true)
             return
         }
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -99,7 +100,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
 
         if (token.isNullOrEmpty()) {
             _uiState.value = _uiState.value?.copy(isLoading = false, error = "Authentication token not found")
-            _shouldNavigateToLogin.value = true
+            _shouldNavigateToLogin.value = Event(true)
             return
         }
 
@@ -129,7 +130,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
 
                     if (errorMessage.contains("Invalid or Expired Token", true) || errorMessage.contains("401")) {
                         _uiState.postValue(_uiState.value?.copy(isLoading = false, error = "Session expired. Please login again."))
-                        _shouldNavigateToLogin.postValue(true)
+                        _shouldNavigateToLogin.postValue(Event(true))
                     } else {
                         _uiState.postValue(_uiState.value?.copy(isLoading = false, error = "Failed to load coral data: $errorMessage"))
                     }
@@ -171,7 +172,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
         val token = sessionManager.fetchAuthToken()
         if (token.isNullOrEmpty()) {
             _showMessage.value = "Authentication token not found"
-            _shouldNavigateToLogin.value = true
+            _shouldNavigateToLogin.value = Event(true)
             return
         }
         _uiState.value = _uiState.value.copy(isLoading = true)
@@ -195,7 +196,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
         val token = sessionManager.fetchAuthToken()
         if (token.isNullOrEmpty()) {
             _showMessage.value = "Authentication token not found"
-            _shouldNavigateToLogin.value = true
+            _shouldNavigateToLogin.value = Event(true)
             return
         }
 
@@ -212,7 +213,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
                     val errorMessage = error?.message ?: "Failed to delete coral"
                     if (errorMessage.contains("Invalid or Expired Token", true) || errorMessage.contains("401")) {
                         _showMessage.postValue("Session expired. Please login again.")
-                        _shouldNavigateToLogin.postValue(true)
+                        _shouldNavigateToLogin.postValue(Event(true))
                     } else {
                         _showMessage.postValue("Failed to delete coral: $errorMessage")
                     }
@@ -227,7 +228,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
 
     fun onLogoutClick() {
         sessionManager.clearSession()
-        _shouldNavigateToLogin.value = true
+        _shouldNavigateToLogin.value = Event(true)
     }
 
     fun onAddCoralClick() {
@@ -243,7 +244,7 @@ class AdminDashboardViewModelFullRepo(private val repository: RepostioryCorral, 
     }
 
     fun onNavigated() {
-        _shouldNavigateToLogin.value = false
+        _shouldNavigateToLogin.value = Event(false)
         _shouldNavigateToAddCoral.value = false
         _shouldNavigateToPlace.value = false
         _shouldNavigateToWorker.value = false
