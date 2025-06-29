@@ -206,7 +206,8 @@ interface ApiService {
     suspend fun finishPlanting(
     @Header("x-auth-token") token: String,
     @Path("id") id: Int,
-    @Body request: FinishPlantingRequest
+    @Body request: FinishPlantingRequest,
+    @Part assignment_picture: MultipartBody.Part
 ): Response<FinishPlantingResponse>
 
     @Multipart

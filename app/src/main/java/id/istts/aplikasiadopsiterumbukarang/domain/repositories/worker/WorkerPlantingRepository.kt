@@ -8,6 +8,10 @@ import id.istts.aplikasiadopsiterumbukarang.domain.models.worker.PlantingDetailR
 import id.istts.aplikasiadopsiterumbukarang.service.ApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 class WorkerPlantingRepository(
     private val apiService: ApiService,
@@ -52,13 +56,18 @@ class WorkerPlantingRepository(
 
     // CORRECTED: The signature of this function now matches what the ViewModel is calling.
     // It no longer takes a File and prepares a simple JSON request body.
-    override suspend fun finishPlanting(id: Int, workerId: Int, token: String): Result<FinishPlantingResponse> = withContext(Dispatchers.IO) {
+    override suspend fun finishPlanting(id: Int, workerId: Int, token: String, img_url: File): Result<FinishPlantingResponse> = withContext(Dispatchers.IO) {
         runCatching {
             val requestBody = FinishPlantingRequest(workerId = workerId)
+            val imagePart = img_url!!.let {
+                val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+                MultipartBody.Part.createFormData("profile_picture", it.name, requestFile)
+            }
             val response = apiService.finishPlanting(
                 token = token,
                 id = id,
-                request = requestBody
+                request = requestBody,
+                assignment_picture = imagePart
             )
 
             if (response.isSuccessful && response.body() != null) {
