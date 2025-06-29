@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import android.util.Log
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.worker.IWorkerPlantingRepository
+import java.io.File
 
 class WorkerPlantingViewModel(
     private val repository: IWorkerPlantingRepository,
@@ -88,7 +89,7 @@ class WorkerPlantingViewModel(
         }
     }
 
-    fun finishPlanting(id: Int) {
+    fun finishPlanting(id: Int , img_url: File) {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             try {
@@ -101,7 +102,7 @@ class WorkerPlantingViewModel(
                     return@launch
                 }
 
-                repository.finishPlanting(id = id, workerId= workerId, token = token)
+                repository.finishPlanting(id = id, workerId= workerId, token = token , img_url = img_url)
                     .onSuccess {
                         _eventFlow.emit(ViewEvent.ShowToast("Coral planting completed successfully! 🐠"))
                         _eventFlow.emit(ViewEvent.NavigateBack) // Navigate back after completion

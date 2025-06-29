@@ -2,12 +2,14 @@ package id.istts.aplikasiadopsiterumbukarang.presentation.fragments.worker
 
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toFile
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,6 +23,8 @@ import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentWorkerDoMissionB
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.worker.WorkerPlantingViewModel
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 class WorkerDoMissionFragment : Fragment() {
 
@@ -72,9 +76,31 @@ class WorkerDoMissionFragment : Fragment() {
                 showToast("Please upload a picture of the planted coral.")
                 return@setOnClickListener
             }
+            val convertedfile = uriToFile(imageUri!!)
 
-            viewModel.finishPlanting(args.plantingId)
+            viewModel.finishPlanting(args.plantingId , convertedfile!!)
         }
+    }
+    private fun uriToFile(uri: Uri): File? {
+        requireContext().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (displayNameIndex == -1) return null
+
+                val displayName = cursor.getString(displayNameIndex)
+                val file = File(requireContext().cacheDir, displayName)
+                try {
+                    val inputStream = requireContext().contentResolver.openInputStream(uri)
+                    val outputStream = FileOutputStream(file)
+                    inputStream?.copyTo(outputStream)
+                    return file
+                } catch (e: Exception) {
+                    // Log the error if something goes wrong
+                    Log.e("uriToFile", "Failed to copy URI content to file", e)
+                }
+            }
+        }
+        return null
     }
 
     private fun observeViewModel() {
