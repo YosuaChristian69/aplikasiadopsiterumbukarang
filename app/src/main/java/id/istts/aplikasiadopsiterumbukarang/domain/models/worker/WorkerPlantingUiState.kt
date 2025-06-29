@@ -13,4 +13,7 @@ data class WorkerPlantingUiState(
     val unassignedPlantings: List<PendingPlanting> = emptyList(),
     // ADDED: This property is required by WorkerDashboardFragment
     val shouldNavigateToLogin: Boolean = false
-)
+){
+    val coralImageUrl: String?
+        get() = selectedPlanting?.detail_coral?.firstOrNull()?.ImgUrl
+}

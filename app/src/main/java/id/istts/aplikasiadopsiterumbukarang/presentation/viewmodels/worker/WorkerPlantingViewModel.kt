@@ -19,12 +19,13 @@ class WorkerPlantingViewModel(
     private val repository: IWorkerPlantingRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
-
+//    val selectedPlanting: Planting? = null,
     private val _uiState = MutableStateFlow(WorkerPlantingUiState())
     val uiState = _uiState.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<ViewEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
+//    val coralImageUrl: String? = selectedPlanting?.detail_coral?.firstOrNull()?.ImgUrl
 
     init {
         val userStatus = sessionManager.fetchUserStatus()

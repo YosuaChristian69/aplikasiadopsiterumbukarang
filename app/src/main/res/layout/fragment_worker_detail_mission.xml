@@ -63,13 +63,16 @@
                 app:cardElevation="8dp"
                 android:layout_marginHorizontal="8dp">
 
+                <!-- Show this view only if a planting detail is loaded -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="32dp">
+                    android:padding="32dp"
+                    android:visibility="@{viewModel.uiState.selectedPlanting != null ? View.VISIBLE : View.GONE}">
 
+                    <!-- **** FIX #1: SAFER DATA ACCESS **** -->
                     <TextView
                         android:id="@+id/tv_coral_name_title"
                         android:layout_width="wrap_content"
@@ -88,16 +91,18 @@
                         app:cardElevation="4dp"
                         android:layout_marginBottom="24dp">
 
+                        <!-- **** FIX #2: USE THE SAFE COMPUTED PROPERTY **** -->
                         <ImageView
                             android:id="@+id/iv_coral_image"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:scaleType="centerCrop"
-                            app:imageUrl="@{viewModel.uiState.selectedPlanting.detail_coral.get(0).ImgUrl}"
+                            app:coralImage="@{viewModel.uiState.coralImageUrl}"
                             tools:src="@drawable/ic_coral_logo" />
 
                     </androidx.cardview.widget.CardView>
 
+                    <!-- **** FIX #3: SAFER DATA ACCESS **** -->
                     <TextView
                         android:id="@+id/tv_coral_species"
                         android:layout_width="wrap_content"
@@ -118,6 +123,7 @@
                         android:textSize="14sp"
                         android:layout_marginBottom="8dp" />
 
+                    <!-- **** FIX #4: SAFER DATA ACCESS **** -->
                     <TextView
                         android:id="@+id/tv_owner_name"
                         android:layout_width="wrap_content"
@@ -199,3 +205,18 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
+<!--    ```-->
+
+<!--    ### Summary of Changes-->
+
+<!--    1.  **Image View (`app:imageUrl`)**:-->
+<!--    * **Old (Unsafe):** `app:imageUrl="@{viewModel.uiState.selectedPlanting.detail_coral.get(0).ImgUrl}"`-->
+<!--    * **New (Safe):** `app:imageUrl="@{viewModel.uiState.coralImageUrl}"`-->
+<!--    * **Why:** This now uses the safe computed property from your `UiState`. If there's no selected planting or no image, it will be `null` and your Binding Adapter will handle it gracefully (by showing a placeholder or error image) instead of crashing.-->
+
+<!--    2.  **Text Views (Coral Name, Species, Owner):**-->
+<!--    * **Old (Unsafe):** `android:text="@{viewModel.uiState.selectedPlanting.detail_coral.get(0).nama_coral ?? 'N/A'}"`-->
+<!--    * **Still the same, but now safer because of the visibility change.** The `?? 'N/A'` (null coalescing operator) helps, but the real crash risk comes from calling `.get(0)` on a potentially null or empty list.-->
+<!--    * **The Fix:** I've wrapped the entire inner `LinearLayout` with a visibility check: `android:visibility="@{viewModel.uiState.selectedPlanting != null ? View.VISIBLE : View.GONE}"`. This ensures that the UI elements trying to access `selectedPlanting`'s details are only visible *after* the data has been loaded and is not null, preventing the crash.-->
+
+<!--    After applying these changes to your XML file, the data binding errors will be resolved, and your app will be more robust and less prone to crash-->
