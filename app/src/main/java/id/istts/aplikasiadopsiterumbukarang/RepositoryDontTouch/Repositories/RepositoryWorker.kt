@@ -92,6 +92,9 @@ class RepositoryWorker {
             if (!remoteData.isSuccessful){
                 throw HttpException(remoteData)
             }
+
+            var localUpdateResult = localUpdate(id,updateData)
+            
             return remoteData.body()?.user!!
         }catch (e: Exception){
             println("error : "+e.message)
@@ -118,6 +121,30 @@ class RepositoryWorker {
         }
 //        return "success"
     }
+
+    suspend fun localUpdate(id:String,updateData: Map<String,String>): Worker{
+        var worker = local.WorkerDAO().getWorkerById(id)
+        var full_name=worker.full_name
+        var email=worker.email
+        var user_status=worker.user_status
+        for ((key,value) in updateData){
+            if(key=="full_name"){
+                full_name=value
+            }
+            if(key=="email"){
+                email=value
+            }
+            if(key=="user_status"){
+                user_status=value
+            }
+        }
+//            println("full_name : "+full_name)
+        var updatedWorker = worker.copy(full_name = full_name,email = email,user_status = user_status,is_updated_locally = true)
+        println("full_name : "+updatedWorker.full_name+" is_updated_locally : "+updatedWorker.is_updated_locally)
+        local.WorkerDAO().updateWorker(updatedWorker)
+        return updatedWorker.toWorker()
+    }
+
     suspend fun insertHybridly():String{
         return "success"
     }
