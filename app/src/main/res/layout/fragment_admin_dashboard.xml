@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboard.AdminDashboardViewModel" />
+            type="id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.dashboardRepo.AdminDashboardViewModelFullRepo" />
         <import type="android.view.View"/>
     </data>
 

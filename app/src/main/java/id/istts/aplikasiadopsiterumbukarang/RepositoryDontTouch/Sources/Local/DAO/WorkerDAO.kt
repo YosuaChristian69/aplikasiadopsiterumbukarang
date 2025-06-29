@@ -12,7 +12,7 @@ interface WorkerDAO {
     @Query("SELECT * FROM workers order by id_user asc")
     suspend fun getAllWorkers(): List<WorkerEntities>
 
-    @Query("SELECT * FROM workers order by id_user desc limit 1")
+    @Query("SELECT * FROM workers order by CAST(id_user AS INTEGER) desc limit 1")
     suspend fun getWorkerWithBiggestID(): WorkerEntities
 
     @Query("SELECT * FROM workers WHERE id_user = :id")

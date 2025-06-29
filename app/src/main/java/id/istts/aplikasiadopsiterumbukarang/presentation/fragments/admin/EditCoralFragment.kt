@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.istts.aplikasiadopsiterumbukarang.R
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelWIthRepo.EditCorralViewModelRepo
 import id.istts.aplikasiadopsiterumbukarang.databinding.FragmentEditCoralBinding // <-- IMPORT VIEW BINDING
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Coral
 import id.istts.aplikasiadopsiterumbukarang.domain.models.EditCoralRequest
@@ -19,14 +20,16 @@ import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editCo
 import id.istts.aplikasiadopsiterumbukarang.presentation.viewmodels.admin.editCoral.EditCoralViewModelFactory
 import id.istts.aplikasiadopsiterumbukarang.repositories.CoralRepositoryImpl
 import id.istts.aplikasiadopsiterumbukarang.utils.SessionManager
-
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.ViewModelFactory.ViewModelFactory
+import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories.RepostioryCorral
 
 class EditCoralFragment : Fragment() {
     // Gunakan View Binding untuk menghindari findViewById
     private var _binding: FragmentEditCoralBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: EditCoralViewModel
+    private lateinit var viewModel: EditCorralViewModelRepo
+//    private lateinit var viewModel: EditCoralViewModel
     private lateinit var sessionManager: SessionManager
     private var currentCoral: Coral? = null
 
@@ -50,8 +53,12 @@ class EditCoralFragment : Fragment() {
     private fun setupDependencies() {
         sessionManager = SessionManager(requireContext())
         // Gunakan factory yang sesuai dengan ViewModel baru Anda
-        val factory = EditCoralViewModelFactory(CoralRepositoryImpl())
-        viewModel = ViewModelProvider(this, factory)[EditCoralViewModel::class.java]
+//        val factory = EditCoralViewModelFactory(CoralRepositoryImpl())
+//        viewModel = ViewModelProvider(this, factory)[EditCoralViewModel::class.java]
+
+
+        val factory = ViewModelFactory(RepostioryCorral(),CoralRepositoryImpl(/* inject your API service here */),sessionManager)
+        viewModel = ViewModelProvider(this, factory).get(EditCorralViewModelRepo::class.java)
     }
 
     private fun getParcelableData() {

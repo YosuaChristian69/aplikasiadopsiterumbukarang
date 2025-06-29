@@ -1,12 +1,22 @@
 package id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Repositories
 
 import android.content.Context
+import android.net.Uri
+import com.google.android.libraries.places.api.model.LocalDate
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Application.Applicatione
 import id.istts.aplikasiadopsiterumbukarang.RepositoryDontTouch.Sources.Local.Entities.WorkerEntities
+import id.istts.aplikasiadopsiterumbukarang.domain.models.AddWorkerRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.Worker
 import id.istts.aplikasiadopsiterumbukarang.domain.repositories.AddWorkerRepository
 import id.istts.aplikasiadopsiterumbukarang.service.RetrofitClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.util.Locale
 
 class RepositoryWorker {
     var remote = RetrofitClient.instance
@@ -27,7 +37,7 @@ class RepositoryWorker {
         }
         return null!!
     }
-    suspend fun syncWithRemote(token:String,context: Context?=null): List<Worker>{
+    suspend fun syncWithRemote(token:String,imageUri: Uri?=null,context: Context?=null): List<Worker>{
         var retainData=false
         var copyData: MutableList<WorkerEntities> = mutableListOf()
         var copyInsertData: MutableList<WorkerEntities> = mutableListOf()
@@ -52,7 +62,13 @@ class RepositoryWorker {
                     }
                 }
                 if(it.is_inserted_locally == true){
-
+                    val responseResult = MSRepo.addWorker(token, AddWorkerRequest(it.full_name,it.email,it.password!!), null, context)
+                    if (responseResult.isSuccessful) {
+                        local.WorkerDAO().deleteSingleWorker(it)
+                    }else {
+                        copyInsertData.add(it)
+                        retainData = true
+                    }
                 }
             }
         }
@@ -92,6 +108,9 @@ class RepositoryWorker {
             if (!remoteData.isSuccessful){
                 throw HttpException(remoteData)
             }
+
+            var localUpdateResult = localUpdate(id,updateData)
+
             return remoteData.body()?.user!!
         }catch (e: Exception){
             println("error : "+e.message)
@@ -118,8 +137,82 @@ class RepositoryWorker {
         }
 //        return "success"
     }
-    suspend fun insertHybridly():String{
-        return "success"
+
+    suspend fun localUpdate(id:String,updateData: Map<String,String>): Worker{
+        var worker = local.WorkerDAO().getWorkerById(id)
+        var full_name=worker.full_name
+        var email=worker.email
+        var user_status=worker.user_status
+        for ((key,value) in updateData){
+            if(key=="full_name"){
+                full_name=value
+            }
+            if(key=="email"){
+                email=value
+            }
+            if(key=="user_status"){
+                user_status=value
+            }
+        }
+//            println("full_name : "+full_name)
+        var updatedWorker = worker.copy(full_name = full_name,email = email,user_status = user_status,is_updated_locally = true)
+        println("full_name : "+updatedWorker.full_name+" is_updated_locally : "+updatedWorker.is_updated_locally)
+        local.WorkerDAO().updateWorker(updatedWorker)
+        return updatedWorker.toWorker()
+    }
+
+    suspend fun insertHybridly(token: String, request: AddWorkerRequest, imageUri: Uri? = null, context: Context? = null):String{
+        var MSRepo = AddWorkerRepository()
+        try {
+            val response = MSRepo.addWorker(token, request, imageUri, context)
+            if (response.isSuccessful) {
+                val message = response.body()?.msg ?: "Worker added successfully"
+                insertLocallyIfRemoteSuccess(request)
+                return message
+            } else {
+//                insertLocallyIfRemoteFail(request)
+                throw HttpException(response)
+            }
+        }catch (e: Exception){
+            println("error in function insertHybridly : "+e.message)
+            insertLocallyIfRemoteFail(request)
+            return "Worker added locally"
+        }
+//        return "success"
+    }
+
+    suspend fun insertLocallyIfRemoteFail(request: AddWorkerRequest){
+        var WorkerWithBiggestID = local.WorkerDAO().getWorkerWithBiggestID()
+        val newWorker= WorkerEntities(
+            id_user = (WorkerWithBiggestID.id_user.toInt()+1).toString(),
+            full_name = request.name,
+            email = request.email,
+            password = request.password,
+            status = "worker",
+            user_status = "active",
+            joined_at = "2020-10-10 08:01:01",
+            balance = "0",
+            is_updated_locally = false,
+            is_inserted_locally = true
+        )
+        local.WorkerDAO().insertWorker(newWorker)
+    }
+
+    suspend fun insertLocallyIfRemoteSuccess(request: AddWorkerRequest){
+        var WorkerWithBiggestID = local.WorkerDAO().getWorkerWithBiggestID()
+        val newWorker= WorkerEntities(
+            id_user = (WorkerWithBiggestID.id_user.toInt()+1).toString(),
+            full_name = request.name,
+            email = request.email,
+            password = request.password,
+            status = "worker",
+            user_status = "active",
+            joined_at = "2020-10-10 08:01:01",
+            balance = "0",
+            is_updated_locally = false,
+            is_inserted_locally = false
+        )
+        local.WorkerDAO().insertWorker(newWorker)
     }
 
     suspend fun selectOneWorkerHybridly(id: String,token:String): Worker{
@@ -133,6 +226,32 @@ class RepositoryWorker {
             println("error in function selectOneWorkerHybridly : "+e.message)
             var worker = local.WorkerDAO().getWorkerById(id)
             return worker.toWorker()
+        }
+    }
+
+    suspend fun copyImageToInternalStorage(context: Context, uri: Uri): File? = withContext(Dispatchers.IO) {
+        try {
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext null
+            val mimeType = context.contentResolver.getType(uri)
+            val extension = when (mimeType) {
+                "image/png" -> ".png"
+                "image/jpeg" -> ".jpeg"
+                "image/jpg" -> ".jpg"
+                else -> ".img"
+            }
+            val fileName = "img_${System.currentTimeMillis()}.${extension}"
+            val targetFile = File(context.filesDir, fileName)
+
+            inputStream.use { input ->
+                FileOutputStream(targetFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            targetFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }
