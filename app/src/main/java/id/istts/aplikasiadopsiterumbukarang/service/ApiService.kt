@@ -1,5 +1,6 @@
 package id.istts.aplikasiadopsiterumbukarang.service
 
+import com.google.gson.annotations.SerializedName
 import id.istts.aplikasiadopsiterumbukarang.domain.CollectionResponse
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiRequest
 import id.istts.aplikasiadopsiterumbukarang.domain.models.AddLokasiResponse
@@ -206,7 +207,10 @@ interface ApiService {
     suspend fun finishPlanting(
     @Header("x-auth-token") token: String,
     @Path("id") id: Int,
-    @Body request: FinishPlantingRequest,
+//    @Body request: FinishPlantingRequest,
+    @Part("worker_id") workerId: Int,
+//    @SerializedName("worker_id")
+//    val workerId: Int
     @Part assignment_picture: MultipartBody.Part
 ): Response<FinishPlantingResponse>
 
