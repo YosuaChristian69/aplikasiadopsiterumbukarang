@@ -78,7 +78,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{viewModel.uiState.selectedPlanting.detail_coral.get(0).nama_coral ?? `N/A`}"
-                        android:textColor="#333333"
+                        android:textColor="@color/black"
                         android:textSize="24sp"
                         android:textStyle="normal"
                         android:layout_marginBottom="24dp"

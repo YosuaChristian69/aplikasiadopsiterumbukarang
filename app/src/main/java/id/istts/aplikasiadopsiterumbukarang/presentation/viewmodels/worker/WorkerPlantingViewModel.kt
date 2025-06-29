@@ -82,7 +82,7 @@ class WorkerPlantingViewModel(
                 repository.getPlantingDetails(token, id)
                     .onSuccess { response ->
                         _uiState.update { it.copy(isLoading = false, selectedPlanting = response.data) }
-                    }
+                        Log.d("WorkerViewModel", "Fetched data: ${response.data}")       }
                     .onFailure { exception -> handleError(exception, "Failed to load planting details") }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = "Unexpected error: ${e.message}") }

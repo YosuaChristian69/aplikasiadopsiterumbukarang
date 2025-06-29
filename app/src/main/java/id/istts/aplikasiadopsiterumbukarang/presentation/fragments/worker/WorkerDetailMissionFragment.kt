@@ -38,12 +38,17 @@ class WorkerDetailMissionFragment : Fragment() {
         return binding.root
     }
 
+    // In WorkerDetailMissionFragment.kt
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Sambungkan ViewModel dan LifecycleOwner ke binding
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner // <-- INI SANGAT PENTING
+
         viewModel.loadPlantingDetails(args.missionId)
         setupSessionManager()
-        Log.d("session manager",sessionManager.fetchUserEmail().toString())
         setupListeners()
         observeViewModel()
     }
@@ -59,35 +64,36 @@ class WorkerDetailMissionFragment : Fragment() {
         }
     }
 
+    // In WorkerDetailMissionFragment.kt
+
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect { state ->
-                    binding.btnNext.isEnabled = !state.isLoading
-                    binding.btnBack.isEnabled = !state.isLoading
-
-                    binding.tvGreeting.text = "Hi, ${state.userName.uppercase()}"
-
-                    state.selectedPlanting?.let { detail ->
-                        val firstCoral = detail.detail_coral.firstOrNull()
-                        binding.tvCoralNameTitle.text = firstCoral?.nama_coral ?: "N/A"
-                        binding.tvCoralSpecies.text = firstCoral?.jenis ?: "N/A"
-                        binding.tvOwnerName.text = detail.pembeli.nama
-
-                        // ADDED: Load the coral image using Glide
-                        // This assumes you have an ImageView with the id 'iv_coral_image' in your layout
-                        firstCoral?.ImgUrl?.let { imageUrl ->
-                            Glide.with(this@WorkerDetailMissionFragment)
-                                .load(imageUrl)
-                                .placeholder(R.drawable.ic_coral_logo) // Optional: a placeholder image
-                                .error(R.drawable.ic_coral_logo) // Optional: an error image
-                                .into(binding.ivCoralImage) // The target ImageView
+                // Observer untuk event satu kali seperti Toast atau Navigasi
+                launch {
+                    viewModel.eventFlow.collect { event ->
+                        when (event) {
+                            is WorkerPlantingViewModel.ViewEvent.ShowToast -> {
+                                showToast(event.message)
+                            }
+                            is WorkerPlantingViewModel.ViewEvent.NavigateBack -> {
+                                findNavController().popBackStack()
+                            }
                         }
                     }
+                }
 
-                    state.errorMessage?.let {
-                        showToast("Error: $it")
-                        viewModel.clearErrorMessage()
+                // Observer untuk state UI yang tidak bisa di-handle di XML
+                launch {
+                    viewModel.uiState.collect { state ->
+                        // HAPUS SEMUA KODE MANUAL UNTUK SET TEXT DAN IMAGE DARI SINI
+                        // Biarkan hanya logika yang tidak terkait langsung dengan data,
+                        // seperti menampilkan error message.
+
+                        state.errorMessage?.let {
+                            showToast("Error: $it")
+                            viewModel.clearErrorMessage()
+                        }
                     }
                 }
             }
