@@ -7,7 +7,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 //    private const val BASE_URL = "http://10.101.17.208:3000"
-    private const val BASE_URL = "http://10.0.2.2:3000"
+//    private const val BASE_URL = "http://10.0.2.2:3000"
+    private const val BASE_URL = "https://xkkgvtkdyk5ciukwtpzzcjdoiq0ospxl.lambda-url.us-east-1.on.aws"
 //    private const val BASE_URL = "http://192.168.1.102:3000/"
 
     // 1. Create the logging interceptor to see network traffic
