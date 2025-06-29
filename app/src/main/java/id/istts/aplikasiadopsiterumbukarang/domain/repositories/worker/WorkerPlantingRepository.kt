@@ -58,7 +58,7 @@ class WorkerPlantingRepository(
     // It no longer takes a File and prepares a simple JSON request body.
     override suspend fun finishPlanting(id: Int, workerId: Int, token: String, img_url: File): Result<FinishPlantingResponse> = withContext(Dispatchers.IO) {
         runCatching {
-            val requestBody = FinishPlantingRequest(workerId = workerId)
+//            val requestBody = FinishPlantingRequest(workerId = workerId)
             val imagePart = img_url!!.let {
                 val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
                 MultipartBody.Part.createFormData("profile_picture", it.name, requestFile)
@@ -66,7 +66,7 @@ class WorkerPlantingRepository(
             val response = apiService.finishPlanting(
                 token = token,
                 id = id,
-                request = requestBody,
+                workerId = workerId,
                 assignment_picture = imagePart
             )
 
