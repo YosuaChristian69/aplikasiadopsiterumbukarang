@@ -67,11 +67,12 @@ class LoginViewModelTest {
         val loginRequest = LoginRequest(email, password)
         val fakeAdminDetailsJson = mock<JSONObject>()
 
+        // DITAMBAHKAN: Mock untuk id_user sesuai dengan signatur baru
+        whenever(fakeAdminDetailsJson.getInt("id_user")).thenReturn(1)
         whenever(fakeAdminDetailsJson.getString("full_name")).thenReturn("Admin Coral")
         whenever(fakeAdminDetailsJson.getString("email")).thenReturn("admin@coralproject.com")
         whenever(fakeAdminDetailsJson.getString("status")).thenReturn("admin")
 
-        // Spy tetap diperlukan karena Anda menguji metode internal `decodeTokenPayload`
         val viewModelSpy = spy(viewModel)
         doReturn(fakeAdminDetailsJson).whenever(viewModelSpy).decodeTokenPayload(any())
         whenever(loginRepository.login(any())).thenReturn(Result.success(loginResponse))
@@ -82,13 +83,15 @@ class LoginViewModelTest {
         // Assert
         verify(loginRepository).login(eq(loginRequest))
         verify(sessionManager).saveAuthToken(fakeToken)
-        verify(sessionManager).saveUserDetails("Admin Coral", "admin@coralproject.com", "admin")
+        // DIUBAH: Sesuaikan verify dengan 4 parameter (id, nama, email, status)
+        verify(sessionManager).saveUserDetails(1, "Admin Coral", "admin@coralproject.com", "admin")
 
         assertEquals(LoginViewModel.LoginState.Success, viewModel.loginState.value)
         assertEquals("Login successful", viewModel.successMessage.value)
         assertEquals(LoginViewModel.NavigationTarget.ADMIN_DASHBOARD, viewModel.navigationEvent.value?.target)
         assertFalse(viewModel.isLoading.value ?: true)
     }
+
 
     @Test
     fun `performLogin dengan kredensial tidak valid harus gagal`() = runTest {
@@ -105,7 +108,8 @@ class LoginViewModelTest {
         // Assert
         verify(loginRepository).login(eq(loginRequest))
         verify(sessionManager, never()).saveAuthToken(any())
-        verify(sessionManager, never()).saveUserDetails(any(), any(), any())
+        // DIUBAH: Sesuaikan verify dengan 4 parameter menggunakan any()
+        verify(sessionManager, never()).saveUserDetails(any(), any(), any(), any())
 
         assertTrue(viewModel.loginState.value is LoginViewModel.LoginState.Error)
         assertEquals(errorMessage, (viewModel.loginState.value as LoginViewModel.LoginState.Error).message)
@@ -127,8 +131,6 @@ class LoginViewModelTest {
         verify(loginRepository, never()).login(any())
         assertEquals(LoginViewModel.FieldType.EMAIL, viewModel.fieldError.value?.field)
         assertEquals("Email is required", viewModel.fieldError.value?.message)
-
-        // PERBAIKAN: Verifikasi bahwa isLoading tidak pernah di-set (nilainya null)
         assertNull(viewModel.isLoading.value)
     }
 
@@ -145,8 +147,6 @@ class LoginViewModelTest {
         verify(loginRepository, never()).login(any())
         assertEquals(LoginViewModel.FieldType.PASSWORD, viewModel.fieldError.value?.field)
         assertEquals("Password is required", viewModel.fieldError.value?.message)
-
-        // PERBAIKAN: Verifikasi bahwa isLoading tidak pernah di-set (nilainya null)
         assertNull(viewModel.isLoading.value)
     }
 

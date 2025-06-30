@@ -22,6 +22,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.io.File
 
 @ExperimentalCoroutinesApi
 class WorkerPlantingViewModelTest {
@@ -40,7 +41,6 @@ class WorkerPlantingViewModelTest {
         mockRepository = mockk()
         mockSessionManager = mockk()
 
-        // Mock panggilan ke Log.d secara global untuk semua test di kelas ini
         mockkStatic(Log::class)
         every { Log.d(any(), any()) } returns 0
     }
@@ -126,6 +126,9 @@ class WorkerPlantingViewModelTest {
     @Test
     fun `finishPlanting - sukses - harusnya emit toast dan navigate back event`() = runTest(testDispatcher) {
         // Arrange
+        // DITAMBAHKAN: Buat mock object File untuk digunakan dalam tes
+        val mockFile = mockk<File>()
+
         every { mockSessionManager.isLoggedIn() } returns true
         every { mockSessionManager.fetchUserStatus() } returns "worker"
         every { mockSessionManager.fetchUserName() } returns "John Doe"
@@ -133,24 +136,22 @@ class WorkerPlantingViewModelTest {
         every { mockSessionManager.fetchUserId() } returns 10
 
         coEvery { mockRepository.getPendingPlantings(any()) } returns Result.success(PendingPlantingResponse("OK", 0, emptyList()))
-        coEvery { mockRepository.finishPlanting(any(), any(), any()) } returns Result.success(FinishPlantingResponse("Success"))
+        // DIUBAH: Tambahkan `any()` keempat untuk parameter img_url
+        coEvery { mockRepository.finishPlanting(any(), any(), any(), any()) } returns Result.success(FinishPlantingResponse("Success"))
 
         viewModel = WorkerPlantingViewModel(mockRepository, mockSessionManager)
         advanceUntilIdle()
 
         // Act & Assert
-        // Verifikasi event pada Flow sudah cukup sebagai bukti bahwa blok onSuccess berjalan.
         viewModel.eventFlow.test {
-            viewModel.finishPlanting(1)
+            viewModel.finishPlanting(1, mockFile)
             advanceUntilIdle()
 
             // Verifikasi event utama
             assertEquals("Coral planting completed successfully! 🐠", (awaitItem() as WorkerPlantingViewModel.ViewEvent.ShowToast).message)
             assertEquals(WorkerPlantingViewModel.ViewEvent.NavigateBack, awaitItem())
 
-            // Batalkan untuk mengabaikan event lain jika ada dan mencegah timeout.
             cancelAndIgnoreRemainingEvents()
         }
-
     }
 }
