@@ -35,7 +35,7 @@ class UserCoralSelectionAdapter(
                     .load(imageUrl)
                     .into(imageView)
             } else {
-//                pass
+                 imageView.setImageResource(R.drawable.ic_coral_seed)
             }
 
             // Now these properties are resolved and will work correctly
