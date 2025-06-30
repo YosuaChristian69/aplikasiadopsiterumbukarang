@@ -117,4 +117,12 @@
     <!-- Overlay Colors -->
     <color name="overlay_dark">#80000000</color>
     <color name="light_blue">#E8F5E9</color>
+
+
+    <color name="coral_error">#F81616</color>
+    <color name="ocean_primary">#2C5F6B</color>
+    <color name="ocean_secondary">#1A4B5C</color>
+    <color name="ocean_dark">#1A3F4A</color>
+    <color name="coral_mint">#4EF8BF</color>
+    <color name="ocean_surface">#3A7A8A</color>
 </resources>

@@ -1,4 +1,12 @@
 <resources>
+    <string name="coral_selection_title">CORAL SELECTION</string>
+    <string name="coral_selection_subtitle">Choose your coral to adopt</string>
+    <string name="selected_prefix">Selected: </string>
+    <string name="selected_none">Selected: None</string>
+    <string name="button_back">BACK</string>
+    <string name="button_select">SELECT</string>
+    <string name="error_no_selection">Please select a coral first!</string>
+    <string name="coral_species_placeholder">Coral Species</string>
     <string name="app_name">AplikasiAdopsiTerumbuKarang</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="tagline">Selamatkan Terumbu Karang Kita</string>

@@ -126,4 +126,6 @@ dependencies {
 
     // 5. TAMBAHKAN INI: Library Turbine untuk testing Flow
     testImplementation("app.cash.turbine:turbine:1.1.0")
+
+    implementation("com.airbnb.android:lottie:6.4.0")
 }
