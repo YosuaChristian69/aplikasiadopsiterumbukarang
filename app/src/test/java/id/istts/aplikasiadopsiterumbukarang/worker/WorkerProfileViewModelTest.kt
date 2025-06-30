@@ -73,9 +73,11 @@ class WorkerProfileViewModelTest {
     @Test
     fun `updateProfile - saat nama berubah - harus update LiveData dan panggil saveUserDetails`() {
         // Arrange
-        // Setup kondisi awal
+        // DIUBAH: Setup ID pengguna karena dibutuhkan untuk saveUserDetails
+        every { mockSessionManager.fetchUserId() } returns 123
         every { mockSessionManager.fetchUserName() } returns "Nama Lama"
         every { mockSessionManager.fetchUserEmail() } returns "email@lama.com"
+        every { mockSessionManager.fetchUserStatus() } returns "worker"
         viewModel = WorkerProfileViewModel(mockSessionManager)
 
         // Buat data profil yang sudah diupdate
@@ -88,27 +90,23 @@ class WorkerProfileViewModelTest {
         assertEquals("Nama Baru", viewModel.workerProfile.value?.name)
         assertEquals(false, viewModel.isEditMode.value)
 
-        // Verifikasi bahwa saveUserDetails DIPANGGIL karena nama berubah
+        // DIUBAH: Verifikasi bahwa saveUserDetails dipanggil dengan 4 parameter yang benar (id, nama, email, status)
         verify(exactly = 1) {
-            mockSessionManager.saveUserDetails("Nama Baru", "email@lama.com", any())
+            mockSessionManager.saveUserDetails(123, "Nama Baru", "email@lama.com", "Diver")
         }
     }
 
     @Test
     fun `updateProfile - saat tidak ada data berubah - TIDAK boleh panggil saveUserDetails`() {
         // Arrange
-        val initialProfile = WorkerProfile(
-            name = "Nama Sama",
-            email = "email@sama.com",
-            jobTitle = "Diver",
-            dateOfBirth = "", phone = "", joinedDate = "", workerId = ""
-        )
-        every { mockSessionManager.fetchUserName() } returns initialProfile.name
-        every { mockSessionManager.fetchUserEmail() } returns initialProfile.email
+        every { mockSessionManager.fetchUserId() } returns 456
+        every { mockSessionManager.fetchUserName() } returns "Nama Sama"
+        every { mockSessionManager.fetchUserEmail() } returns "email@sama.com"
+        every { mockSessionManager.fetchUserStatus() } returns "worker"
         viewModel = WorkerProfileViewModel(mockSessionManager)
 
-        // Buat data update yang sama persis
-        val updatedProfile = initialProfile.copy(phone = "08111") // Ubah data lain, bukan nama/email
+        // Buat data update yang sama persis untuk nama dan email
+        val updatedProfile = viewModel.workerProfile.value!!.copy(phone = "08111") // Ubah data lain
 
         // Act
         viewModel.updateProfile(updatedProfile)
@@ -116,8 +114,8 @@ class WorkerProfileViewModelTest {
         // Assert
         assertEquals("08111", viewModel.workerProfile.value?.phone)
 
-        // Verifikasi bahwa saveUserDetails TIDAK PERNAH DIPANGGIL
-        verify(exactly = 0) { mockSessionManager.saveUserDetails(any(), any(), any()) }
+        // DIUBAH: Verifikasi bahwa saveUserDetails TIDAK PERNAH DIPANGGIL dengan 4 parameter
+        verify(exactly = 0) { mockSessionManager.saveUserDetails(any(), any(), any(), any()) }
     }
 
     @Test
