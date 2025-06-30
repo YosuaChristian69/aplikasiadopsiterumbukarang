@@ -28,7 +28,15 @@ class UserCoralSelectionAdapter(
 
         fun bind(coral: Coral, isSelected: Boolean) {
             nameTextView.text = coral.tk_name
-            // Glide.with(itemView.context).load(coral.img_path).into(imageView)
+            val imageUrl = coral.img_path
+
+            if (!imageUrl.isNullOrEmpty()) {
+                Glide.with(itemView.context)
+                    .load(imageUrl)
+                    .into(imageView)
+            } else {
+//                pass
+            }
 
             // Now these properties are resolved and will work correctly
             cardView.strokeWidth = if (isSelected) 8 else 0 // 8dp stroke width when selected
